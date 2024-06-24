@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="add initial files">
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="clean up library dependency">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
@@ -100,7 +100,15 @@
       <option name="project" value="LOCAL" />
       <updated>1719235089246</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="clean up library dependency">
+      <option name="closed" value="true" />
+      <created>1719242809476</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1719242809476</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -120,7 +128,8 @@
     </ignored-roots>
     <MESSAGE value="Create a financial analysis repo" />
     <MESSAGE value="add initial files" />
-    <option name="LAST_COMMIT_MESSAGE" value="add initial files" />
+    <MESSAGE value="clean up library dependency" />
+    <option name="LAST_COMMIT_MESSAGE" value="clean up library dependency" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
