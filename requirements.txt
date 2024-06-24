@@ -1,9 +1,4 @@
-openai==1.35.3
 yahooquery==2.3.7
-langchain==0.2.5
-langchain_experimental==0.0.61
-nltk==3.8.1
-forex-python==1.8
 CurrencyConverter==0.17.23
 streamlit
 pandas==2.0.3
