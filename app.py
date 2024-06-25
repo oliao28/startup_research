@@ -2,7 +2,7 @@ import streamlit as st
 import financial_analysis as fa
 from currency_converter import CurrencyConverter
 st.title('Peer Comparison Analysis')
-
+st.text('For a list of public companies, compare selected financial metrics from their annual report (sourced from Yahoo Finance)')
 # Input for companies
 companies_input = st.text_input('Enter company names (comma-separated)', 'Apple, Microsoft, Google')
 companies = [company.strip() for company in companies_input.split(',')]
