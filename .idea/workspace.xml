@@ -156,7 +156,23 @@
       <option name="project" value="LOCAL" />
       <updated>1719848680754</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Add startup research functionality to the app">
+      <option name="closed" value="true" />
+      <created>1719848695719</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1719848695719</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Add startup research functionality to the app">
+      <option name="closed" value="true" />
+      <created>1719848916432</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1719848916432</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
