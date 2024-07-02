@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="fixing bugs so we only add a new entry to Affinity if it doesn't exist yet.">
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="add a function to extract startup name from the report">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/startup_research.py" beforeDir="false" afterPath="$PROJECT_DIR$/startup_research.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -207,7 +205,15 @@
       <option name="project" value="LOCAL" />
       <updated>1719904363082</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="add a function to extract startup name from the report">
+      <option name="closed" value="true" />
+      <created>1719908403748</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1719908403748</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -237,7 +243,8 @@
     <MESSAGE value="add functionality to push the draft memo into Affinity" />
     <MESSAGE value="fixing syntext errors" />
     <MESSAGE value="fixing bugs so we only add a new entry to Affinity if it doesn't exist yet." />
-    <option name="LAST_COMMIT_MESSAGE" value="fixing bugs so we only add a new entry to Affinity if it doesn't exist yet." />
+    <MESSAGE value="add a function to extract startup name from the report" />
+    <option name="LAST_COMMIT_MESSAGE" value="add a function to extract startup name from the report" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
