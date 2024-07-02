@@ -13,3 +13,12 @@ def build_prompt(prompt: str, company_website: str, company_description: str):
     else:
         return company_description + "\n" + "Here's it's website:" + company_website + "\n" + prompt
 
+def get_company_name(report: str, company_website: str):
+    name = report.split('\n')[0]
+    if len(name)<3 or len(name)>20:  # this is an arbitrary threshold assuming no one would name a company with more than 20 characters
+      tmp = company_website.split('.')
+      if "www" in tmp[0]:
+          name = tmp[1]
+      else:
+          name = tmp[0]
+    return name.capitalize()

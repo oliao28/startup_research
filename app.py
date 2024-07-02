@@ -1,7 +1,7 @@
 import streamlit as st
 import financial_analysis as fa
 from config import all_metrics, sorted_currency, research_config
-from startup_research import get_report, build_prompt
+from startup_research import get_report, build_prompt, get_company_name
 import os
 import asyncio
 import affinity_utils  as au
@@ -34,15 +34,13 @@ async def main():
             critical questions you should ask during due diligence. Add the startup and memo directly
             to Affinity or copy paste the draft into your favorite notes talking app.            
             """)
-        company_name = st.text_input('Enter company name') ## temporary solution
         website = st.text_input('Enter company website URL')
         description = st.text_input('Describe the company in a few sentences (or leave blank if website is provided)')
         prompt = build_prompt(research_config["prompt"], website, description)
 
         if st.button("Prepare draft memo"):
-            report = 'abc'
-            # report = await get_report(prompt, research_config["report_type"],
-            #             research_config["agent"], research_config["role"], verbose=False)
+            report = await get_report(prompt, research_config["report_type"],
+                        research_config["agent"], research_config["role"], verbose=False)
             # Store the report in session state
             st.session_state.report = report
         # Display the report if it exists in session state
@@ -53,12 +51,10 @@ async def main():
             if st.button("Add to Affinity"):
                 # Replace LIST_ID with the actual ID of your Affinity list
                 list_id = '143881'
-                print(website)
+                company_name = get_company_name(st.session_state.report, website)
                 company_data = {
                     "name": company_name,
                     "domain": website,
-                    # "field_values": [
-                    # ]
                 }
                 org_result = au.create_organization_in_affinity(AFFINITY_API_KEY, company_data)
                 if org_result:
