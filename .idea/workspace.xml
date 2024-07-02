@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="change the secret keys">
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="change the app name">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
     </list>
@@ -221,7 +221,23 @@
       <option name="project" value="LOCAL" />
       <updated>1719908914197</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="change the app name">
+      <option name="closed" value="true" />
+      <created>1719910138515</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1719910138515</updated>
+    </task>
+    <task id="LOCAL-00021" summary="change the app name">
+      <option name="closed" value="true" />
+      <created>1719910148787</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1719910148787</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -253,7 +269,8 @@
     <MESSAGE value="fixing bugs so we only add a new entry to Affinity if it doesn't exist yet." />
     <MESSAGE value="add a function to extract startup name from the report" />
     <MESSAGE value="change the secret keys" />
-    <option name="LAST_COMMIT_MESSAGE" value="change the secret keys" />
+    <MESSAGE value="change the app name" />
+    <option name="LAST_COMMIT_MESSAGE" value="change the app name" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
