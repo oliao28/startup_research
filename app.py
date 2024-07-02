@@ -27,7 +27,7 @@ async def main():
         st.session_state.report = None
 
     with tab_startup:
-        st.header("Prepare a draft call memo")
+        st.header("Research a startup and draft the call memo")
         st.markdown(
             """Use this app to get a preliminary research of a startup based on its 
             website and public information. The app will draft a call memo and recommend
@@ -38,7 +38,7 @@ async def main():
         description = st.text_input('Describe the company in a few sentences (or leave blank if website is provided)')
         prompt = build_prompt(research_config["prompt"], website, description)
 
-        if st.button("Prepare draft memo"):
+        if st.button("Draft call memo"):
             report = await get_report(prompt, research_config["report_type"],
                         research_config["agent"], research_config["role"], verbose=False)
             # Store the report in session state
