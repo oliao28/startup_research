@@ -30,10 +30,9 @@ async def main():
     with tab_startup:
         st.header("Research a startup and draft the call memo")
         st.markdown(
-            """Use this app to get a preliminary research of a startup based on its 
-            website and public information. The app will draft a call memo and recommend
-            critical questions you should ask during due diligence. Add the startup and memo directly
-            to Affinity or copy paste the draft into your favorite notes talking app.            
+            """Use this app to conduct preliminary research on a startup based on its website and public information. 
+            The app will draft a call memo and recommend critical questions to ask during due diligence. 
+            You can add the startup and memo directly to Affinity or copy and paste the draft into your favorite note-taking app.     
             """)
         website = st.text_input('Enter company website URL')
         description = st.text_input('Describe the company in a few sentences (or leave blank if website is provided)')
