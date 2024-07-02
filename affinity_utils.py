@@ -11,17 +11,13 @@ def affinity_authorization(affinity_api_key):
     username = ""
     pwd = affinity_api_key
     auth = "Basic " + base64.b64encode(f"{username}:{pwd}".encode()).decode()
-    headers = {"Authorization": auth, "Content-Type": "application/json"}
+    headers = {"Authorization": auth,
+               "Content-Type": "application/json",
+               "User-Agent": "startupresearch"}
     return headers
 
 
 def create_organization_in_affinity(affinity_api_key, organization_data):
-    # example of organization_data
-    # organization_data = {
-    #     "name": name,
-    #     "domain": domain
-    # }
-    #-----------------------------------------
     # Create headers with authentication
     headers = affinity_authorization(affinity_api_key)
 
@@ -29,7 +25,8 @@ def create_organization_in_affinity(affinity_api_key, organization_data):
     response = requests.post(url_affinity_organizations, json=organization_data, headers=headers)
 
     # Check if the request was successful
-    if response.status_code == 201:
+    # if response.status_code == 201:
+    if response.status_code in [200, 201]:
         print("Organization created successfully!")
         return response.json()  #response will contains entity_id of the new organization
     else:
@@ -44,7 +41,8 @@ def add_entry_to_list(affinity_api_key, list_id, entity_id):# list_id is 143881
     # Make the POST request
     response = requests.post(full_url, json=data, headers=headers)
     # Check if the request was successful
-    if response.status_code == 201:
+    # if response.status_code == 201:
+    if response.status_code in [200, 201]:
         print("Organization added to list successfully!")
         return response.json()
     else:
@@ -56,7 +54,8 @@ def add_notes_to_company(affinity_api_key, organization_id, note):
     headers = affinity_authorization(affinity_api_key)
     note_data = {"organization_ids": organization_id, "content": note}
     response = requests.post(url_affinity_note, headers=headers, json=note_data)
-    if response.status_code == 201:
+    # if response.status_code == 201:
+    if response.status_code in [200, 201]:
         print("Organization added to list successfully!")
         return response.json()
     else:

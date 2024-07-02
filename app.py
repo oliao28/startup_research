@@ -22,6 +22,9 @@ os.environ["SMART_LLM_MODEL"]=research_config["smart_llm_model"]
 
 async def main():
     tab_startup, tab_peer = st.tabs(["Startup Research", "Peer Comparison"])
+    # Initialize session state variables
+    if 'report' not in st.session_state:
+        st.session_state.report = None
 
     with tab_startup:
         st.header("Prepare a draft call memo")
@@ -30,38 +33,42 @@ async def main():
             Based on the company's website and internet research, the app will draft a call memo and highlight
             critical questions we should ask for due diligence. Copy paste the draft into your favorite notes talking app.            
             """)
-
+        company_name = st.text_input('Enter company name') ## temporary solution
         website = st.text_input('Enter company website URL')
         description = st.text_input('Describe the company in a few sentences (or leave blank if website is provided)')
         prompt = build_prompt(research_config["prompt"], website, description)
 
         if st.button("Prepare draft memo"):
-            report = await get_report(prompt, research_config["report_type"],
-                        research_config["agent"], research_config["role"], verbose=False)
+            report = 'abc'
+            # report = await get_report(prompt, research_config["report_type"],
+            #             research_config["agent"], research_config["role"], verbose=False)
             # Store the report in session state
             st.session_state.report = report
         # Display the report if it exists in session state
         if st.session_state.report:
             # st.subheader("Draft memo")
-            st.write(report)
+            st.write(st.session_state.report)
             # Add to Affinity
             if st.button("Add to Affinity"):
                 # Replace LIST_ID with the actual ID of your Affinity list
                 list_id = '143881'
-                organization_data = {
-                    "domain": website
+                print(website)
+                company_data = {
+                    "name": company_name,
+                    "domain": website,
+                    # "field_values": [
+                    # ]
                 }
-                org_result = au.create_organization_in_affinity(AFFINITY_API_KEY, organization_data)
+                org_result = au.create_organization_in_affinity(AFFINITY_API_KEY, company_data)
                 if org_result:
                     st.success(f"Created organization ID: {org_result['id']}", icon="✅")
-
                     # Now, add the organization to the list
-                    add_entry_to_list(AFFINITY_API_KEY, list_id, org_result['id'])
+                    au.add_entry_to_list(AFFINITY_API_KEY, list_id, org_result['id'])
 
                     # Now add notes to the organization
-                    add_notes_to_company(AFFINITY_API_KEY, org_result['id'], note)
-                else:
-                    st.error("Failed to create organization")
+                    au.add_notes_to_company(AFFINITY_API_KEY, org_result['id'], note)
+                # else:
+                #     st.error("Failed to create organization")
     with tab_peer:
         st.header('Peer Comparison Analysis')
         st.markdown(
