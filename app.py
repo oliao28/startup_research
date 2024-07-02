@@ -4,10 +4,17 @@ from config import all_metrics, sorted_currency, research_config
 from startup_research import get_report, build_prompt
 import os
 import asyncio
-
-os.environ["OPENAI_API_KEY"] =  st.secrets["open_api_key"] # Set the OpenAI API key as an environment variable
-os.environ["TAVILY_API_KEY"] = st.secrets["tavily_api_key"] # Set the Tavyly API key as an environment variable
-os.environ["ANTHROPIC_API_KEY"]= st.secrets["anthropic_api_key"]
+import affinity_utils  as au
+from dotenv import load_dotenv
+load_dotenv()  # take environment variables from .env.
+open_api_key = os.getenv('AFFINITY_API_KEY')
+tavily_api_key = os.getenv("TAVILY_API_KEY")
+anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
+AFFINITY_API_KEY = os.getenv('AFFINITY_API_KEY')
+# os.environ["OPENAI_API_KEY"] =  st.secrets["open_api_key"] # Set the OpenAI API key as an environment variable
+# os.environ["TAVILY_API_KEY"] = st.secrets["tavily_api_key"] # Set the Tavyly API key as an environment variable
+# os.environ["ANTHROPIC_API_KEY"]= st.secrets["anthropic_api_key"]
+# os.environ['AFFINITY_API_KEY']= st.secrets["affinity_api_key"]
 os.environ["LLM_PROVIDER"]=research_config["llm_provider"]
 os.environ["FAST_LLM_MODEL"]=research_config["fast_llm_model"]
 os.environ["SMART_LLM_MODEL"]=research_config["smart_llm_model"]
@@ -17,37 +24,47 @@ async def main():
     tab_startup, tab_peer = st.tabs(["Startup Research", "Peer Comparison"])
 
     with tab_startup:
-        st.header("Prepare a draft call memo and critical questions for due diligence")
+        st.header("Prepare a draft call memo")
+        st.markdown(
+            """Before walking into a pitch meeting, use this app to get a preliminary research of the startup.
+            Based on the company's website and internet research, the app will draft a call memo and highlight
+            critical questions we should ask for due diligence. Copy paste the draft into your favorite notes talking app.            
+            """)
+
         website = st.text_input('Enter company website URL')
         description = st.text_input('Describe the company in a few sentences (or leave blank if website is provided)')
         prompt = build_prompt(research_config["prompt"], website, description)
 
         if st.button("Prepare draft memo"):
-            # # Create a placeholder for the log messages
-            # log_output = st.empty()
-            #
-            # # Create a StringIO object to capture print output
-            # f = io.StringIO()
-
-            # # Redirect stdout to our StringIO object
-            # with redirect_stdout(f):
-            #     # Run get_report and capture its output
             report = await get_report(prompt, research_config["report_type"],
                         research_config["agent"], research_config["role"], verbose=False)
-
-            # # Get the log output as a string
-            # log_contents = f.getvalue()
-            #
-            # # Display the log messages
-            # log_output.text(log_contents)
-
-            # Display the final report
-            st.subheader("Draft memo")
+            # Store the report in session state
+            st.session_state.report = report
+        # Display the report if it exists in session state
+        if st.session_state.report:
+            # st.subheader("Draft memo")
             st.write(report)
+            # Add to Affinity
+            if st.button("Add to Affinity"):
+                # Replace LIST_ID with the actual ID of your Affinity list
+                list_id = '143881'
+                organization_data = {
+                    "domain": website
+                }
+                org_result = au.create_organization_in_affinity(AFFINITY_API_KEY, organization_data)
+                if org_result:
+                    st.success(f"Created organization ID: {org_result['id']}", icon="✅")
 
+                    # Now, add the organization to the list
+                    add_entry_to_list(AFFINITY_API_KEY, list_id, org_result['id'])
+
+                    # Now add notes to the organization
+                    add_notes_to_company(AFFINITY_API_KEY, org_result['id'], note)
+                else:
+                    st.error("Failed to create organization")
     with tab_peer:
         st.header('Peer Comparison Analysis')
-        st.text(
+        st.markdown(
             'For a list of public companies, compare selected financial metrics from their annual report (sourced from Yahoo Finance)')
         # Input for companies
         companies_input = st.text_input('Enter company names (comma-separated)', 'Apple, Microsoft, Google')

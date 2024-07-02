@@ -4,8 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="Add startup research functionality to the app">
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="add text description for the app">
+      <change afterPath="$PROJECT_DIR$/affinity_utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -172,7 +175,15 @@
       <option name="project" value="LOCAL" />
       <updated>1719848916432</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Add files needed for startup research">
+      <option name="closed" value="true" />
+      <created>1719849045367</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1719849045367</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -198,7 +209,8 @@
     <MESSAGE value="remove secret key" />
     <MESSAGE value="Revert &quot;Add startup research functionality to the app&quot;&#10;&#10;This reverts commit ba0d2178" />
     <MESSAGE value="Add startup research functionality to the app" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add startup research functionality to the app" />
+    <MESSAGE value="Add files needed for startup research" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add files needed for startup research" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
