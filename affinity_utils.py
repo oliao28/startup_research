@@ -21,6 +21,17 @@ def create_organization_in_affinity(affinity_api_key, organization_data):
     # Create headers with authentication
     headers = affinity_authorization(affinity_api_key)
 
+    # First, search for the organization
+    search_params = {"term": organization_data.get("domain", "")}
+    search_response = requests.get(url_affinity_organizations, headers=headers, params=search_params)
+
+    if search_response.status_code == 200:
+        search_results = search_response.json()
+        if search_results["organizations"]:
+            # Organization already exists
+            print("Organization already exists!")
+            return search_results["organizations"][0]
+
     # Make the POST request
     response = requests.post(url_affinity_organizations, json=organization_data, headers=headers)
 
@@ -38,6 +49,15 @@ def add_entry_to_list(affinity_api_key, list_id, entity_id):# list_id is 143881
     headers = affinity_authorization(affinity_api_key)
     full_url = f"{url_affinity_list}/{list_id}/list-entries"
     data = {"entity_id": entity_id}
+
+    # First, check if the organization is already in the list
+    check_response = requests.get(full_url, headers=headers, params=data)
+    if check_response.status_code == 200:
+        existing_entries = check_response.json()
+        if existing_entries:
+            print("Organization is already in the list!")
+            return existing_entries[0]
+
     # Make the POST request
     response = requests.post(full_url, json=data, headers=headers)
     # Check if the request was successful
@@ -52,14 +72,14 @@ def add_entry_to_list(affinity_api_key, list_id, entity_id):# list_id is 143881
 
 def add_notes_to_company(affinity_api_key, organization_id, note):
     headers = affinity_authorization(affinity_api_key)
-    note_data = {"organization_ids": organization_id, "content": note}
+    note_data = {"organization_ids": [organization_id], "content": note}
     response = requests.post(url_affinity_note, headers=headers, json=note_data)
     # if response.status_code == 201:
     if response.status_code in [200, 201]:
-        print("Organization added to list successfully!")
+        print("Notes added to the company successfully!")
         return response.json()
     else:
-        print(f"Failed to add organization to list. Status code: {response.status_code}")
+        print(f"Failed to add notes to the company. Status code: {response.status_code}")
         print(f"Response: {response.text}")
         return None
 #

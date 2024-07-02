@@ -29,9 +29,10 @@ async def main():
     with tab_startup:
         st.header("Prepare a draft call memo")
         st.markdown(
-            """Before walking into a pitch meeting, use this app to get a preliminary research of the startup.
-            Based on the company's website and internet research, the app will draft a call memo and highlight
-            critical questions we should ask for due diligence. Copy paste the draft into your favorite notes talking app.            
+            """Use this app to get a preliminary research of a startup based on its 
+            website and public information. The app will draft a call memo and recommend
+            critical questions you should ask during due diligence. Add the startup and memo directly
+            to Affinity or copy paste the draft into your favorite notes talking app.            
             """)
         company_name = st.text_input('Enter company name') ## temporary solution
         website = st.text_input('Enter company website URL')
@@ -66,7 +67,7 @@ async def main():
                     au.add_entry_to_list(AFFINITY_API_KEY, list_id, org_result['id'])
 
                     # Now add notes to the organization
-                    au.add_notes_to_company(AFFINITY_API_KEY, org_result['id'], note)
+                    au.add_notes_to_company(AFFINITY_API_KEY, org_result['id'], st.session_state.report)
                 # else:
                 #     st.error("Failed to create organization")
     with tab_peer:
