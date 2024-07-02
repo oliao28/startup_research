@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="change the app name">
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="fix affinity api key">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
     </list>
@@ -237,7 +237,15 @@
       <option name="project" value="LOCAL" />
       <updated>1719910148787</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="fix affinity api key">
+      <option name="closed" value="true" />
+      <created>1719910983481</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1719910983481</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -270,7 +278,8 @@
     <MESSAGE value="add a function to extract startup name from the report" />
     <MESSAGE value="change the secret keys" />
     <MESSAGE value="change the app name" />
-    <option name="LAST_COMMIT_MESSAGE" value="change the app name" />
+    <MESSAGE value="fix affinity api key" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix affinity api key" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
