@@ -5,12 +5,13 @@ from startup_research import get_report, build_prompt, get_company_name
 import os
 import asyncio
 import affinity_utils  as au
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 # load_dotenv()  # take environment variables from .env.
 # open_api_key = os.getenv("OPENAI_API_KEY")
 # tavily_api_key = os.getenv("TAVILY_API_KEY")
 # anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
 # AFFINITY_API_KEY = os.getenv('AFFINITY_API_KEY')
+
 os.environ["OPENAI_API_KEY"] =  st.secrets["openai_api_key"] # Set the OpenAI API key as an environment variable
 os.environ["TAVILY_API_KEY"] = st.secrets["tavily_api_key"] # Set the Tavyly API key as an environment variable
 os.environ["ANTHROPIC_API_KEY"]= st.secrets["anthropic_api_key"]
@@ -63,7 +64,9 @@ async def main():
                     au.add_entry_to_list(AFFINITY_API_KEY, list_id, org_result['id'])
 
                     # Now add notes to the organization
-                    au.add_notes_to_company(AFFINITY_API_KEY, org_result['id'], st.session_state.report)
+                    note_result = au.add_notes_to_company(AFFINITY_API_KEY, org_result['id'], st.session_state.report)
+                    if note_result:
+                        st.success(f"Added note to: {company_name}", icon="✅")
                 # else:
                 #     st.error("Failed to create organization")
     with tab_peer:

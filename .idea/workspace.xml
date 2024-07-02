@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="fix affinity api key">
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="fix minor errors">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/affinity_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/affinity_utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -245,7 +246,15 @@
       <option name="project" value="LOCAL" />
       <updated>1719910983481</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="fix minor errors">
+      <option name="closed" value="true" />
+      <created>1719914537783</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1719914537783</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -279,7 +288,8 @@
     <MESSAGE value="change the secret keys" />
     <MESSAGE value="change the app name" />
     <MESSAGE value="fix affinity api key" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix affinity api key" />
+    <MESSAGE value="fix minor errors" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix minor errors" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

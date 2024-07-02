@@ -76,7 +76,7 @@ def add_notes_to_company(affinity_api_key, organization_id, note):
     response = requests.post(url_affinity_note, headers=headers, json=note_data)
     # if response.status_code == 201:
     if response.status_code in [200, 201]:
-        print("Notes added to the company successfully!")
+        print("Notes added to the company successfully! Status code: {response.status_code}")
         return response.json()
     else:
         print(f"Failed to add notes to the company. Status code: {response.status_code}")
