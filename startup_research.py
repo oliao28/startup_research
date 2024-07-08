@@ -16,9 +16,9 @@ async def get_report(prompt: str, report_type: str, agent=None,role=None,config_
 
 def build_prompt(prompt: str, company_website: str, company_description: str, pitch_deck: str):
     if company_description == '':
-        return "Based on the website of this startup:" + company_website + ", first understand what it does. Then," + prompt
+        return "Based on the website of this startup:" + company_website + " and the pitch deck Text: " + pitch_deck + ", first understand what it does. Then," + prompt 
     else:
-        return company_description + "\n" + "Here's it's website:" + company_website + "\n" + prompt
+        return company_description + "\n" + " and here is the pitch deck Text: " + pitch_deck + " Here's it's website:" + company_website + "\n" + prompt
 
 def get_company_name(report: str, company_website: str):
     name = report.split('\n')[0]
