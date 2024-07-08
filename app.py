@@ -1,7 +1,7 @@
 import streamlit as st
 import financial_analysis as fa
 from config import all_metrics, sorted_currency, research_config
-from startup_research import get_report, build_prompt, get_company_name
+from startup_research import get_report, build_prompt, get_company_name, parse_pitch_deck
 import os
 import asyncio
 import affinity_utils  as au
@@ -22,13 +22,13 @@ AFFINITY_API_KEY = st.secrets["affinity_api_key"]
 
 
 async def main():
-    tab_startup, tab_peer = st.tabs(["Startup Research", "Peer Comparison"])
+    tab_startup, tab_peer = st.tabs(["BETA Startup Research", "DEPRECATED Peer Comparison"])
     # Initialize session state variables
     if 'report' not in st.session_state:
         st.session_state.report = None
 
     with tab_startup:
-        st.header("Research a startup and draft the call memo")
+        st.header("BETA TESTING Research a startup and draft the call memo")
         st.markdown(
             """Use this app to get a preliminary research of a startup based on its 
             website and public information. The app will draft a call memo and recommend
@@ -37,7 +37,12 @@ async def main():
             """)
         website = st.text_input('Enter company website URL')
         description = st.text_input('Describe the company in a few sentences (or leave blank if website is provided)')
-        prompt = build_prompt(research_config["prompt"], website, description)
+        #first get a link to a pitchdeck
+        link = st.text_input('Add a link to a pitch deck')
+        #call to parse
+        pitch_text = parse_pitch_deck(link)
+        
+        prompt = build_prompt(research_config["prompt"], website, description, pitch_text)
 
         if st.button("Draft call memo"):
             report = await get_report(prompt, research_config["report_type"],
