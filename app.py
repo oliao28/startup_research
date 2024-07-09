@@ -4,7 +4,8 @@ from googleapiclient.discovery import build
 import os
 import asyncio
 import affinity_utils  as au
-import threading
+import time
+
 from datetime import datetime
 import financial_analysis as fa
 import startup_research as sr
@@ -20,15 +21,12 @@ AFFINITY_API_KEY = st.secrets["affinity_api_key"]
 
 #TODO: During the update of pinecone, remove repetitie information from repeated insert
 #TODO: figure out how to set namespace
+#TODO: make the app mobile app friendly
 async def main():
     tab_startup, tab_peer, tab_qna = st.tabs(["Startup Research", "Peer Comparison", "Darwin Knowledge Q&A"])
     # Initialize session state variables
     if 'report' not in st.session_state:
         st.session_state.report = None
-    # Updated whenever the user asks a question.
-    if 'last_activity' not in st.session_state:
-        st.session_state.last_activity = datetime.now()
-
     with tab_startup:
         st.header("Research a startup and draft the call memo")
         st.markdown(
@@ -107,21 +105,17 @@ async def main():
 
         if 'folder_id' not in st.session_state:
             st.session_state.folder_id = '1JHdl4fsFJoysaByHMS1SCh7KO_EBqaS1'  #TODO: Replace with your actual folder ID
-
-        if 'last_update_file_id' not in st.session_state:
-            drive_service = build('drive', 'v3', credentials=st.session_state.credentials)
-            st.session_state.last_update_file_id = gq.get_or_create_last_update_file(drive_service,
-                                                                                  st.session_state.folder_id)
-        #check_and_update_index runs every 10 mins.  It checks if the user has been inactive for more than 10 minutes,
-        # and if so, it checks if it's been more than a week since the last update. If both conditions are met, it triggers an update.
-        # Check and update index
-        gq.check_and_update_index(drive_service)
+        # Initialize session state for user question
+        if 'user_question' not in st.session_state:
+            st.session_state.user_question = ""
 
         # Q&A Interface
-        user_question = st.text_input("Enter your question:")
+        user_question = st.text_input("Enter your question:", value=st.session_state.user_question,
+                                      key="question_input")
+        # Update session state when user enters a question
+        st.session_state.user_question = user_question
         if st.button("Ask"):
             if user_question:
-                st.session_state.last_activity = datetime.now()
                 query_engine = gq.get_query_engine()
                 response = query_engine.query(user_question)
 
@@ -133,6 +127,7 @@ async def main():
                     if file_id:
                         file_url = gq.get_file_url(file_id)
                         st.write(f"- [{file_name}]({file_url})")
+
 if __name__ == "__main__":
     asyncio.run(main())
 
