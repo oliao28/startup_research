@@ -89,7 +89,7 @@ def get_query_engine():
     if query_engine is None:
         logging.info("create query engine")
         llm = Anthropic(model="claude-3-5-sonnet-20240620", system_prompt = qna_system_prompt )
-        query_engine = index.as_query_engine(llm=llm, streaming=True)
+        query_engine = index.as_query_engine(llm=llm)
     return query_engine
 
 
@@ -140,36 +140,42 @@ def get_or_create_last_update_file(drive_service, folder_id):
         return file.get('id')
 
 
-def check_and_update_index():
-    while True:
-        time.sleep(600)  # Wait for 10 minutes
+def check_and_update_index(drive_service):
+    if 'last_check_time' not in st.session_state:
+        st.session_state.last_check_time = datetime.now()
+
+    current_time = datetime.now()
+    time_since_last_check = current_time - st.session_state.last_check_time
+
+    if time_since_last_check > timedelta(minutes=10):
+        st.session_state.last_check_time = current_time
+
         if 'last_activity' in st.session_state:
-            time_since_last_activity = datetime.now() - st.session_state.last_activity
+            time_since_last_activity = current_time - st.session_state.last_activity
             if time_since_last_activity > timedelta(minutes=10):
-                drive_service = build('drive', 'v3', credentials=st.session_state.credentials)
                 if 'last_update_file_id' not in st.session_state or not st.session_state.last_update_file_id:
                     st.session_state.last_update_file_id = get_or_create_last_update_file(drive_service,
                                                                                           st.session_state.folder_id)
 
                 last_update_time = read_last_update_time(drive_service, st.session_state.last_update_file_id)
                 if last_update_time:
-                    time_since_last_update = datetime.now() - last_update_time
-                    if time_since_last_update > timedelta(weeks=1):
+                    time_since_last_update = current_time - last_update_time
+                    if time_since_last_update > timedelta(minutes=10): #weeks=1):
                         logging.info("Updating index after inactivity...")
-                        new_last_update_time = process_google_drive(st.session_state.credentials,
-                                                                    st.session_state.folder_id, last_update_time)
+                        new_last_update_time = process_google_drive(drive_service, st.session_state.folder_id,
+                                                                    last_update_time)
                         if new_last_update_time:
                             write_last_update_time(drive_service, st.session_state.last_update_file_id,
                                                    new_last_update_time)
                 else:
-                    # If we couldn't read the last update time (e.g. accidental deletion, we should probably update)
                     logging.info("No last update time found. Updating index...")
-                    new_last_update_time = process_google_drive(st.session_state.credentials,
-                                                                st.session_state.folder_id)
+                    new_last_update_time = process_google_drive(drive_service, st.session_state.folder_id)
                     if new_last_update_time:
                         write_last_update_time(drive_service, st.session_state.last_update_file_id,
                                                new_last_update_time)
 
+    # Schedule the next check
+    st.experimental_rerun()
 
 def process_google_drive(credentials, folder_id, last_update_time=None):
     global index

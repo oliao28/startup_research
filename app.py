@@ -10,7 +10,7 @@ import financial_analysis as fa
 import startup_research as sr
 import gdrive_qna as gq
 
-
+os.environ["OPENAI_API_KEY"] =  st.secrets["openai_api_key"] # Set the OpenAI API key as an environment variable
 os.environ["TAVILY_API_KEY"] = st.secrets["tavily_api_key"] # Set the Tavyly API key as an environment variable
 os.environ["ANTHROPIC_API_KEY"]= st.secrets["anthropic_api_key"]
 os.environ["LLM_PROVIDER"]=research_config["llm_provider"]
@@ -19,7 +19,7 @@ os.environ["SMART_LLM_MODEL"]=research_config["smart_llm_model"]
 AFFINITY_API_KEY = st.secrets["affinity_api_key"]
 
 #TODO: During the update of pinecone, remove repetitie information from repeated insert
-
+#TODO: figure out how to set namespace
 async def main():
     tab_startup, tab_peer, tab_qna = st.tabs(["Startup Research", "Peer Comparison", "Darwin Knowledge Q&A"])
     # Initialize session state variables
@@ -112,13 +112,10 @@ async def main():
             drive_service = build('drive', 'v3', credentials=st.session_state.credentials)
             st.session_state.last_update_file_id = gq.get_or_create_last_update_file(drive_service,
                                                                                   st.session_state.folder_id)
-        """check_and_update_index runs every 10 mins.  It checks if the user has been inactive for more than 10 minutes,
-         and if so, it checks if it's been more than a week since the last update. If both conditions are met, it triggers an update.
-        """
-        if 'update_checker_started' not in st.session_state:
-            update_thread = threading.Thread(target=gq.check_and_update_index, daemon=True)
-            update_thread.start()
-            st.session_state.update_checker_started = True
+        #check_and_update_index runs every 10 mins.  It checks if the user has been inactive for more than 10 minutes,
+        # and if so, it checks if it's been more than a week since the last update. If both conditions are met, it triggers an update.
+        # Check and update index
+        gq.check_and_update_index(drive_service)
 
         # Q&A Interface
         user_question = st.text_input("Enter your question:")
