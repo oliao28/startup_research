@@ -13,7 +13,6 @@ import gdrive_qna as gq
 
 os.environ["TAVILY_API_KEY"] = st.secrets["tavily_api_key"] # Set the Tavyly API key as an environment variable
 os.environ["ANTHROPIC_API_KEY"]= st.secrets["anthropic_api_key"]
-os.environ["PINECONE_API_KEY"]=st.secrets["pinecone_api_key"]
 os.environ["LLM_PROVIDER"]=research_config["llm_provider"]
 os.environ["FAST_LLM_MODEL"]=research_config["fast_llm_model"]
 os.environ["SMART_LLM_MODEL"]=research_config["smart_llm_model"]
@@ -103,11 +102,11 @@ async def main():
             'Ask questions and get answers from Darwin\'s Google drive' )
         # Initialize session state
         if 'credentials' not in st.session_state:
-            credentials_path = 'path/to/your/credentials.json'  # Update this path
+            credentials_path = 'desk_credentials.json'  # TODO: Update this path
             st.session_state.credentials = gq.authenticate_google_drive(credentials_path)
 
         if 'folder_id' not in st.session_state:
-            st.session_state.folder_id = '1JHdl4fsFJoysaByHMS1SCh7KO_EBqaS1'  # Replace with your actual folder ID
+            st.session_state.folder_id = '1JHdl4fsFJoysaByHMS1SCh7KO_EBqaS1'  #TODO: Replace with your actual folder ID
 
         if 'last_update_file_id' not in st.session_state:
             drive_service = build('drive', 'v3', credentials=st.session_state.credentials)
@@ -139,21 +138,4 @@ async def main():
                         st.write(f"- [{file_name}]({file_url})")
 if __name__ == "__main__":
     asyncio.run(main())
-
-
-"""
-Decision paths for Q&A
-if new session:
-    1. authenticate into Darwin Google Drive
-    2. Set last_update_file_id = None
-    3. set last_activity to be NOW
-    4. Force the last_update_time to be 2 weeks ago
-    5. Set update_checker_started = True
-    6. whenever user ask a question:
-        a. update the  last_activity_time
-        b. In get_query_engine, if the first time asking, create initial pinecone index and query engine, else use existing index
-        c. answer the question
-    7. if more than 10 mins since the last question, check_and_update_index:
-        since it's a new session, pinecone update is forced
-"""
 
