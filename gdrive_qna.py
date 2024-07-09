@@ -1,19 +1,13 @@
 import os
 import logging
 import streamlit as st
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import Flow
-from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from llama_index import VectorStoreIndex, SimpleDirectoryReader, Document
 from llama_index.readers import GoogleDriveReader
 from llama_index.storage.storage_context import StorageContext
 from llama_index.vector_stores import PineconeVectorStore
-import pinecone
-import schedule
 import time
 from datetime import datetime, timedelta
-import threading
 from googleapiclient.http import MediaIoBaseUpload
 import io
 from llama_index.llms.anthropic import Anthropic
@@ -25,8 +19,32 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 # Set up Google Drive API
 SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
+def authenticate_google_drive(credentials_path):
+    creds = None
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
 
-# ... (keep the authenticate_google_drive function as before)
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = Flow.from_client_secrets_file(
+                credentials_path,
+                scopes=SCOPES,
+                redirect_uri='urn:ietf:wg:oauth:2.0:oob')
+
+            auth_url, _ = flow.authorization_url(prompt='consent')
+
+            print(f"Please visit this URL to authorize the application: {auth_url}")
+            code = input("Enter the authorization code: ")
+            flow.fetch_token(code=code)
+            creds = flow.credentials
+
+        with open('token.json', 'w') as token:
+            token.write(creds.to_json())
+
+    return build('drive', 'v3', credentials=creds)
+
 
 # Set up Pinecone
 pc = Pinecone(api_key=os.environ.get("PINECONE_API_KEY"))
@@ -57,94 +75,20 @@ def get_query_engine():
         storage_context = StorageContext.from_defaults(vector_store=vector_store)
         index = VectorStoreIndex.from_documents([], storage_context=storage_context)
     if query_engine is None:
-        llm = Anthropic(model="claude-3-5-sonnet-20240620",system_prompt = qna_system_prompt )
-        query_engine = index.as_query_engine(llm=llm)
+        llm = Anthropic(model="claude-3-5-sonnet-20240620", system_prompt = qna_system_prompt )
+        query_engine = index.as_query_engine(llm=llm, streaming=True)
     return query_engine
 
-"""
-
-"""
-def process_google_drive(credentials, folder_id, force_update=False):
-    global index
-
-    # Build the Drive service
-    drive_service = build('drive', 'v3', credentials=credentials)
-
-    # Read the last update time from Google Drive
-    last_update_file_id = st.session_state.get('last_update_file_id')
-    last_update_time = None
-    if last_update_file_id:
-        last_update_time = read_last_update_time(drive_service, last_update_file_id)
-
-    # Check if an update is needed
-    current_time = datetime.utcnow()
-    if last_update_time and not force_update:
-        time_since_last_update = current_time - last_update_time
-        if time_since_last_update < timedelta(weeks=1):
-            logging.info("No update needed. Last update was less than a week ago.")
-            return
-    # Check if the index already exists in Pinecone.
-    # We only process all documents if the index is empty or if a forced update is triggered.
-    if pinecone_index.describe_index_stats()['total_vector_count'] > 0:
-        logging.info("Index already exists. Skipping initial document insertion.")
-        return
-    # Initialize GoogleDriveReader
-    gdrive_reader = GoogleDriveReader(credentials=credentials)
-
-    # Read documents from the specified folder
-    if last_update_time:
-        query = f"'{folder_id}' in parents and modifiedTime > '{last_update_time.isoformat()}'"
-        documents = gdrive_reader.load_data(folder_id=folder_id, query=query)
-    else:
-        documents = gdrive_reader.load_data(folder_id=folder_id)
-
-    if not documents:
-        logging.info("No new or modified documents found.")
-        return
-
-    # Update the index
-    vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
-    storage_context = StorageContext.from_defaults(vector_store=vector_store)
-
-    if index is None: # TODO: check when will the index NOt be none
-        index = VectorStoreIndex.from_documents(documents, storage_context=storage_context)
-    else:
-        for doc in documents:
-            index.insert(doc)
-
-    # Write the new last update time to Google Drive
-    file_id = write_last_update_time(drive_service, last_update_file_id, current_time)
-    if file_id:
-        st.session_state.last_update_file_id = file_id
-
-    logging.info(f"Processed {len(documents)} new or modified documents.")
-
-
-def get_file_url(file_id):
-    return f"https://drive.google.com/file/d/{file_id}/view"
-
-
-
-##Also, ensure that your Google Drive API credentials have the necessary permissions to create and update files.
-def update_index():
-    logging.info("Running weekly update...")
-    process_google_drive(st.session_state.credentials, st.session_state.folder_id, force_update=True)
-    logging.info("Update completed. Next update scheduled for one week from now.")
-
-
-def run_scheduler():
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
 
 def read_last_update_time(drive_service, file_id):
     try:
-        # file = drive_service.files().get(fileId=file_id).execute()
+        file = drive_service.files().get(fileId=file_id).execute()
         content = drive_service.files().get_media(fileId=file_id).execute()
         return datetime.fromisoformat(content.decode())
     except Exception as e:
         logging.error(f"Error reading last update time: {e}")
         return None
+
 
 def write_last_update_time(drive_service, file_id, last_update_time):
     try:
@@ -162,3 +106,89 @@ def write_last_update_time(drive_service, file_id, last_update_time):
     except Exception as e:
         logging.error(f"Error writing last update time: {e}")
         return None
+def get_or_create_last_update_file(drive_service, folder_id):
+    query = f"name='last_update_time.txt' and '{folder_id}' in parents and trashed=false"
+    results = drive_service.files().list(q=query, spaces='drive', fields='files(id, name)').execute()
+    files = results.get('files', [])
+
+    if files:
+
+        return files[0]['id']
+    else:
+        file_metadata = {
+            'name': 'last_update_time.txt',
+            'parents': [folder_id],
+            'mimeType': 'text/plain'
+        }
+        file = drive_service.files().create(body=file_metadata, fields='id').execute()
+        return file.get('id')
+
+
+def check_and_update_index():
+    while True:
+        time.sleep(600)  # Wait for 10 minutes
+        if 'last_activity' in st.session_state:
+            time_since_last_activity = datetime.now() - st.session_state.last_activity
+            if time_since_last_activity > timedelta(minutes=10):
+                drive_service = build('drive', 'v3', credentials=st.session_state.credentials)
+                if 'last_update_file_id' not in st.session_state or not st.session_state.last_update_file_id:
+                    st.session_state.last_update_file_id = get_or_create_last_update_file(drive_service,
+                                                                                          st.session_state.folder_id)
+
+                last_update_time = read_last_update_time(drive_service, st.session_state.last_update_file_id)
+                if last_update_time:
+                    time_since_last_update = datetime.now() - last_update_time
+                    if time_since_last_update > timedelta(weeks=1):
+                        logging.info("Updating index after inactivity...")
+                        new_last_update_time = process_google_drive(st.session_state.credentials,
+                                                                    st.session_state.folder_id, last_update_time)
+                        if new_last_update_time:
+                            write_last_update_time(drive_service, st.session_state.last_update_file_id,
+                                                   new_last_update_time)
+                else:
+                    # If we couldn't read the last update time (e.g. accidental deletion, we should probably update)
+                    logging.info("No last update time found. Updating index...")
+                    new_last_update_time = process_google_drive(st.session_state.credentials,
+                                                                st.session_state.folder_id)
+                    if new_last_update_time:
+                        write_last_update_time(drive_service, st.session_state.last_update_file_id,
+                                               new_last_update_time)
+
+
+def process_google_drive(credentials, folder_id, last_update_time=None):
+    global index
+
+    drive_service = build('drive', 'v3', credentials=credentials)
+    gdrive_reader = GoogleDriveReader(credentials=credentials)
+
+    if last_update_time:
+        query = f"'{folder_id}' in parents and modifiedTime > '{last_update_time.isoformat()}'"
+        logging.info("partial update of Pinecone")
+        documents = gdrive_reader.load_data(folder_id=folder_id, query=query)
+    else:
+        logging.info("full creation of Pinecone")
+        documents = gdrive_reader.load_data(folder_id=folder_id)
+
+    if not documents:
+        logging.info("No new or modified documents found.")
+        return
+
+    vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
+    storage_context = StorageContext.from_defaults(vector_store=vector_store)
+
+    if index is None:
+        index = VectorStoreIndex.from_documents(documents, storage_context=storage_context)
+    else:
+        for doc in documents:
+            index.insert(doc)
+
+    current_time = datetime.utcnow()
+    file_id = write_last_update_time(drive_service, st.session_state.last_update_file_id, current_time)
+    if file_id:
+        st.session_state.last_update_file_id = file_id
+
+    logging.info(f"Processed {len(documents)} documents.")
+    return current_time  # Return the new last_update_time
+
+def get_file_url(file_id):
+    return f"https://drive.google.com/file/d/{file_id}/view"

@@ -1,28 +1,25 @@
 import streamlit as st
-import financial_analysis as fa
 from config import all_metrics, sorted_currency, research_config
-from startup_research import get_report, build_prompt, get_company_name
+from googleapiclient.discovery import build
 import os
 import asyncio
 import affinity_utils  as au
-from dotenv import load_dotenv
-load_dotenv()  # take environment variables from .env.
-# open_api_key = os.getenv("OPENAI_API_KEY")
-# tavily_api_key = os.getenv("TAVILY_API_KEY")
-# anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
-AFFINITY_API_KEY = os.getenv('AFFINITY_API_KEY')
-import logging
-logger = logging.getLogger(__name__)
+import threading
+from datetime import datetime
+import financial_analysis as fa
+import startup_research as sr
+import gdrive_qna as gq
 
-# os.environ["OPENAI_API_KEY"] =  st.secrets["openai_api_key"] # Set the OpenAI API key as an environment variable
-# os.environ["TAVILY_API_KEY"] = st.secrets["tavily_api_key"] # Set the Tavyly API key as an environment variable
-# os.environ["ANTHROPIC_API_KEY"]= st.secrets["anthropic_api_key"]
-# os.environ["PINECONE_API_KEY"]=st.secrets["pinecone_api_key"]
-# os.environ["LLM_PROVIDER"]=research_config["llm_provider"]
-# os.environ["FAST_LLM_MODEL"]=research_config["fast_llm_model"]
-# os.environ["SMART_LLM_MODEL"]=research_config["smart_llm_model"]
-# AFFINITY_API_KEY = st.secrets["affinity_api_key"]
 
+os.environ["TAVILY_API_KEY"] = st.secrets["tavily_api_key"] # Set the Tavyly API key as an environment variable
+os.environ["ANTHROPIC_API_KEY"]= st.secrets["anthropic_api_key"]
+os.environ["PINECONE_API_KEY"]=st.secrets["pinecone_api_key"]
+os.environ["LLM_PROVIDER"]=research_config["llm_provider"]
+os.environ["FAST_LLM_MODEL"]=research_config["fast_llm_model"]
+os.environ["SMART_LLM_MODEL"]=research_config["smart_llm_model"]
+AFFINITY_API_KEY = st.secrets["affinity_api_key"]
+
+#TODO: During the update of pinecone, remove repetitie information from repeated insert
 
 async def main():
     tab_startup, tab_peer, tab_qna = st.tabs(["Startup Research", "Peer Comparison", "Darwin Knowledge Q&A"])
@@ -39,10 +36,10 @@ async def main():
             """)
         website = st.text_input('Enter company website URL')
         description = st.text_input('Describe the company in a few sentences (or leave blank if website is provided)')
-        prompt = build_prompt(research_config["prompt"], website, description)
+        prompt = sr.build_prompt(research_config["prompt"], website, description)
 
         if st.button("Draft call memo"):
-            report = await get_report(prompt, research_config["report_type"],
+            report = await sr.get_report(prompt, research_config["report_type"],
                         research_config["agent"], research_config["role"], verbose=False)
             # Store the report in session state
             st.session_state.report = report
@@ -54,7 +51,7 @@ async def main():
             if st.button("Add to Affinity"):
                 # Replace LIST_ID with the actual ID of your Affinity list
                 list_id = '143881'
-                company_name = get_company_name(st.session_state.report, website)
+                company_name = sr.get_company_name(st.session_state.report, website)
                 company_data = {
                     "name": company_name,
                     "domain": website,
@@ -103,32 +100,43 @@ async def main():
             'Ask questions and get answers from Darwin\'s Google drive' )
         # Initialize session state
         if 'credentials' not in st.session_state:
-            credentials_path = 'credentials.json'  # Update this path  TODO: Modify this to work with Streamlit community cloud
-            st.session_state.credentials = authenticate_google_drive(credentials_path)
-        else:
-            logger.debug('log in without authentication')
+            credentials_path = 'path/to/your/credentials.json'  # Update this path
+            st.session_state.credentials = gq.authenticate_google_drive(credentials_path)
+
         if 'folder_id' not in st.session_state:
-            st.session_state.folder_id = '14YM7BWXfuP4cvoGQFd7K1dJoExmIcoCo'  # TODO: Edit it to the master folder '1I3q0cChDtrAPoEr9kPnViDD3fYJXfp5V'
+            st.session_state.folder_id = 'your_folder_id_here'  # Replace with your actual folder ID
 
         if 'last_update_file_id' not in st.session_state:
-            st.session_state.last_update_file_id = None
+            drive_service = build('drive', 'v3', credentials=st.session_state.credentials)
+            st.session_state.last_update_file_id = gq.get_or_create_last_update_file(drive_service,
+                                                                                  st.session_state.folder_id)
+        # Updated whenever the user asks a question. TODO: move this to the top of the app
+        if 'last_activity' not in st.session_state:
+            st.session_state.last_activity = datetime.now()
+        """check_and_update_index runs every 10 mins.  It checks if the user has been inactive for more than 10 minutes,
+         and if so, it checks if it's been more than a week since the last update. If both conditions are met, it triggers an update.
+        """
+        if 'update_checker_started' not in st.session_state:
+            update_thread = threading.Thread(target=gq.check_and_update_index, daemon=True)
+            update_thread.start()
+            st.session_state.update_checker_started = True
 
-        if 'index_initialized' not in st.session_state:
-            # Initialize the index if it doesn't exist
-            process_google_drive(st.session_state.credentials, st.session_state.folder_id)
-            st.session_state.index_initialized = True
-        else:
-            logger.debug('index already initialized')
+        # Q&A Interface
+        user_question = st.text_input("Enter your question:")
+        if st.button("Ask"):
+            if user_question:
+                st.session_state.last_activity = datetime.now()
+                query_engine = gq.get_query_engine()
+                response = query_engine.query(user_question)
 
-        if 'scheduler_initialized' not in st.session_state:
-            # Schedule weekly updates
-            schedule.every().week.do(update_index)
-
-            # Start the scheduler in a separate thread
-            scheduler_thread = threading.Thread(target=run_scheduler)
-            scheduler_thread.start()
-
-            st.session_state.scheduler_initialized = True
+                st.write("Answer:", response.response)
+                st.write("Sources:")
+                for source_node in response.source_nodes:
+                    file_id = source_node.node.metadata.get('file id')
+                    file_name = source_node.node.metadata.get('file name')
+                    if file_id:
+                        file_url = gq.get_file_url(file_id)
+                        st.write(f"- [{file_name}]({file_url})")
 
 if __name__ == "__main__":
     asyncio.run(main())
@@ -136,45 +144,17 @@ if __name__ == "__main__":
 
 """
 Decision paths for Q&A
-The index will only be fully populated once, and subsequent runs will either do nothing (if less 
-than a week has passed) or perform incremental updates (if a week has passed or a forced update is triggered). 
 if new session:
     1. authenticate into Darwin Google Drive
     2. Set last_update_file_id = None
-    3. process_google_drive: 
-        if  Pinecone_index already exist, do NOTHING
-        else vectorized the entire drive, initialized_index, create index <-- INDEX doesn't persist though
-else if mid of session:
-    No need to authenticate
-    last_update_file_id is None
-    index_initialized = True
-    
-else if weekly udpate time:  
+    3. set last_activity to be NOW
+    4. Force the last_update_time to be 2 weeks ago
+    5. Set update_checker_started = True
+    6. whenever user ask a question:
+        a. update the  last_activity_time
+        b. In get_query_engine, if the first time asking, create initial pinecone index and query engine, else use existing index
+        c. answer the question
+    7. if more than 10 mins since the last question, check_and_update_index:
+        since it's a new session, pinecone update is forced
 """
 
-
-# For the gdrive_qna
-#-------------------
-# def main():
-#     st.title("Google Drive Q&A System")
-#
-
-#     # Q&A Interface
-#     user_question = st.text_input("Enter your question:")
-#     if st.button("Ask"):
-#         if user_question:
-#             query_engine = get_query_engine()
-#             response = query_engine.query(user_question)
-#
-#             st.write("Answer:", response.response)
-#             st.write("Sources:")
-#             for source_node in response.source_nodes:
-#                 file_id = source_node.node.metadata.get('file_id')
-#                 file_name = source_node.node.metadata.get('file_name')
-#                 if file_id:
-#                     file_url = get_file_url(file_id)
-#                     st.write(f"- [{file_name}]({file_url})")
-#
-#
-# if __name__ == "__main__":
-#     main()

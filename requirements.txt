@@ -5,3 +5,20 @@ streamlit
 numpy==1.26.4
 pandas==2.0.3
 requests
+google-api-python-client==1.7.2
+google-auth==1.8.0
+google-auth-httplib2==0.0.3
+google-auth-oauthlib==0.4.1
+llama_index==0.10.52
+pinecone-client==4.1.2
+pinecone==4.0.0
+schedule==1.2.2
+docx2txt==0.8
+torch==2.2.2
+transformers==4.42.3
+python-pptx==0.6.23
+Pillow==10.4.0
+llama-index-vector-stores-pinecone==0.1.7
+llama-index-readers-google==0.2.9
+anthropic==0.28.1
+llama-index-llms-anthropic==0.1.15 #docx2txt #torch transformers python-pptx Pillow
