@@ -2,10 +2,9 @@ import os
 import logging
 import streamlit as st
 from googleapiclient.discovery import build
-from llama_index import VectorStoreIndex, SimpleDirectoryReader, Document
-from llama_index.readers import GoogleDriveReader
-from llama_index.storage.storage_context import StorageContext
-from llama_index.vector_stores import PineconeVectorStore
+from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, StorageContext
+from llama_index.readers.google import GoogleDriveReader
+from llama_index.vector_stores.pinecone import PineconeVectorStore
 import time
 from datetime import datetime, timedelta
 from googleapiclient.http import MediaIoBaseUpload
@@ -22,12 +21,14 @@ SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
 def authenticate_google_drive(credentials_path):
     creds = None
     if os.path.exists('token.json'):
+        logging.info("Automatically authentication")
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
 
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
+            logging.info("Initialize an authentication")
             flow = Flow.from_client_secrets_file(
                 credentials_path,
                 scopes=SCOPES,
@@ -41,6 +42,7 @@ def authenticate_google_drive(credentials_path):
             creds = flow.credentials
 
         with open('token.json', 'w') as token:
+            logging.info("Create token file")
             token.write(creds.to_json())
 
     return build('drive', 'v3', credentials=creds)
@@ -71,10 +73,12 @@ def get_query_engine():
     global index, query_engine
     if index is None:
         # Initialize index here if needed
+        logging.info("Initialize index")
         vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
         storage_context = StorageContext.from_defaults(vector_store=vector_store)
         index = VectorStoreIndex.from_documents([], storage_context=storage_context)
     if query_engine is None:
+        logging.info("create query engine")
         llm = Anthropic(model="claude-3-5-sonnet-20240620", system_prompt = qna_system_prompt )
         query_engine = index.as_query_engine(llm=llm, streaming=True)
     return query_engine
@@ -96,9 +100,11 @@ def write_last_update_time(drive_service, file_id, last_update_time):
         media = MediaIoBaseUpload(io.BytesIO(last_update_time.isoformat().encode()),
                                   mimetype='text/plain')
         if file_id:
+            logging.info("Update the update_time.txt")
             file = drive_service.files().update(fileId=file_id,
                                                 media_body=media).execute()
         else:
+            logging.info("Create an last_update_time.txt")
             file = drive_service.files().create(body=file_metadata,
                                                 media_body=media,
                                                 fields='id').execute()
@@ -112,7 +118,7 @@ def get_or_create_last_update_file(drive_service, folder_id):
     files = results.get('files', [])
 
     if files:
-
+        logging.INFO(f"Get last update file: {files[0]['id']}")
         return files[0]['id']
     else:
         file_metadata = {
@@ -121,6 +127,7 @@ def get_or_create_last_update_file(drive_service, folder_id):
             'mimeType': 'text/plain'
         }
         file = drive_service.files().create(body=file_metadata, fields='id').execute()
+        logging.INFO(f"Create last update file: {file.get('id')}")
         return file.get('id')
 
 

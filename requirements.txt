@@ -5,12 +5,12 @@ streamlit
 numpy==1.26.4
 pandas==2.0.3
 requests
-google-api-python-client==1.7.2
-google-auth==1.8.0
-google-auth-httplib2==0.0.3
-google-auth-oauthlib==0.4.1
+google-api-python-client==2.136.0
+google-auth==2.32.0
+google-auth-httplib2==0.2.0
+google-auth-oauthlib==1.2.1
 llama_index==0.10.52
-pinecone-client==4.1.2
+pinecone-client==3.2.2
 pinecone==4.0.0
 schedule==1.2.2
 docx2txt==0.8

@@ -26,6 +26,9 @@ async def main():
     # Initialize session state variables
     if 'report' not in st.session_state:
         st.session_state.report = None
+    # Updated whenever the user asks a question.
+    if 'last_activity' not in st.session_state:
+        st.session_state.last_activity = datetime.now()
 
     with tab_startup:
         st.header("Research a startup and draft the call memo")
@@ -104,15 +107,12 @@ async def main():
             st.session_state.credentials = gq.authenticate_google_drive(credentials_path)
 
         if 'folder_id' not in st.session_state:
-            st.session_state.folder_id = 'your_folder_id_here'  # Replace with your actual folder ID
+            st.session_state.folder_id = '1JHdl4fsFJoysaByHMS1SCh7KO_EBqaS1'  # Replace with your actual folder ID
 
         if 'last_update_file_id' not in st.session_state:
             drive_service = build('drive', 'v3', credentials=st.session_state.credentials)
             st.session_state.last_update_file_id = gq.get_or_create_last_update_file(drive_service,
                                                                                   st.session_state.folder_id)
-        # Updated whenever the user asks a question. TODO: move this to the top of the app
-        if 'last_activity' not in st.session_state:
-            st.session_state.last_activity = datetime.now()
         """check_and_update_index runs every 10 mins.  It checks if the user has been inactive for more than 10 minutes,
          and if so, it checks if it's been more than a week since the last update. If both conditions are met, it triggers an update.
         """
@@ -137,7 +137,6 @@ async def main():
                     if file_id:
                         file_url = gq.get_file_url(file_id)
                         st.write(f"- [{file_name}]({file_url})")
-
 if __name__ == "__main__":
     asyncio.run(main())
 
