@@ -5,24 +5,27 @@ from startup_research import get_report, build_prompt, get_company_name
 import os
 import asyncio
 import affinity_utils  as au
-# from dotenv import load_dotenv
-# load_dotenv()  # take environment variables from .env.
+from dotenv import load_dotenv
+load_dotenv()  # take environment variables from .env.
 # open_api_key = os.getenv("OPENAI_API_KEY")
 # tavily_api_key = os.getenv("TAVILY_API_KEY")
 # anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
-# AFFINITY_API_KEY = os.getenv('AFFINITY_API_KEY')
+AFFINITY_API_KEY = os.getenv('AFFINITY_API_KEY')
+import logging
+logger = logging.getLogger(__name__)
 
-os.environ["OPENAI_API_KEY"] =  st.secrets["openai_api_key"] # Set the OpenAI API key as an environment variable
-os.environ["TAVILY_API_KEY"] = st.secrets["tavily_api_key"] # Set the Tavyly API key as an environment variable
-os.environ["ANTHROPIC_API_KEY"]= st.secrets["anthropic_api_key"]
-os.environ["LLM_PROVIDER"]=research_config["llm_provider"]
-os.environ["FAST_LLM_MODEL"]=research_config["fast_llm_model"]
-os.environ["SMART_LLM_MODEL"]=research_config["smart_llm_model"]
-AFFINITY_API_KEY = st.secrets["affinity_api_key"]
+# os.environ["OPENAI_API_KEY"] =  st.secrets["openai_api_key"] # Set the OpenAI API key as an environment variable
+# os.environ["TAVILY_API_KEY"] = st.secrets["tavily_api_key"] # Set the Tavyly API key as an environment variable
+# os.environ["ANTHROPIC_API_KEY"]= st.secrets["anthropic_api_key"]
+# os.environ["PINECONE_API_KEY"]=st.secrets["pinecone_api_key"]
+# os.environ["LLM_PROVIDER"]=research_config["llm_provider"]
+# os.environ["FAST_LLM_MODEL"]=research_config["fast_llm_model"]
+# os.environ["SMART_LLM_MODEL"]=research_config["smart_llm_model"]
+# AFFINITY_API_KEY = st.secrets["affinity_api_key"]
 
 
 async def main():
-    tab_startup, tab_peer = st.tabs(["Startup Research", "Peer Comparison"])
+    tab_startup, tab_peer, tab_qna = st.tabs(["Startup Research", "Peer Comparison", "Darwin Knowledge Q&A"])
     # Initialize session state variables
     if 'report' not in st.session_state:
         st.session_state.report = None
@@ -94,9 +97,84 @@ async def main():
                 file_name="financial_analysis.csv",
                 mime="text/csv",
             )
+    with tab_qna:
+        st.header('Darwin Knowledge Q&A')
+        st.markdown(
+            'Ask questions and get answers from Darwin\'s Google drive' )
+        # Initialize session state
+        if 'credentials' not in st.session_state:
+            credentials_path = 'credentials.json'  # Update this path  TODO: Modify this to work with Streamlit community cloud
+            st.session_state.credentials = authenticate_google_drive(credentials_path)
+        else:
+            logger.debug('log in without authentication')
+        if 'folder_id' not in st.session_state:
+            st.session_state.folder_id = '14YM7BWXfuP4cvoGQFd7K1dJoExmIcoCo'  # TODO: Edit it to the master folder '1I3q0cChDtrAPoEr9kPnViDD3fYJXfp5V'
+
+        if 'last_update_file_id' not in st.session_state:
+            st.session_state.last_update_file_id = None
+
+        if 'index_initialized' not in st.session_state:
+            # Initialize the index if it doesn't exist
+            process_google_drive(st.session_state.credentials, st.session_state.folder_id)
+            st.session_state.index_initialized = True
+        else:
+            logger.debug('index already initialized')
+
+        if 'scheduler_initialized' not in st.session_state:
+            # Schedule weekly updates
+            schedule.every().week.do(update_index)
+
+            # Start the scheduler in a separate thread
+            scheduler_thread = threading.Thread(target=run_scheduler)
+            scheduler_thread.start()
+
+            st.session_state.scheduler_initialized = True
 
 if __name__ == "__main__":
     asyncio.run(main())
 
 
+"""
+Decision paths for Q&A
+The index will only be fully populated once, and subsequent runs will either do nothing (if less 
+than a week has passed) or perform incremental updates (if a week has passed or a forced update is triggered). 
+if new session:
+    1. authenticate into Darwin Google Drive
+    2. Set last_update_file_id = None
+    3. process_google_drive: 
+        if  Pinecone_index already exist, do NOTHING
+        else vectorized the entire drive, initialized_index, create index <-- INDEX doesn't persist though
+else if mid of session:
+    No need to authenticate
+    last_update_file_id is None
+    index_initialized = True
+    
+else if weekly udpate time:  
+"""
 
+
+# For the gdrive_qna
+#-------------------
+# def main():
+#     st.title("Google Drive Q&A System")
+#
+
+#     # Q&A Interface
+#     user_question = st.text_input("Enter your question:")
+#     if st.button("Ask"):
+#         if user_question:
+#             query_engine = get_query_engine()
+#             response = query_engine.query(user_question)
+#
+#             st.write("Answer:", response.response)
+#             st.write("Sources:")
+#             for source_node in response.source_nodes:
+#                 file_id = source_node.node.metadata.get('file_id')
+#                 file_name = source_node.node.metadata.get('file_name')
+#                 if file_id:
+#                     file_url = get_file_url(file_id)
+#                     st.write(f"- [{file_name}]({file_url})")
+#
+#
+# if __name__ == "__main__":
+#     main()
