@@ -1,6 +1,5 @@
 import streamlit as st
 import json
-import re
 import financial_analysis as fa
 from config import all_metrics, sorted_currency, research_config
 from startup_research import get_report, build_prompt, get_company_name, export_pdf, parse_pitch_deck
@@ -59,7 +58,11 @@ async def main():
         pitch_text = ""
 
         if link: #if link is not empty 
-            file_id = re.search(r'/d/([a-zA-Z0-9_-]+)', link).group(1)
+            start_index = link.find("/d/") + len("/d/")
+            end_index = link.find("/", start_index)
+
+            # Extract the file_id substring
+            file_id = link[start_index:end_index]            
             export_pdf(file_id, GOOGLE_TOKEN, GOOGLE_CRED)
 
             #call to parse
