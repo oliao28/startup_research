@@ -21,4 +21,5 @@ Pillow==10.4.0
 llama-index-vector-stores-pinecone==0.1.7
 llama-index-readers-google==0.2.9
 anthropic==0.28.1
-llama-index-llms-anthropic==0.1.15 #docx2txt #torch transformers python-pptx Pillow
+llama-index-llms-anthropic==0.1.15
+pytz

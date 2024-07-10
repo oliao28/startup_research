@@ -1,12 +1,8 @@
 import streamlit as st
 from config import all_metrics, sorted_currency, research_config
-from googleapiclient.discovery import build
 import os
 import asyncio
 import affinity_utils  as au
-import time
-
-from datetime import datetime
 import financial_analysis as fa
 import startup_research as sr
 import gdrive_qna as gq
@@ -19,9 +15,9 @@ os.environ["FAST_LLM_MODEL"]=research_config["fast_llm_model"]
 os.environ["SMART_LLM_MODEL"]=research_config["smart_llm_model"]
 AFFINITY_API_KEY = st.secrets["affinity_api_key"]
 
-#TODO: During the update of pinecone, remove repetitie information from repeated insert
-#TODO: figure out how to set namespace
 #TODO: make the app mobile app friendly
+#TODO: Improve the RAG search: can't identify founder of Treasury
+#TODO: In the QnA, if year is in the question, take advantage of the namespace
 async def main():
     tab_startup, tab_peer, tab_qna = st.tabs(["Startup Research", "Peer Comparison", "Darwin Knowledge Q&A"])
     # Initialize session state variables
@@ -98,13 +94,6 @@ async def main():
         st.header('Darwin Knowledge Q&A')
         st.markdown(
             'Ask questions and get answers from Darwin\'s Google drive' )
-        # Initialize session state
-        if 'credentials' not in st.session_state:
-            credentials_path = 'desk_credentials.json'  # TODO: Update this path
-            st.session_state.credentials = gq.authenticate_google_drive(credentials_path)
-
-        if 'folder_id' not in st.session_state:
-            st.session_state.folder_id = '1JHdl4fsFJoysaByHMS1SCh7KO_EBqaS1'  #TODO: Replace with your actual folder ID
         # Initialize session state for user question
         if 'user_question' not in st.session_state:
             st.session_state.user_question = ""
