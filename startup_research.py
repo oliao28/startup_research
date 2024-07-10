@@ -88,5 +88,5 @@ def parse_pitch_deck():
     text = ""
     for page in doc: # iterate the document pages
         text += page.get_text() # get plain text 
-    
+    print(text)
     return text
