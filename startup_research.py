@@ -71,7 +71,8 @@ def export_pdf(real_file_id):
 
     # Download the file
     request = service.files().get_media(fileId=real_file_id)
-    with io.FileIO("\\company\\pitchdeck.pdf", 'wb') as fh:
+    file_path = os.path.join("company", "pitchdeck.pdf")
+    with io.FileIO(file_path, 'wb') as fh:
         downloader = MediaIoBaseDownload(fh, request)
         done = False
         while not done:
@@ -83,10 +84,12 @@ def export_pdf(real_file_id):
     file = None
  
 def parse_pitch_deck():
-    #extract text
-    doc = pymupdf.open("\\company\\pitchdeck.pdf") # open a document
-    text = ""
-    for page in doc: # iterate the document pages
-        text += page.get_text() # get plain text 
-    print(text)
-    return text
+  #extract text
+  file_path = os.path.join("company", "pitchdeck.pdf")
+
+  doc = pymupdf.open(file_path) # open a document
+  text = ""
+  for page in doc: # iterate the document pages
+      text += page.get_text() # get plain text 
+  print(text)
+  return text

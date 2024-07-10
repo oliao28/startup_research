@@ -20,7 +20,7 @@ os.environ["ANTHROPIC_API_KEY"]= st.secrets["anthropic_api_key"]
 os.environ["LLM_PROVIDER"]=research_config["llm_provider"]
 os.environ["FAST_LLM_MODEL"]=research_config["fast_llm_model"]
 os.environ["SMART_LLM_MODEL"]=research_config["smart_llm_model"]
-os.environ["DOC_PATH"] = "\\company\\"
+os.environ["DOC_PATH"] = os.path.join("company")
 
 AFFINITY_API_KEY = st.secrets["affinity_api_key"]
 
