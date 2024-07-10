@@ -10,16 +10,16 @@ from googleapiclient.http import MediaIoBaseDownload
 from gpt_researcher import GPTResearcher
 
 async def get_report(prompt: str, report_type: str, agent=None,role=None,config_path = None, verbose = True) -> str:
-    researcher = GPTResearcher(prompt, report_type, config_path = config_path, agent= agent, role=role, verbose = verbose)
+    researcher = GPTResearcher(prompt, report_type, report_source="local", config_path = config_path, agent= agent, role=role, verbose = verbose)
     research_result = await researcher.conduct_research()
     report = await researcher.write_report()
     return report
 
 def build_prompt(prompt: str, company_website: str, company_description: str, pitch_deck: str):
     if company_description == '':
-        return "Based on the website of this startup:" + company_website + " and the pitch deck Text: " + pitch_deck + ", first understand what it does. Then," + prompt 
+        return "Based on the website of this startup:" + company_website  + ", first understand what it does. Then," + prompt 
     else:
-        return company_description + "\n" + " and here is the pitch deck Text: " + pitch_deck + " Here's it's website:" + company_website + "\n" + prompt
+        return company_description + "\n   Here's it's website:" + company_website + "\n" + prompt
 
 def get_company_name(report: str, company_website: str):
     name = report.split('\n')[0]
@@ -87,5 +87,6 @@ def parse_pitch_deck():
     doc = pymupdf.open("pitchdeck.pdf") # open a document
     text = ""
     for page in doc: # iterate the document pages
-        text += page.get_text() # get plain text 
+        text += page.get_textpage_ocr() # get plain text 
+    
     return text
