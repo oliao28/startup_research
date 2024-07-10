@@ -8,6 +8,7 @@ pymupdf
 re
 os.path
 io
+json
 googleapiclient.http
 googleapiclient.errors
 googleapiclient.discovery
