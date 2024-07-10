@@ -5,9 +5,7 @@ streamlit
 numpy==1.26.4
 pandas==2.0.3
 pymupdf
-googleapiclient.http
-googleapiclient.errors
-googleapiclient.discovery
-google_auth_oauthlib.flow
-google.auth.transport.requests
-google.oauth2.credentials
+google-api-python-client 
+google-auth-httplib2 
+google-auth-oauthlib
+google.auth
