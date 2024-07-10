@@ -58,12 +58,8 @@ async def main():
         pitch_text = ""
 
         if link: #if link is not empty 
-            start_index = link.find("/d/") + len("/d/")
-            end_index = link.find("/", start_index)
-
-            # Extract the file_id substring
-            file_id = link[start_index:end_index]            
-            export_pdf(file_id, GOOGLE_TOKEN, GOOGLE_CRED)
+            file_id = re.search(r'/d/([a-zA-Z0-9_-]+)', link).group(1)            
+            export_pdf(file_id)
 
             #call to parse
             pitch_text = parse_pitch_deck()
