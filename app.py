@@ -1,7 +1,9 @@
 import streamlit as st
+import json
+import re
 import financial_analysis as fa
 from config import all_metrics, sorted_currency, research_config
-from startup_research import get_report, build_prompt, get_company_name, parse_pitch_deck
+from startup_research import get_report, build_prompt, get_company_name, export_pdf, parse_pitch_deck
 import os
 import asyncio
 import affinity_utils  as au
@@ -18,7 +20,20 @@ os.environ["ANTHROPIC_API_KEY"]= st.secrets["anthropic_api_key"]
 os.environ["LLM_PROVIDER"]=research_config["llm_provider"]
 os.environ["FAST_LLM_MODEL"]=research_config["fast_llm_model"]
 os.environ["SMART_LLM_MODEL"]=research_config["smart_llm_model"]
+
 AFFINITY_API_KEY = st.secrets["affinity_api_key"]
+
+GOOGLE_CRED = json.loads(str(st.secrets["GOOGLE_CRED"]))
+GOOGLE_TOKEN = json.loads(str(st.secrets["GOOGLE_TOKEN"]))
+
+# Function to write credentials to JSON files
+#By writing locally, it allows for the potential to update the credentials
+def write_credentials_to_files():
+    with open('credentials.json', 'w') as cred_file:
+        json.dump(GOOGLE_CRED, cred_file, indent=4)
+
+    with open('token.json', 'w') as token_file:
+        json.dump(GOOGLE_TOKEN, token_file, indent=4)
 
 
 async def main():
@@ -39,8 +54,16 @@ async def main():
         description = st.text_input('Describe the company in a few sentences (or leave blank if website is provided)')
         #first get a link to a pitchdeck
         link = st.text_input('Add a link to a pitch deck')
-        #call to parse
-        pitch_text = parse_pitch_deck(link)
+        write_credentials_to_files()
+
+        pitch_text = ""
+
+        if link: #if link is not empty 
+            file_id = re.search(r'/d/([a-zA-Z0-9_-]+)', link).group(1)
+            export_pdf(file_id, GOOGLE_TOKEN, GOOGLE_CRED)
+
+            #call to parse
+            pitch_text = parse_pitch_deck()
         
         prompt = build_prompt(research_config["prompt"], website, description, pitch_text)
 
