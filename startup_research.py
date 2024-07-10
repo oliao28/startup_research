@@ -70,7 +70,7 @@ def export_pdf(real_file_id):
     service = build("drive", "v3", credentials=creds)
 
     # Download the file
-    request = service.files().get_media(fileId=file_id)
+    request = service.files().get_media(fileId=real_file_id)
     with io.FileIO("pitchdeck.pdf", 'wb') as fh:
         downloader = MediaIoBaseDownload(fh, request)
         done = False
