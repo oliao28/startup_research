@@ -87,6 +87,6 @@ def parse_pitch_deck():
     doc = pymupdf.open("pitchdeck.pdf") # open a document
     text = ""
     for page in doc: # iterate the document pages
-        text += page.get_textpage_ocr() # get plain text 
+        text += page.get_text() # get plain text 
     
     return text
