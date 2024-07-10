@@ -39,7 +39,7 @@ def parse_pitch_deck(link):
         r = requests.get(link)
         if r.status_code == 200:
             output = r"pitchdeck.pdf"
-            gdown.download(url, output, fuzzy=True)
+            gdown.download(link, output, fuzzy=True)
     except:
         pass
 
