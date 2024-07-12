@@ -101,13 +101,14 @@ async def main():
         # Q&A Interface
         user_question = st.text_input("Enter your question:", value=st.session_state.user_question,
                                       key="question_input")
+        gq.initialize_pinecone(os.environ.get("PINECONE_API_KEY"))
         # Update session state when user enters a question
         st.session_state.user_question = user_question
         if st.button("Ask"):
             if user_question:
-                query_engine = gq.get_query_engine()
+                question_info = None #gq.get_info_question(user_question)
+                query_engine = gq.get_query_engine(question_info)
                 response = query_engine.query(user_question)
-
                 st.write("Answer:", response.response)
                 st.write("Sources:")
                 for source_node in response.source_nodes:
@@ -119,4 +120,5 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 

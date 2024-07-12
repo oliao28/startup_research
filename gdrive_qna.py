@@ -2,50 +2,169 @@ import os
 import logging
 import streamlit as st
 from pinecone import Pinecone, ServerlessSpec
-from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, StorageContext
+import time
+from typing import Any, List, Optional, Set
+from llama_index.core.callbacks import CallbackManager, LlamaDebugHandler
+from llama_index.core.callbacks.base_handler import BaseCallbackHandler
+from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, StorageContext, ServiceContext
 from llama_index.vector_stores.pinecone import PineconeVectorStore
 from llama_index.llms.anthropic import Anthropic
+
 from config import qna_system_prompt
-os.environ["PINECONE_API_KEY"]=st.secrets["pinecone_api_key"]
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Set up Pinecone
-pc = Pinecone(api_key=os.environ.get("PINECONE_API_KEY"))
-index_name = "googledrive-qa"
-pinecone_index = pc.Index(index_name)
-#Debug
-stats = pinecone_index.describe_index_stats()
-print(f"Total vectors in index: {stats['total_vector_count']}")
-logging.info(f"Successfully connected to Pinecone. Index stats: {stats}")
 # Global variables
 index = None
-query_engine = None
+llm = None
+pinecone_index = None
+performance_callback = None
+def initialize_pinecone(api_key):
+    global pinecone_index
+    pc = Pinecone(api_key=api_key)
+    pinecone_index = pc.Index("googledrive-qa")
 
 @st.cache_resource
-def get_query_engine():
-    global index, query_engine
+def get_query_engine(question_info = None):
+    global index, llm, performance_callback
+    if performance_callback is None:
+        performance_callback = PerformanceCallback()
     if index is None:
         vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
-        index = VectorStoreIndex.from_vector_store(vector_store)
+        # Set up debug logging
+        llama_debug = LlamaDebugHandler(print_trace_on_end=True)
+        callback_manager = CallbackManager([llama_debug, performance_callback])
+
+        # TODO:TEST THIS: Specify a multi-language model to deal with our Chinese & Japanese documents
+        # embed_model = HuggingFaceEmbedding(
+        #     model_name="intfloat/multilingual-e5-large",
+        #     device="cuda" if torch.cuda.is_available() else "cpu"
+        # )
+        service_context = ServiceContext.from_defaults(
+            #embed_model=embed_model,
+            callback_manager=callback_manager
+        )
+
+        index = VectorStoreIndex.from_vector_store(
+            vector_store,
+            service_context=service_context
+        )
         logging.info(f"Initialize index = {index}")
-    if query_engine is None:
-        logging.info("Create query engine")
+
+    if llm is None:
         llm = Anthropic(model="claude-3-5-sonnet-20240620", system_prompt=qna_system_prompt)
-        query_engine = index.as_query_engine(llm=llm)
+
+    # Create query engine with hybrid retriever
+    # Use built-in hybrid search
+    # TODO: test out hybrid search
+    query_engine = index.as_query_engine(
+        vector_store_query_mode="hybrid",
+        similarity_top_k=5,
+        filters=question_info,
+        llm=llm
+    )
     logging.info(f"Query engine created: {query_engine}")
     return query_engine
 
-#Debug
-def test_query_engine():
-    logging.info(f"Anthropic API key set: {'ANTHROPIC_API_KEY' in os.environ}")
-    query_engine = get_query_engine()
-    test_question = "What is Darwin?"
-    response = query_engine.query(test_question)
-    logging.info(f"Test question: {test_question}")
-    logging.info(f"Response: {response.response}")
-    logging.info(f"Source nodes: {response.source_nodes}")
-
-
+# def get_info_question(question):
+#     """Return meta info about the question.
+#
+#     Args:
+#         question: user input question
+#     Returns:
+#         info: dictionary, e.g. {"year":"2023", "company:"Swif"} or {"company:"Swif"}
+#     """
+#     #TODO: what small language model is specifically good at identifying patterns in a setence, e.g. find the company, find the year
+#     #TODO: need to make sure company name is capitalized
+#     #TODO: need to make sure we can search for company names in Chinese/Japanse
+#     return info
 def get_file_url(file_id):
     return f"https://drive.google.com/file/d/{file_id}/view"
+
+class PerformanceCallback(BaseCallbackHandler):
+    def __init__(self, event_starts_to_ignore: Optional[Set[str]] = None,
+                 event_ends_to_ignore: Optional[Set[str]] = None):
+        super().__init__(event_starts_to_ignore or set(), event_ends_to_ignore or set())
+        self.start_time = None
+        self.total_latency = 0
+        self.num_queries = 0
+        self.num_retrieved_nodes = 0
+
+    def on_event_start(
+                self,
+                event_type: str,
+                payload: Optional[dict] = None,
+                event_id: Optional[str] = None,
+                parent_id: Optional[str] = None,
+                **kwargs: Any,
+        ) -> str:
+            if event_type == "retrieve":
+                self.start_time = time.time()
+            elif event_type == "query":
+                self.num_queries += 1
+            return event_id or ""
+
+    def on_event_end(
+            self,
+            event_type: str,
+            payload: Optional[dict] = None,
+            event_id: Optional[str] = None,
+            **kwargs: Any,
+    ) -> None:
+        if event_type == "retrieve":
+            if self.start_time is not None:
+                self.total_latency += time.time() - self.start_time
+                self.start_time = None
+            if payload and "nodes" in payload:
+                self.num_retrieved_nodes += len(payload["nodes"])
+
+    def get_metrics(self):
+        avg_latency = self.total_latency / self.num_queries if self.num_queries > 0 else 0
+        avg_nodes_retrieved = self.num_retrieved_nodes / self.num_queries if self.num_queries > 0 else 0
+        return {
+            "num_queries": self.num_queries,
+            "avg_total_latency": avg_latency,
+            "avg_nodes_retrieved": avg_nodes_retrieved
+        }
+
+    def start_trace(self, trace_id: Optional[str] = None) -> None:
+        pass
+
+    def end_trace(
+        self,
+        trace_id: Optional[str] = None,
+        trace_map: Optional[dict] = None,
+    ) -> None:
+        pass
+
+    def on_event_start(
+        self,
+        event_type: str,
+        payload: Optional[dict] = None,
+        event_id: Optional[str] = None,
+        parent_id: Optional[str] = None,
+        **kwargs: Any,
+    ) -> str:
+        return event_id or ""
+
+    def on_event_end(
+        self,
+        event_type: str,
+        payload: Optional[dict] = None,
+        event_id: Optional[str] = None,
+        **kwargs: Any,
+    ) -> None:
+        pass
+
+    def flush(self) -> None:
+        pass
+
+    def handle_event(
+        self,
+        event_type: str,
+        payload: Optional[dict] = None,
+        event_id: Optional[str] = None,
+        parent_id: Optional[str] = None,
+        **kwargs: Any
+    ) -> None:
+        pass
