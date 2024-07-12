@@ -3,12 +3,15 @@ import logging
 import streamlit as st
 from pinecone import Pinecone, ServerlessSpec
 import time
+import torch
 from typing import Any, List, Optional, Set
 from llama_index.core.callbacks import CallbackManager, LlamaDebugHandler
 from llama_index.core.callbacks.base_handler import BaseCallbackHandler
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, StorageContext, ServiceContext
 from llama_index.vector_stores.pinecone import PineconeVectorStore
 from llama_index.llms.anthropic import Anthropic
+from llama_index.core.postprocessor import SimilarityPostprocessor
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
 from config import qna_system_prompt
 # Set up logging
@@ -24,6 +27,15 @@ def initialize_pinecone(api_key):
     pc = Pinecone(api_key=api_key)
     pinecone_index = pc.Index("googledrive-qa")
 
+class LengthAwareSimilarityPostprocessor(SimilarityPostprocessor):
+    def postprocess_nodes(self, nodes, query_bundle):
+        for node in nodes:
+            # Adjust score based on document length
+            length_factor = min(len(node.text.split()) / 100, 1)  # Normalize to max of 1
+            node.score *= (0.5 + 0.5 * length_factor)  # Blend original score with length factor
+        return sorted(nodes, key=lambda x: x.score, reverse=True)
+
+
 @st.cache_resource
 def get_query_engine(question_info = None):
     global index, llm, performance_callback
@@ -36,12 +48,12 @@ def get_query_engine(question_info = None):
         callback_manager = CallbackManager([llama_debug, performance_callback])
 
         # TODO:TEST THIS: Specify a multi-language model to deal with our Chinese & Japanese documents
-        # embed_model = HuggingFaceEmbedding(
-        #     model_name="intfloat/multilingual-e5-large",
-        #     device="cuda" if torch.cuda.is_available() else "cpu"
-        # )
+        embed_model = HuggingFaceEmbedding(
+            model_name="intfloat/multilingual-e5-large",
+            device="cuda" if torch.cuda.is_available() else "cpu"
+        )
         service_context = ServiceContext.from_defaults(
-            #embed_model=embed_model,
+            embed_model=embed_model,
             callback_manager=callback_manager
         )
 
@@ -55,13 +67,15 @@ def get_query_engine(question_info = None):
         llm = Anthropic(model="claude-3-5-sonnet-20240620", system_prompt=qna_system_prompt)
 
     # Create query engine with hybrid retriever
-    # Use built-in hybrid search
-    # TODO: test out hybrid search
+    # reorder = LongContextReorder()
+    reorder = LengthAwareSimilarityPostprocessor(similarity_cutoff=0.7)
     query_engine = index.as_query_engine(
         vector_store_query_mode="hybrid",
+        node_postprocessors=[reorder],
         similarity_top_k=5,
+        alpha=0.5,  # This controls the balance between vector and keyword search
         filters=question_info,
-        llm=llm
+        llm=llm,
     )
     logging.info(f"Query engine created: {query_engine}")
     return query_engine
@@ -168,3 +182,27 @@ class PerformanceCallback(BaseCallbackHandler):
         **kwargs: Any
     ) -> None:
         pass
+
+# #RERANKER option 1
+#
+# from llama_index.postprocessor import SimilarityPostprocessor
+#
+# #RERANKER OPTION 2
+# class ContentRelevancePostprocessor(SimilarityPostprocessor):
+#     def postprocess_nodes(self, nodes, query_bundle):
+#         nodes = super().postprocess_nodes(nodes, query_bundle)
+#         for node in nodes:
+#             # Implement your content relevance scoring here
+#             relevance_score = your_relevance_scoring_function(node.text, query_bundle.query_str)
+#             node.score *= relevance_score
+#         return sorted(nodes, key=lambda x: x.score, reverse=True)
+#
+# content_reranker = ContentRelevancePostprocessor(similarity_cutoff=0.7)
+# query_engine = index.as_query_engine(
+#     vector_store_query_mode="hybrid",
+#     node_postprocessors=[content_reranker]
+# )
+# #RERANKER OPTION 3
+# # Implement custom postprocessing
+# # Custom postprocessor to consider document length
+# reranker = LengthAwareSimilarityPostprocessor(similarity_cutoff=0.7)
