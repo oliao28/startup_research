@@ -41,7 +41,7 @@ def combine_reports(offline, online):
     messages=[
       {"role": "system", "content": "You are a helpful assistant that can integrate two reports into a single one. Each report has "},
       {"role": "user", "content": "Please integrate these two reports. The first report is done on offline research: " + offline + " The second report is done by online research: " + online},
-      {"role": "assistant", "content": "Stick to the same format as the reports. Each section begins with factual statements regarding the section topic. If a factual statement comes from the offline research, please cite it by attaching \"Pitchdeck\" to the end of the statement. It is then followed by a subsection titled \"investor questions\" All questions should go into that subsection. If one of the questions is answered by the factual statements included before, do not include that question. "}
+      {"role": "assistant", "content": "Stick to the same format as the reports. Each section begins with factual statements regarding the section topic. If a factual statement comes from the offline research, please cite it by attaching \"Pitchdeck\" to the end of the statement. If statements conflict, please highlight the conflict. It is then followed by a subsection titled \"investor questions\" All questions should go into that subsection. If one of the questions is answered by the factual statements included before, do not include that question. "}
     ]
     )
 
