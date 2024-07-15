@@ -78,10 +78,7 @@ async def main():
             
             online_report = await get_report("web", prompt, research_config["report_type"],
                         research_config["agent"], research_config["role"], verbose=False)
-            print(offline_report)
-            print("SPACEEEEEEEEEEEEEEEEEEEEEEEEE")
-            print(online_report)
-
+            
             report = combine_reports(offline_report, online_report)
             # Store the report in session state
             st.session_state.report = report
