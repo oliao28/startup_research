@@ -71,7 +71,7 @@ async def main():
         prompt = build_prompt(research_config["prompt"], website, description)
 
         if st.button("Draft call memo"):
-            urls = [website]
+            urls = [""]
             online_report = await get_report("web", prompt, research_config["report_type"], urls,
                         research_config["agent"], research_config["role"], verbose=False)
             #site_report = await get_report("web", prompt, research_config["report_type"],
