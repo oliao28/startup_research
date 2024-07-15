@@ -48,9 +48,6 @@ def combine_reports(offline, online):
     response = str(completion.choices[0].message.content)
     return response
 
-#this function takes in input and attempts to 
-def fact_check(input):
-
 
 
 #This function takes in a real_file_id and downloads the pdf to "pitchdeck.pdf"
