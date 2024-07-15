@@ -71,22 +71,20 @@ async def main():
         prompt = build_prompt(research_config["prompt"], website, description)
 
         if st.button("Draft call memo"):
-            online_report = await get_report("web", prompt, research_config["report_type"],
-                        research_config["agent"], research_config["role"], verbose=False)
             
-
-            if link: #if link is not empty 
+            if link: #if link to pitchdeck is not empty 
                 offline_report = await get_report("local", prompt, research_config["report_type"], 
                         research_config["agent"], research_config["role"], verbose=False)
                 
-
+                
                 #run the online report on the report made by the offline research
-                prompt = build_prompt(research_config["prompt"], website, offline_report)
                 online_report = await get_report("web", prompt, research_config["report_type"],
                         research_config["agent"], research_config["role"], verbose=False)
 
                 report = combine_reports(offline_report, online_report)
             else:
+                online_report = await get_report("web", prompt, research_config["report_type"],
+                        research_config["agent"], research_config["role"], verbose=False)
                 report = online_report
             
             
