@@ -11,7 +11,7 @@ from googleapiclient.http import MediaIoBaseDownload
 from gpt_researcher import GPTResearcher
 
 async def get_report(source: str, prompt: str, report_type: str, urls_list: list, agent=None,role=None,config_path = None, verbose = True) -> str:
-    researcher = GPTResearcher(prompt, report_type, report_source=source, source_urls = urls_list config_path = config_path, agent= agent, role=role, verbose = verbose)
+    researcher = GPTResearcher(prompt, report_type, report_source=source, source_urls = urls_list, config_path = config_path, agent= agent, role=role, verbose = verbose)
     research_result = await researcher.conduct_research()
     report = await researcher.write_report()
     return report
