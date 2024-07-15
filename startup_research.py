@@ -10,18 +10,11 @@ from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
 from gpt_researcher import GPTResearcher
 
-'''async def get_report(source: str, prompt: str, report_type: str, agent=None,role=None,config_path = None, verbose = True) -> str:
-    researcher = GPTResearcher(prompt, report_type, report_source=source, config_path = config_path, agent= agent, role=role, verbose = verbose)
-    research_result = await researcher.conduct_research()
-    report = await researcher.write_report()
-    return report'''
-
-async def get_report(prompt: str, report_type: str, agent=None,role=None,config_path = None, verbose = True) -> str:
-    researcher = GPTResearcher(prompt, report_type, config_path = config_path, agent= agent, role=role, verbose = verbose)
+async def get_report(source: str, prompt: str, report_type: str, urls_list: list, agent=None,role=None,config_path = None, verbose = True) -> str:
+    researcher = GPTResearcher(prompt, report_type, report_source=source, source_urls = urls_list config_path = config_path, agent= agent, role=role, verbose = verbose)
     research_result = await researcher.conduct_research()
     report = await researcher.write_report()
     return report
-
 
 def build_prompt(prompt: str, company_website: str, company_description: str):
     if company_description == '':
