@@ -67,15 +67,15 @@ async def main():
 
             #call to parse this is deprecated as the gpt researcher now cannabalizes the documents
             #pitch_text = parse_pitch_deck()
-        
-        prompt = build_prompt(research_config["prompt"], website, description)
+        company_name = get_company_name(st.session_state.report, website)
+
+        prompt = build_prompt(research_config["prompt"], website, description, company_name)
 
         if st.button("Draft call memo"):
             urls = [""]
             online_report = await get_report("web", prompt, research_config["report_type"],
                         research_config["agent"], research_config["role"], verbose=False)
-            #site_report = await get_report("web", prompt, research_config["report_type"],
-                       # research_config["agent"], research_config["role"], verbose=False)
+            
 
             if link: #if link is not empty 
                 offline_report = await get_report("local", prompt, research_config["report_type"], 
@@ -97,7 +97,6 @@ async def main():
             if st.button("Add to Affinity"):
                 # Replace LIST_ID with the actual ID of your Affinity list
                 list_id = '143881'
-                company_name = get_company_name(st.session_state.report, website)
                 company_data = {
                     "name": company_name,
                     "domain": website,

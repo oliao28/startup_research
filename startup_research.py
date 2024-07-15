@@ -10,17 +10,17 @@ from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
 from gpt_researcher import GPTResearcher
 
-async def get_report(source: str, prompt: str, report_type: str, urls_list: list, agent=None,role=None,config_path = None, verbose = True) -> str:
-    researcher = GPTResearcher(prompt, report_type, report_source=source, source_urls = urls_list, config_path = config_path, agent= agent, role=role, verbose = verbose)
+async def get_report(source: str, prompt: str, report_type: str, agent=None,role=None,config_path = None, verbose = True) -> str:
+    researcher = GPTResearcher(prompt, report_type, report_source=source, config_path = config_path, agent= agent, role=role, verbose = verbose)
     research_result = await researcher.conduct_research()
     report = await researcher.write_report()
     return report
 
-def build_prompt(prompt: str, company_website: str, company_description: str):
+def build_prompt(prompt: str, company_website: str, company_description: str, name: str):
     if company_description == '':
-        return "Based on the website of this startup:" + company_website  + ", first understand what it does. Then," + prompt 
+        return "Based on the website of this startup and other online sources:" + company_website  + ", first understand what " + name + " does. Then," + prompt 
     else:
-        return company_description + "\n   Here's it's website:" + company_website + "\n" + prompt
+        return company_description + "\n   Here's  " + name + " website:" + company_website + "\n" + prompt
 
 def get_company_name(report: str, company_website: str):
     name = report.split('\n')[0]
