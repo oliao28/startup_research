@@ -71,15 +71,16 @@ async def main():
         prompt = build_prompt(research_config["prompt"], website, description)
 
         if st.button("Draft call memo"):
-
+            online_report = await get_report("web", prompt, research_config["report_type"],
+                        research_config["agent"], research_config["role"], verbose=False)
             if link: #if link is not empty 
                 offline_report = await get_report("local", prompt, research_config["report_type"], 
                         research_config["agent"], research_config["role"], verbose=False)
+                report = combine_reports(offline_report, online_report)
             
-            online_report = await get_report("web", prompt, research_config["report_type"],
-                        research_config["agent"], research_config["role"], verbose=False)
             
-            report = combine_reports(offline_report, online_report)
+            
+            
             # Store the report in session state
             st.session_state.report = report
         # Display the report if it exists in session state
