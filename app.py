@@ -2,7 +2,7 @@ import streamlit as st
 import json
 import financial_analysis as fa
 from config import all_metrics, sorted_currency, research_config
-from startup_research import get_report, build_prompt, get_company_name, export_pdf, parse_pitch_deck
+from startup_research import get_report, build_prompt, get_company_name, export_pdf, combine_reports
 import os
 import re
 import asyncio
@@ -65,14 +65,21 @@ async def main():
             file_id = re.search(r'/d/([a-zA-Z0-9_-]+)', link).group(1)            
             export_pdf(file_id)
 
-            #call to parse
-            pitch_text = parse_pitch_deck()
+            #call to parse this is deprecated as the gpt researcher now cannabalizes the documents
+            #pitch_text = parse_pitch_deck()
         
-        prompt = build_prompt(research_config["prompt"], website, description, pitch_text)
+        prompt = build_prompt(research_config["prompt"], website, description)
 
         if st.button("Draft call memo"):
-            report = await get_report(prompt, research_config["report_type"],
+
+            if link: #if link is not empty 
+                offline_report = await get_report("local", prompt, research_config["report_type"], 
                         research_config["agent"], research_config["role"], verbose=False)
+            
+            online_report = await get_report("web", prompt, research_config["report_type"],
+                        research_config["agent"], research_config["role"], verbose=False)
+
+            report = combine_reports(offline_report, online_report)
             # Store the report in session state
             st.session_state.report = report
         # Display the report if it exists in session state

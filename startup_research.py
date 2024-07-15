@@ -1,6 +1,7 @@
 import os.path
 import pymupdf
 import io
+from openai import OpenAI
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -9,13 +10,13 @@ from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
 from gpt_researcher import GPTResearcher
 
-async def get_report(prompt: str, report_type: str, agent=None,role=None,config_path = None, verbose = True) -> str:
-    researcher = GPTResearcher(prompt, report_type, report_source="local", config_path = config_path, agent= agent, role=role, verbose = verbose)
+async def get_report(source: str, prompt: str, report_type: str, agent=None,role=None,config_path = None, verbose = True) -> str:
+    researcher = GPTResearcher(prompt, report_type, report_source=source, config_path = config_path, agent= agent, role=role, verbose = verbose)
     research_result = await researcher.conduct_research()
     report = await researcher.write_report()
     return report
 
-def build_prompt(prompt: str, company_website: str, company_description: str, pitch_deck: str):
+def build_prompt(prompt: str, company_website: str, company_description: str):
     if company_description == '':
         return "Based on the website of this startup:" + company_website  + ", first understand what it does. Then," + prompt 
     else:
@@ -30,6 +31,24 @@ def get_company_name(report: str, company_website: str):
       else:
           name = tmp[0]
     return name.capitalize()
+
+#this function integrates the two reports, online and offline
+def combine_reports(offline, online):
+  client = OpenAI()
+
+  completion = client.chat.completions.create(
+  model="gpt-4",
+  messages=[
+    {"role": "system", "content": "You are a helpful assistant that can integrate two reports into a single one."},
+    {"role": "user", "content": "Please integrate these two reports. The first report is done on offline research: " + offline + " The second report is done by online research: " + online},
+    {"role": "assistant", "content": "Stick to the same format as the reports."}
+  ]
+  )
+
+  response = str(completion.choices[0].message.content)
+  return response
+
+   
 
 
 #This function takes in a real_file_id and downloads the pdf to "pitchdeck.pdf"
