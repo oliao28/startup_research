@@ -68,7 +68,7 @@ async def main():
             #call to parse this is deprecated as the gpt researcher now cannabalizes the documents
             #pitch_text = parse_pitch_deck()
 
-        prompt = build_prompt(research_config["prompt"], website, description, company_name)
+        prompt = build_prompt(research_config["prompt"], website, description)
 
         if st.button("Draft call memo"):
             urls = [""]
