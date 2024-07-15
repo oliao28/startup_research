@@ -51,7 +51,7 @@ reference_prompt = """
 You MUST write all used source urls at the end of the report as references, and make sure to not add duplicated sources, but only one reference for each.
 """
 prompt = prompt+"\n" + reference_prompt
-'''research_config = {
+research_config = {
 	"llm_provider": "anthropic",
 	"fast_llm_model": "claude-2.1",
 	"smart_llm_model": "claude-3-5-sonnet-20240620",
@@ -62,9 +62,9 @@ prompt = prompt+"\n" + reference_prompt
             insightful, and impartial investment analyses based on provided company information, market trends, and competitive landscapes.
             If you don’t know the precise answers, ask the investors to deep dive into those questions.
     """
-}'''
+}
 
-research_config = {
+'''research_config = {
 	"llm_provider": "openai",
 	"fast_llm_model": "gpt-4o",
 	"smart_llm_model": "gpt-4o",
@@ -75,5 +75,5 @@ research_config = {
             insightful, and impartial investment analyses based on provided company information, market trends, and competitive landscapes.
             If you don’t know the precise answers, ask the investors to deep dive into those questions.
     """
-}
+}'''
 
