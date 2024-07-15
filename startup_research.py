@@ -16,11 +16,11 @@ async def get_report(source: str, prompt: str, report_type: str, agent=None,role
     report = await researcher.write_report()
     return report
 
-def build_prompt(prompt: str, company_website: str, company_description: str, name: str):
+def build_prompt(prompt: str, company_website: str, company_description: str):
     if company_description == '':
-        return "Based on the website of this startup and other online sources:" + company_website  + ", first understand what " + name + " does. Then," + prompt 
+        return "Based on the website of this startup and as many other online sources as possible:" + company_website  + ", first understand what it does. Then," + prompt 
     else:
-        return company_description + "\n   Here's  " + name + " website:" + company_website + "\n" + prompt
+        return company_description + "\n   Here's it's  website:" + company_website + "\n" + prompt
 
 def get_company_name(report: str, company_website: str):
     name = report.split('\n')[0]
