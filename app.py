@@ -77,6 +77,8 @@ async def main():
                 offline_report = await get_report("local", prompt, research_config["report_type"], 
                         research_config["agent"], research_config["role"], verbose=False)
                 report = combine_reports(offline_report, online_report)
+            else:
+                report = online_report
             
             
             
