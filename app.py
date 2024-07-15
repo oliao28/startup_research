@@ -72,7 +72,7 @@ async def main():
 
         if st.button("Draft call memo"):
             urls = [""]
-            online_report = await get_report("web", prompt, research_config["report_type"], urls,
+            online_report = await get_report("web", prompt, research_config["report_type"],
                         research_config["agent"], research_config["role"], verbose=False)
             #site_report = await get_report("web", prompt, research_config["report_type"],
                        # research_config["agent"], research_config["role"], verbose=False)
