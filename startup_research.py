@@ -37,7 +37,7 @@ def combine_reports(offline, online):
   client = OpenAI()
 
   completion = client.chat.completions.create(
-  model="gpt-4",
+  model="gpt-4o",
   messages=[
     {"role": "system", "content": "You are a helpful assistant that can integrate two reports into a single one."},
     {"role": "user", "content": "Please integrate these two reports. The first report is done on offline research: " + offline + " The second report is done by online research: " + online},
@@ -48,7 +48,9 @@ def combine_reports(offline, online):
   response = str(completion.choices[0].message.content)
   return response
 
-   
+#this function takes in input and attempts to 
+def fact_check(input):
+
 
 
 #This function takes in a real_file_id and downloads the pdf to "pitchdeck.pdf"
