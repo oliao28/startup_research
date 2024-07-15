@@ -76,8 +76,6 @@ async def main():
                 offline_report = await get_report("local", prompt, research_config["report_type"], 
                         research_config["agent"], research_config["role"], verbose=False)
                 
-                
-                #run the online report on the report made by the offline research
                 online_report = await get_report("web", prompt, research_config["report_type"],
                         research_config["agent"], research_config["role"], verbose=False)
 

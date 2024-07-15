@@ -18,7 +18,7 @@ async def get_report(source: str, prompt: str, report_type: str, agent=None,role
 
 def build_prompt(prompt: str, company_website: str, company_description: str):
     if company_description == '':
-        return "Based on the website of this startup, the subdomains of this domain, and other available  that is specific to this company and this industry:" + company_website  + ", first understand what it does. Then," + prompt 
+        return "Based on the website of this startup, the subdomains of this domain, and other available that is specific to this company and this industry:" + company_website  + ", first understand what it does. Then," + prompt 
     else:
         return company_description + "\n   Here's it's  website:" + company_website + "\n" + prompt
 
@@ -41,7 +41,7 @@ def combine_reports(offline, online):
     messages=[
       {"role": "system", "content": "You are a helpful assistant that can integrate two reports into a single one. You do not do research of your own. You only copy and paste statements from each report and reformat."},
       {"role": "user", "content": "Please integrate these two reports. The first report is done on offline research: " + offline + " The second report is done by online research: " + online},
-      {"role": "assistant", "content": "Stick to the same format as the reports. Each section begins with factual statements regarding the section topic. If a factual statement comes from the offline research, please cite it by attaching \"Pitchdeck\" to the end of the statement. Statements from the offline and online report may conflict or disagree. When this happens, please put the two statements onto the same line and indicate that there is a conflict. It is then followed by a subsection titled \"investor questions\" All questions should go into that subsection. If one of the questions is answered by the factual statements included before, do not include that question. "}
+      {"role": "assistant", "content": "Stick to the same format as the reports. There are eight sections: Website, Team, Market, Product, Traction, Exit Strategy, Concerns, and Deal Structure. Each section begins with factual statements regarding the section topic. If a factual statement comes from the offline research, please cite it by attaching \"Pitchdeck\" to the end of the statement. If a factual statement comes from online research, please cit it by attaching \"Online\" to the end of the statement. When factual statements from the offline and online reports conflict and disagree, please put the two statements onto the same line and indicate that there is a conflict by attaching \"CONFLICT\" to the end of the statement. Each factual statement subsection then followed by a subsection titled \"investor questions\" All questions should go into that subsection. If one of the questions is answered by the factual statements included before, do not include that question. If the questions repeat each other, only include the question once"}
     ]
     )
 
