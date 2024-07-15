@@ -33,14 +33,14 @@ def get_company_name(report: str, company_website: str):
     return name.capitalize()
 
 #this function integrates the two reports, online and offline
-def combine_reports(offline, online):
+def combine_reports(prompt, offline, online):
     client = OpenAI()
 
     completion = client.chat.completions.create(
     model="gpt-4o",
     messages=[
       {"role": "system", "content": "You are a helpful assistant that can integrate two reports into a single one. You do not do research of your own. You only copy and paste statements from each report and reformat."},
-      {"role": "user", "content": "Please integrate these two reports. The first report is done on offline research: " + offline + " The second report is done by online research: " + online},
+      {"role": "user", "content": "Please integrate these two reports. The first report is done on offline research: " + offline + " The second report is done by online research: " + online + "use the format of " + prompt},
       {"role": "assistant", "content": "Stick to the same format as the reports. There are eight sections: Website, Team, Market, Product, Traction, Exit Strategy, Concerns, and Deal Structure. Each section begins with factual statements regarding the section topic. If a factual statement comes from the offline research, please cite it by attaching \"Pitchdeck\" to the end of the statement. If a factual statement comes from online research, please cit it by attaching \"Online\" to the end of the statement. When factual statements from the offline and online reports conflict and disagree, please put the two statements onto the same line and indicate that there is a conflict by attaching \"CONFLICT\" to the end of the statement. Each factual statement subsection then followed by a subsection titled \"investor questions\" All questions should go into that subsection. If one of the questions is answered by the factual statements included before, do not include that question. If the questions repeat each other, only include the question once"}
     ]
     )
