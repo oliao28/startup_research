@@ -71,8 +71,10 @@ async def main():
         prompt = build_prompt(research_config["prompt"], website, description)
 
         if st.button("Draft call memo"):
-            online_report = await get_report("web", prompt, research_config["report_type"],
+            online_report = await get_report("", prompt, research_config["report_type"],
                         research_config["agent"], research_config["role"], verbose=False)
+            
+
             if link: #if link is not empty 
                 offline_report = await get_report("local", prompt, research_config["report_type"], 
                         research_config["agent"], research_config["role"], verbose=False)
