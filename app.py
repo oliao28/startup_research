@@ -2,6 +2,7 @@ import streamlit as st
 from config import all_metrics, sorted_currency, research_config
 import os
 import asyncio
+from llama_index.core import set_global_handler
 import affinity_utils  as au
 import financial_analysis as fa
 import startup_research as sr
@@ -14,6 +15,12 @@ os.environ["LLM_PROVIDER"]=research_config["llm_provider"]
 os.environ["FAST_LLM_MODEL"]=research_config["fast_llm_model"]
 os.environ["SMART_LLM_MODEL"]=research_config["smart_llm_model"]
 AFFINITY_API_KEY = st.secrets["affinity_api_key"]
+PHOENIX_API_KEY = st.secrets["phoenix_api_key"]
+os.environ["OTEL_EXPORTER_OTLP_HEADERS"] = f"api_key={PHOENIX_API_KEY}"
+set_global_handler(
+    "arize_phoenix", endpoint="https://llamatrace.com/v1/traces"
+)
+
 
 #TODO: make the app mobile app friendly
 #TODO: Improve the RAG search: can't identify founder of Treasury
@@ -109,14 +116,14 @@ async def main():
                 question_info = None #gq.get_info_question(user_question)
                 query_engine = gq.get_query_engine(question_info)
                 response = query_engine.query(user_question)
+                sources = sorted(response.source_nodes, key=lambda x: x.score, reverse=True)
+                source_names = [(s.node.metadata.get('file name'), s.node.metadata.get('file id')) for s in sources]
+                top_3_sources = gq.extract_unique_top_3(source_names)
                 st.write("Answer:", response.response)
                 st.write("Sources:")
-                for source_node in response.source_nodes:
-                    file_id = source_node.node.metadata.get('file id')
-                    file_name = source_node.node.metadata.get('file name')
-                    if file_id:
-                        file_url = gq.get_file_url(file_id)
-                        st.write(f"- [{file_name}]({file_url})")
+                for source in top_3_sources:
+                    file_url = gq.get_file_url(source[1])
+                    st.write(f"- [{source[0]}]({file_url})")
 
 if __name__ == "__main__":
     asyncio.run(main())
