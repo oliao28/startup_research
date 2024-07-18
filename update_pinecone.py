@@ -21,6 +21,16 @@ load_dotenv(find_dotenv())
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+# Set up a separate file handler for specific error messages
+file_handler = logging.FileHandler('error_indexing_file.txt')
+file_handler.setLevel(logging.ERROR)
+file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s: %(message)s'))
+
+# Create a separate logger for file logging
+file_index_logger = logging.getLogger('file_index_logger')
+file_index_logger.addHandler(file_handler)
+file_index_logger.setLevel(logging.ERROR)
+
 # Set up Google Drive API
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
@@ -59,15 +69,12 @@ def authenticate_google_drive(): #TODO: need to make it work with Streamlit clou
         logging.info("Automatically authentication")
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
     # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            logging.info("Initialize an authentication")
-            flow = InstalledAppFlow.from_client_secrets_file(
-                "web_credentials.json", SCOPES
-            )
-            creds = flow.run_local_server(port=8001, prompt='consent')
+    if not creds or not creds.valid or creds.expired:
+        logging.info("Initialize an authentication")
+        flow = InstalledAppFlow.from_client_secrets_file(
+            "desk_credentials.json", SCOPES
+        )
+        creds = flow.run_local_server(port=8001, prompt='consent')
 
         with open('token.json', 'w') as token:
             logging.info("Create token file")
@@ -109,7 +116,7 @@ def write_processed_folders(folders):
     try:
         with open(PROCESSED_FOLDERS_FILE, 'w') as f:
             for folder in folders:
-                f.write(f"{folder[0]}\n")
+                f.write(f"{folder}\n")
         logging.info(f"Updated {PROCESSED_FOLDERS_FILE}")
     except Exception as e:
         logging.error(f"Error writing processed folders: {e}")
@@ -120,6 +127,8 @@ def get_folders(drive_service, parent_folder_id):
     results = drive_service.files().list(q=query, spaces='drive', fields='files(id, name)').execute()
     return {folder['name']: folder['id'] for folder in results.get('files', [])}
 
+def set_to_list(item):
+    return list(item) if isinstance(item, set) else item
 
 def process_google_drive(credentials, parent_folder_id):
     drive_service = build('drive', 'v3', credentials=credentials)
@@ -129,7 +138,7 @@ def process_google_drive(credentials, parent_folder_id):
     folders = get_folders(drive_service, parent_folder_id)
     folders = folders.items()
     folders = [folder for folder in folders if folder[0].startswith("Darwin")]
-    processed_folders = read_processed_folders()
+    processed_folders = set_to_list(read_processed_folders())
     # Sort folders by year (assuming folder names end with a year)
     sorted_folders = sorted(
         [folder for folder in folders if len(folder[0].split()) > 1 and folder[0].split()[1].isdigit()],
@@ -138,6 +147,7 @@ def process_google_drive(credentials, parent_folder_id):
     )
     num_folders = 2 if processed_folders else len(sorted_folders)
     folders_to_process = sorted_folders[:num_folders]  # Process only the latest two folders
+    folders_to_process = [x for x in folders_to_process if x[0]!="Darwin 2024 BP"]#TODO: delete this
     logging.info(f"Folders to be processed: {folders_to_process}")
 
     # Create the embedding model
@@ -149,7 +159,6 @@ def process_google_drive(credentials, parent_folder_id):
     all_docs = []
     for folder_name, folder_id in folders_to_process:
         year = folder_name.split()[1]  # Extract year from folder name
-
         if folder_name not in processed_folders:
             query = f"'{folder_id}' in parents"
             logging.info(f"Processing all documents in new folder: {folder_name}")
@@ -180,8 +189,10 @@ def process_google_drive(credentials, parent_folder_id):
                     'modified at': doc.metadata.get('modified at'),
                 }
                 doc.metadata = new_metadata
-
-            all_docs.append(documents)
+            import pickle
+            with open(f'documents_{year}.pkl', 'wb') as f:
+                pickle.dump(documents, f)
+            # all_docs.append(set_to_list(documents))
             vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
             storage_context = StorageContext.from_defaults(vector_store=vector_store)
             try:
@@ -189,14 +200,15 @@ def process_google_drive(credentials, parent_folder_id):
                                             embed_model=embed_model)
                logging.info(f"Processed {len(documents)} documents in folder: {folder_name}")
             except Exception as e:
-               logging.error(f"Error indexing the documents: {e}")
-
+               file_index_logger.error(f"Error indexing the documents: {e}")
             if folder_name not in processed_folders:
                 processed_folders.add(folder_name)
         else:
             logging.info(f"No new or modified documents found in folder: {folder_name}")
 
-    write_processed_folders(folders_to_process)
+    all_processed = [x[0] for x in folders_to_process]+processed_folders
+    print(all_processed)
+    write_processed_folders(list(set(all_processed)))
     write_last_update_time(datetime.now(taipei_tz))
     return all_docs
 def main():
@@ -206,16 +218,12 @@ def main():
     # folder_id ='1D403KctcPHAHmszLwFpNXw_-wOs1Ulwp' #BP_test_olivia/Darwin 2022 BP
     # folder_id ='1ZIcgpzXzkIGfE2way2oh3viRK9Xpz6ud' #BP/Darwin 2023 BP/Olivia_test <-- no errors but processed zero documents
     # folder_id ='1W38m1nqmKrZ-Qykm6eB2toOLcTIOE0vt' #BP/Darwin 2023 BP/Olivia_test2 <-- no errors but processed zero documents
-    folder_id ='1flkALOgcO9X_oSmp9i-Hdb1xtzseJRsd' #BP_test_olivia  <-- no errors but processed zero documents
-    # folder_id ='1C-9v688e6Y-jT5n2jBSLN_dyOtqnIR-x' #BP/Darwin 2023 BP/CogSmart <-- successfully processed 3 documents
-    # TODO: Replace with your actual folder ID: '1p5_PIIvXEGckI1LP-Tvnn3Ajt0XDCtVH' #
+    # folder_id ='1flkALOgcO9X_oSmp9i-Hdb1xtzseJRsd' #BP_test_olivia  <-- no errors but processed zero documents
+    folder_id ='1p5_PIIvXEGckI1LP-Tvnn3Ajt0XDCtVH' #BP
     all_docs = process_google_drive(credentials, folder_id)
-    import pickle
-    with open('all_docs.pickle', 'wb') as handle:
-        pickle.dump(all_docs, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    # import pickle
+    # with open('all_docs.pickle', 'wb') as handle:
+    #     pickle.dump(all_docs, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 if __name__ == "__main__":
     main()
-
-#TO DO: run test.py on multiple companies to test out the accuracy of the new multi-language embedding model
-# If pass, try out metadata filter

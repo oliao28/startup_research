@@ -12,6 +12,7 @@ import asyncio
 from itertools import repeat
 from pathlib import Path, PurePosixPath
 import fsspec
+import docx2txt
 from fsspec.implementations.local import LocalFileSystem
 from typing import Any, Callable, Dict, Generator, List, Optional, Type
 
@@ -19,8 +20,7 @@ from llama_index.core.readers.base import BaseReader, ResourcesReaderMixin
 from llama_index.core.async_utils import run_jobs, get_asyncio_module
 from llama_index.core.schema import Document
 from tqdm import tqdm
-
-
+from config import do_not_process_suffix
 class FileSystemReaderMixin(ABC):
     @abstractmethod
     def read_file_content(self, input_file: Path, **kwargs) -> bytes:
@@ -62,12 +62,13 @@ def _try_loading_included_file_formats() -> Dict[str, Type[BaseReader]]:
             PyMuPDFReader,
             PptxReader,
             VideoAudioReader,
+            UnstructuredReader,
         )  # pants: no-infer-dep
     except ImportError:
         raise ImportError("`llama-index-readers-file` package not found")
 
     default_file_reader_cls: Dict[str, Type[BaseReader]] = {
-        ".hwp": HWPReader,
+        # ".hwp": HWPReader,
         ".pdf": PyMuPDFReader,
         ".docx": DocxReader,
         ".pptx": PptxReader,
@@ -78,15 +79,16 @@ def _try_loading_included_file_formats() -> Dict[str, Type[BaseReader]]:
         ".png": ImageReader,
         ".jpeg": ImageReader,
         ".webp": ImageReader,
-        ".mp3": VideoAudioReader,
-        ".mp4": VideoAudioReader,
+        # ".mp3": VideoAudioReader,
+        # ".mp4": VideoAudioReader,
         ".csv": PandasCSVReader,
-        ".epub": EpubReader,
+        # ".epub": EpubReader,
         ".md": MarkdownReader,
-        ".mbox": MboxReader,
-        ".ipynb": IPYNBReader,
+        # ".mbox": MboxReader,
+        # ".ipynb": IPYNBReader,
         ".xls": PandasExcelReader,
         ".xlsx": PandasExcelReader,
+        ".doc": UnstructuredReader,
     }
     return default_file_reader_cls
 
@@ -471,6 +473,10 @@ class SimpleDirectoryReader(BaseReader, ResourcesReaderMixin, FileSystemReaderMi
             return f.read()
 
     @staticmethod
+    def read_doc_file(file_path):
+        text = docx2txt.process(file_path)
+        return Document(text=text)
+    @staticmethod
     def load_file(
         input_file: Path,
         file_metadata: Callable[[str], Dict],
@@ -522,10 +528,9 @@ class SimpleDirectoryReader(BaseReader, ResourcesReaderMixin, FileSystemReaderMi
             metadata = file_metadata(str(input_file))
         file_suffix = input_file.suffix.lower()
         if file_suffix is None or file_suffix=='':  #this should capture pdf files. Note that pdfparse will sepearate each page into a doc
-            suffix = metadata['file name'].split('.')[-1]
+            suffix = metadata['file name'].split('.')[-1].lower()
             file_suffix='.'+suffix
         metadata['file type'] = file_suffix
-        print(f"load_file file_suffix is {file_suffix}")
         if file_suffix in default_file_reader_suffix or file_suffix in file_extractor:
             # use file readers
             if file_suffix not in file_extractor:
@@ -559,7 +564,12 @@ class SimpleDirectoryReader(BaseReader, ResourcesReaderMixin, FileSystemReaderMi
                     doc.id_ = f"{input_file!s}_part_{i}"
 
             documents.extend(docs)
-        else:
+        # elif file_suffix =='.doc':
+        #     doc = SimpleDirectoryReader.read_doc_file(input_file)
+        #     documents.append(doc)
+        elif file_suffix in do_not_process_suffix:
+            return []
+        else: # this include all files without suffix, which are mostly 'application/vnd.google-apps.document'
             # do standard read
             fs = fs or get_default_fs()
             with fs.open(input_file, errors=errors, encoding=encoding) as f:

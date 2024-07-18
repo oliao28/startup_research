@@ -2,6 +2,8 @@
 import json
 import logging
 import os
+import pickle
+
 import tempfile
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
@@ -9,13 +11,22 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from google.auth.transport.requests import Request
 from google.oauth2 import service_account
 from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-
+from google_auth_oauthlib.flow import InstalledAppFlow, Flow
 from llama_index.core.bridge.pydantic import Field, PrivateAttr
 from base_reader import SimpleDirectoryReader ##copied the base file from llama_index to fix some errors
 from llama_index.core.readers.base import BasePydanticReader, BaseReader
 from llama_index.core.schema import Document
 logger = logging.getLogger(__name__)
+
+# Set up a separate file handler for specific error messages
+file_handler = logging.FileHandler('error_download_file.txt')
+file_handler.setLevel(logging.ERROR)
+file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s: %(message)s'))
+
+# Create a separate logger for file logging
+file_logger = logging.getLogger('file_logger')
+file_logger.addHandler(file_handler)
+file_logger.setLevel(logging.ERROR)
 
 # Scope for reading and downloading google drive files
 SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
@@ -162,23 +173,29 @@ class GoogleDriveReader(BasePydanticReader):
             creds = Credentials.from_authorized_user_info(
                 self.authorized_user_info, SCOPES
             )
+            # print(f'_get_credentials A creds expiry is {creds.expiry}')
+            # print(f'_get_credentials A creds is expired? {creds.expired}')
         elif self.service_account_key is not None:
-            return service_account.Credentials.from_service_account_info(
+            creds=service_account.Credentials.from_service_account_info(
                 self.service_account_key, scopes=SCOPES
             )
+            # print(f'_get_credentials B creds expiry is {creds.expiry}')
+            # print(f'_get_credentials B creds is expired? {creds.expired}')
+            return creds
 
         # If there are no (valid) credentials available, let the user log in.
-        if not creds or not creds.valid:
-            if creds and creds.expired and creds.refresh_token:
-                creds.refresh(Request())
-            else:
-                flow = InstalledAppFlow.from_client_config(self.client_config, SCOPES)
-                creds = flow.run_local_server(port=0)
-
+        if not creds or not creds.valid or creds.expired:
+            logging.info("Initialize an authentication")
+            flow = InstalledAppFlow.from_client_secrets_file(
+                "desk_credentials.json", SCOPES
+            )
+            creds = flow.run_local_server(port=8001, prompt='consent')
             # Save the credentials for the next run
             if not self._is_cloud:
                 with open(self.token_path, "w", encoding="utf-8") as token:
                     token.write(creds.to_json())
+            # Update self.authorized_user_info
+            self.authorized_user_info = creds
 
         return creds
 
@@ -206,7 +223,10 @@ class GoogleDriveReader(BasePydanticReader):
         """
         from googleapiclient.discovery import build
         try:
-            service = build("drive", "v3", credentials=self._creds, cache_discovery=False)
+            creds = self._creds
+            if creds and creds.expired:
+                creds = self._get_credentials()
+            service = build("drive", "v3", credentials=creds, cache_discovery=False)
             fileids_meta = []
             if folder_id:
                 folder_mime_type = "application/vnd.google-apps.folder"
@@ -358,7 +378,11 @@ class GoogleDriveReader(BasePydanticReader):
 
         try:
             # Get file details
-            service = build("drive", "v3", credentials=self._creds, cache_discovery=False)
+            creds = self._creds
+            if creds and creds.expired:
+                creds = self._get_credentials()
+
+            service = build("drive", "v3", credentials=creds, cache_discovery=False)
             file = service.files().get(fileId=fileid, supportsAllDrives=True).execute()
             if file["mimeType"] in self._mimetypes:
                 download_mimetype = self._mimetypes[file["mimeType"]]["mimetype"]
@@ -388,8 +412,8 @@ class GoogleDriveReader(BasePydanticReader):
                 f.write(file_data.getvalue())
             return new_file_name
         except Exception as e:
-            logger.error(
-                f"An error occurred while downloading file: {e}", exc_info=True
+            file_logger.error(
+                f"An error occurred while downloading file: {e}, {fileid}", exc_info=True
             )
 
     def _load_data_fileids_meta(self, fileids_meta: List[List[str]]) -> List[Document]:
@@ -504,6 +528,8 @@ class GoogleDriveReader(BasePydanticReader):
                 mime_types=mime_types,
                 query_string=query_string,
             )
+            with open('fileids_meta.pickle', 'wb') as handle:
+                pickle.dump(fileids_meta, handle, protocol=pickle.HIGHEST_PROTOCOL)
             return self._load_data_fileids_meta(fileids_meta)
         except Exception as e:
             logger.error(
@@ -532,6 +558,8 @@ class GoogleDriveReader(BasePydanticReader):
             List[Document]: A list of documents.
         """
         self._creds = self._get_credentials()
+        # print(f'load_data creds expiry is {self._creds.expiry}')
+        # print(f'load_data creds is expired? {self._creds.expired}')
         # If no arguments are provided to load_data, default to the object attributes
         if drive_id is None:
             drive_id = self.drive_id

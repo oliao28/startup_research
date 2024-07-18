@@ -69,3 +69,4 @@ answer questions about the startup. Answer the question based on the given conte
 Be succinct and concise. Skip premable.
 """
 
+do_not_process_suffix = [".hwp",".mp3",".mp4",".epub",".mbox",".ipynb", ".heic", ".xml",  ".zip"]

@@ -5,11 +5,11 @@ streamlit
 numpy==1.26.4
 pandas==2.0.3
 requests
-google-api-python-client==2.136.0
+google-api-python-client==2.137.0
 google-auth==2.32.0
 google-auth-httplib2==0.2.0
 google-auth-oauthlib==1.2.1
-llama_index==0.10.52
+llama_index==0.10.55
 pinecone-client==3.2.2
 pinecone==4.0.0
 schedule==1.2.2
@@ -25,4 +25,6 @@ anthropic==0.28.1
 llama-index-llms-anthropic==0.1.15
 pytz==2024.1
 llama-index-embeddings-huggingface==0.2.2
+
 openpyxl==3.1.5
+xlrd
