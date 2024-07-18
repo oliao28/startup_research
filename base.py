@@ -379,8 +379,8 @@ class GoogleDriveReader(BasePydanticReader):
         try:
             # Get file details
             creds = self._creds
-            if creds and creds.expired:
-                creds = self._get_credentials()
+            # if creds and creds.expired:
+            #     creds = self._get_credentials()
 
             service = build("drive", "v3", credentials=creds, cache_discovery=False)
             file = service.files().get(fileId=fileid, supportsAllDrives=True).execute()

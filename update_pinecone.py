@@ -3,13 +3,13 @@ import logging
 from datetime import datetime
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
-from google.auth.transport.requests import Request
 from pinecone import Pinecone, ServerlessSpec
 from llama_index.core import VectorStoreIndex, StorageContext, ServiceContext
 from llama_index.core import Settings
 from llama_index.vector_stores.pinecone import PineconeVectorStore
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 import torch
+import json
 
 from base import GoogleDriveReader #copied the base file from llama_index to fix some errors
 import pytz
@@ -32,7 +32,7 @@ file_index_logger.addHandler(file_handler)
 file_index_logger.setLevel(logging.ERROR)
 
 # Set up Google Drive API
-SCOPES = ['https://www.googleapis.com/auth/drive']
+SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
 
 # Set up Pinecone
 pc = Pinecone(api_key=os.environ.get("PINECONE_API_KEY"))
@@ -67,7 +67,12 @@ def authenticate_google_drive(): #TODO: need to make it work with Streamlit clou
     creds = None
     if os.path.exists('token.json'):
         logging.info("Automatically authentication")
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+        with open('token.json', encoding="utf-8") as json_file:
+            authorized_user_info = json.load(json_file)
+        creds = Credentials.from_authorized_user_info(
+            authorized_user_info, SCOPES
+        )
+        # creds = Credentials.from_authorized_user_file('token.json', SCOPES)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid or creds.expired:
         logging.info("Initialize an authentication")
@@ -131,7 +136,7 @@ def set_to_list(item):
     return list(item) if isinstance(item, set) else item
 
 def process_google_drive(credentials, parent_folder_id):
-    drive_service = build('drive', 'v3', credentials=credentials)
+    drive_service = build('drive', 'v3', credentials=credentials, cache_discovery=False)
     gdrive_reader = GoogleDriveReader(credentials=credentials)
     # Upload Darwin 20xx partitioned folders
     #-----------------------------------------
