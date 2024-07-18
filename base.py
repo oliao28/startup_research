@@ -13,9 +13,11 @@ from google.oauth2 import service_account
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow, Flow
 from llama_index.core.bridge.pydantic import Field, PrivateAttr
-from base_reader import SimpleDirectoryReader ##copied the base file from llama_index to fix some errors
 from llama_index.core.readers.base import BasePydanticReader, BaseReader
 from llama_index.core.schema import Document
+from googleapiclient.errors import HttpError
+from base_reader import SimpleDirectoryReader ##copied the base file from llama_index to fix some errors
+from config import do_not_process_suffix
 logger = logging.getLogger(__name__)
 
 # Set up a separate file handler for specific error messages
@@ -199,6 +201,18 @@ class GoogleDriveReader(BasePydanticReader):
 
         return creds
 
+    def _get_file_path(self, file, service):
+        try:
+            path = [file.get('name')]
+            parent = file.get('parents')
+            while parent:
+                parent_file = service.files().get(fileId=parent[0], fields="name,parents").execute()
+                path.insert(0, parent_file.get('name'))
+                parent = parent_file.get('parents')
+            return path
+            # return '/'.join(path)
+        except HttpError:
+            return "Path not accessible"
     def _get_fileids_meta(
         self,
         drive_id: Optional[str] = None,
@@ -325,7 +339,8 @@ class GoogleDriveReader(BasePydanticReader):
                                     item["mimeType"],
                                     item["createdTime"],
                                     item["modifiedTime"],
-                                    full_path
+                                    full_path,
+                                    item["size"],
                                 )
                             )
             else:
@@ -345,6 +360,7 @@ class GoogleDriveReader(BasePydanticReader):
                 )
                 if file["mimeType"] != 'application/vnd.google-apps.shortcut':
                     full_path = f"{current_path}/{file['name']}" if current_path else file['name']
+                    # full_path = self._get_file_path(file, service) #TODO: switch it back
                     fileids_meta.append(
                         (
                             file["id"],
@@ -353,7 +369,8 @@ class GoogleDriveReader(BasePydanticReader):
                             file["mimeType"],
                             file["createdTime"],
                             file["modifiedTime"],
-                            full_path
+                            full_path,
+                            file["size"],
                         )
                     )
             return fileids_meta
@@ -432,23 +449,38 @@ class GoogleDriveReader(BasePydanticReader):
 
                 temp_dir = Path(temp_dir)
                 metadata = {}
-
+                files_not_load={}
                 for fileid_meta in fileids_meta:
                     # Download files and name them with their fileid
                     fileid = fileid_meta[0]
+                    file_size = fileid_meta[7]
                     filepath = os.path.join(temp_dir, fileid)
-                    final_filepath = self._download_file(fileid, filepath)
-
-                    # Add metadata of the file to metadata dictionary
-                    metadata[final_filepath] = {
-                        "file id": fileid_meta[0],
-                        "author": fileid_meta[1],
-                        "file name": fileid_meta[2],
-                        "mime type": fileid_meta[3],
-                        "created at": fileid_meta[4],
-                        "modified at": fileid_meta[5],
-                        "full path": fileid_meta[6],
-                    }
+                    file_suffix = temp_dir.suffix.lower()
+                    if file_suffix is None or file_suffix == '':  # this should capture pdf files. Note that pdfparse will sepearate each page into a doc
+                        suffix = fileid_meta[2].split('.')[-1].lower()
+                        file_suffix = '.' + suffix
+                    # Only add the metadata of the files we want to process to the list
+                    if file_suffix in do_not_process_suffix or float(file_size) > 10**7: #10MB
+                        files_not_load[fileid]={
+                            "file id": fileid_meta[0],
+                            "file name": fileid_meta[2],
+                            "full path": fileid_meta[6],
+                            "file suffix": file_suffix,
+                            "file size": file_size,
+                        }
+                    else:
+                        final_filepath = self._download_file(fileid, filepath)
+                        # Add metadata of the file to metadata dictionary
+                        metadata[final_filepath] = {
+                            "file id": fileid_meta[0],
+                            "author": fileid_meta[1],
+                            "file name": fileid_meta[2],
+                            "mime type": fileid_meta[3],
+                            "created at": fileid_meta[4],
+                            "modified at": fileid_meta[5],
+                            "full path": fileid_meta[6],
+                            "file suffix": file_suffix,
+                        }
 
                 if metadata:
                     loader = SimpleDirectoryReader(
@@ -461,9 +493,9 @@ class GoogleDriveReader(BasePydanticReader):
                     for doc in documents:
                         doc.id_ = doc.metadata.get("file id", doc.id_)
 
-                    return documents
+                    return documents, files_not_load
                 else:
-                    return []
+                    return [], files_not_load
         except Exception as e:
             logger.error(
                 f"An error occurred while loading data from fileids meta: {e}",

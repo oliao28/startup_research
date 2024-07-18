@@ -10,6 +10,7 @@ from llama_index.vector_stores.pinecone import PineconeVectorStore
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 import torch
 import json
+import pickle
 
 from base import GoogleDriveReader #copied the base file from llama_index to fix some errors
 import pytz
@@ -155,7 +156,7 @@ def process_google_drive(credentials, parent_folder_id):
     folders_to_process = [x for x in folders_to_process if x[0]!="Darwin 2024 BP"]#TODO: delete this
     logging.info(f"Folders to be processed: {folders_to_process}")
 
-    # Create the embedding model
+    ## Create the embedding model
     embed_model = HuggingFaceEmbedding(
         model_name="intfloat/multilingual-e5-base",
         device="cuda" if torch.cuda.is_available() else "cpu"
@@ -176,7 +177,10 @@ def process_google_drive(credentials, parent_folder_id):
                 query = f"'{folder_id}' in parents"
                 logging.info(f"Processing all documents in folder: {folder_name} (no last update time found)")
 
-        documents = gdrive_reader.load_data(folder_id=folder_id, query_string=query)
+        documents, files_not_load = gdrive_reader.load_data(folder_id=folder_id, query_string=query)
+        with open(f'excluded_files_{year}.pkl', 'wb') as fp:
+            pickle.dump(files_not_load, fp)
+
         logging.info(f"Loaded {len(documents)} documents from Gdrive ")
         if documents:
             # Process each document to update metadata
@@ -212,10 +216,9 @@ def process_google_drive(credentials, parent_folder_id):
             logging.info(f"No new or modified documents found in folder: {folder_name}")
 
     all_processed = [x[0] for x in folders_to_process]+processed_folders
-    print(all_processed)
     write_processed_folders(list(set(all_processed)))
     write_last_update_time(datetime.now(taipei_tz))
-    return all_docs
+
 def main():
     credentials = authenticate_google_drive()
     # folder_id ='1UzLrdbCOVIQYUesYpw3z2KOxs5bfU18-'  #BP_test_olivia/Darwin 2023 BP/swif <-- success processed 1 documents
@@ -226,9 +229,8 @@ def main():
     # folder_id ='1flkALOgcO9X_oSmp9i-Hdb1xtzseJRsd' #BP_test_olivia  <-- no errors but processed zero documents
     folder_id ='1p5_PIIvXEGckI1LP-Tvnn3Ajt0XDCtVH' #BP
     all_docs = process_google_drive(credentials, folder_id)
-    # import pickle
-    # with open('all_docs.pickle', 'wb') as handle:
-    #     pickle.dump(all_docs, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    with open('all_docs.pickle', 'wb') as handle:
+        pickle.dump(all_docs, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 if __name__ == "__main__":
     main()
