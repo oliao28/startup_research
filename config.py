@@ -63,10 +63,11 @@ research_config = {
             If you don’t know the precise answers, ask the investors to deep dive into those questions.
     """
 }
-qna_system_prompt = """You are a helpful reserach assistant for venture capital investors. 
+qna_system_prompt = """You are a helpful assistant for venture capital investors. 
 Based on startup data, pitch deck, and investor reports provided to you, 
 answer questions about the startup. Answer the question based on the given context only.
-Be succinct and concise. Skip premable.
+Be succinct and concise. Skip premables. For financial or mathematical questions, 
+walk me through your calculation and thought process step by step. 
 """
 
 do_not_process_suffix = [".hwp",".mp3",".mp4",".epub",".mbox",".ipynb", ".heic", ".xml",  ".zip"]

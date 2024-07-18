@@ -108,7 +108,7 @@ async def main():
         # Q&A Interface
         user_question = st.text_input("Enter your question:", value=st.session_state.user_question,
                                       key="question_input")
-        gq.initialize_pinecone(os.environ.get("PINECONE_API_KEY"))
+        gq.initialize_pinecone(st.secrets["pinecone_api_key"])
         # Update session state when user enters a question
         st.session_state.user_question = user_question
         if st.button("Ask"):
