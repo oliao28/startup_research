@@ -7,16 +7,18 @@ from pinecone import Pinecone, ServerlessSpec
 from llama_index.core import VectorStoreIndex, StorageContext, ServiceContext
 from llama_index.core import Settings
 from llama_index.vector_stores.pinecone import PineconeVectorStore
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
-import torch
 import json
 import pickle
-
-from base import GoogleDriveReader #copied the base file from llama_index to fix some errors
+from base import GoogleDriveReader  # copied the base file from llama_index to fix some errors
 import pytz
-taipei_tz = pytz.timezone('Asia/Taipei')
 
+# Set up some global parameters
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+import torch
+taipei_tz = pytz.timezone('Asia/Taipei')
+# Load environment variables
 from dotenv import load_dotenv, find_dotenv
+
 load_dotenv(find_dotenv())
 
 # Set up logging
@@ -53,7 +55,6 @@ pinecone_index = pc.Index(index_name)
 LAST_UPDATE_FILE = 'last_update_time.txt'
 PROCESSED_FOLDERS_FILE = 'processed_folders.txt'
 
-
 # def authenticate_google_drive():
 #     creds = Credentials.from_authorized_user_file('token.json', SCOPES)
 #     if not creds or not creds.valid:
@@ -64,7 +65,9 @@ PROCESSED_FOLDERS_FILE = 'processed_folders.txt'
 #     return creds
 
 from google_auth_oauthlib.flow import InstalledAppFlow, Flow
-def authenticate_google_drive(): #TODO: need to make it work with Streamlit cloud. Try running quickstart.py
+
+
+def authenticate_google_drive():  #TODO: need to make it work with Streamlit cloud. Try running quickstart.py
     creds = None
     if os.path.exists('token.json'):
         logging.info("Automatically authentication")
@@ -99,7 +102,7 @@ def read_last_update_time():
     return None
 
 
-def write_last_update_time(last_update_time): #write to a file in Github
+def write_last_update_time(last_update_time):  #write to a file in Github
     try:
         with open(LAST_UPDATE_FILE, 'w') as f:
             f.write(last_update_time.isoformat())
@@ -133,14 +136,42 @@ def get_folders(drive_service, parent_folder_id):
     results = drive_service.files().list(q=query, spaces='drive', fields='files(id, name)').execute()
     return {folder['name']: folder['id'] for folder in results.get('files', [])}
 
+
 def set_to_list(item):
     return list(item) if isinstance(item, set) else item
 
-def process_google_drive(credentials, parent_folder_id):
-    drive_service = build('drive', 'v3', credentials=credentials, cache_discovery=False)
-    gdrive_reader = GoogleDriveReader(credentials=credentials)
-    # Upload Darwin 20xx partitioned folders
-    #-----------------------------------------
+
+def get_new_metadata(metadata, year):
+    file_path = metadata.get('full path')
+    company = file_path.split("/")[0]
+    # Update metadata
+    new_metadata = {
+        'file name': metadata.get('file name'),
+        'file id': metadata.get('file id'),
+        'year': year,
+        'company': company.capitalize(),
+        'file type': metadata.get('file suffix'),
+        'modified at': metadata.get('modified at'),
+    }
+    return new_metadata
+
+
+def get_query(folder_name, folder_id, processed_folders):
+    if folder_name not in processed_folders:
+        query = f"'{folder_id}' in parents"
+        logging.info(f"Processing all documents in new folder: {folder_name}")
+    else:
+        last_update_time = read_last_update_time()
+        if last_update_time:
+            query = f"'{folder_id}' in parents and modifiedTime > '{last_update_time.isoformat()}'"
+            logging.info(f"Updating documents modified after {last_update_time} in folder: {folder_name}")
+        else:
+            query = f"'{folder_id}' in parents"
+            logging.info(f"Processing all documents in folder: {folder_name} (no last update time found)")
+    return query
+
+
+def get_folders_to_process(drive_service, parent_folder_id):
     folders = get_folders(drive_service, parent_folder_id)
     folders = folders.items()
     folders = [folder for folder in folders if folder[0].startswith("Darwin")]
@@ -153,9 +184,28 @@ def process_google_drive(credentials, parent_folder_id):
     )
     num_folders = 2 if processed_folders else len(sorted_folders)
     folders_to_process = sorted_folders[:num_folders]  # Process only the latest two folders
-    folders_to_process = [x for x in folders_to_process if x[0] not in ["Darwin 2024 BP"]]#TODO: delete this
+    folders_to_process = [x for x in folders_to_process if x[0] not in ["Darwin 2024 BP", "Darwin 2023 BP", "Darwin 2022 BP"]]  #TODO: delete this
     logging.info(f"Folders to be processed: {folders_to_process}")
+    return processed_folders, folders_to_process
 
+
+def create_pinecone_index(pinecone_index, documents, folder_name):
+    vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
+    storage_context = StorageContext.from_defaults(vector_store=vector_store)
+    try:
+        VectorStoreIndex.from_documents(documents, storage_context=storage_context,
+                                        embed_model=embed_model)
+        logging.info(f"Processed {len(documents)} documents in folder: {folder_name}")
+    except Exception as e:
+        file_index_logger.error(f"Error indexing the documents: {e}")
+
+
+def process_google_drive(credentials, parent_folder_id):
+    drive_service = build('drive', 'v3', credentials=credentials, cache_discovery=False)
+    gdrive_reader = GoogleDriveReader(credentials=credentials)
+    # Upload Darwin 20xx partitioned folders
+    #-----------------------------------------
+    processed_folders, folders_to_process = get_folders_to_process(drive_service, parent_folder_id)
     # Create the embedding model
     embed_model = HuggingFaceEmbedding(
         model_name="intfloat/multilingual-e5-base",
@@ -165,60 +215,31 @@ def process_google_drive(credentials, parent_folder_id):
     all_docs = []
     for folder_name, folder_id in folders_to_process:
         year = folder_name.split()[1]  # Extract year from folder name
-        if folder_name not in processed_folders:
-            query = f"'{folder_id}' in parents"
-            logging.info(f"Processing all documents in new folder: {folder_name}")
-        else:
-            last_update_time = read_last_update_time()
-            if last_update_time:
-                query = f"'{folder_id}' in parents and modifiedTime > '{last_update_time.isoformat()}'"
-                logging.info(f"Updating documents modified after {last_update_time} in folder: {folder_name}")
-            else:
-                query = f"'{folder_id}' in parents"
-                logging.info(f"Processing all documents in folder: {folder_name} (no last update time found)")
-
+        query = get_query(folder_name, folder_id, processed_folders)
         documents, files_not_load = gdrive_reader.load_data(folder_id=folder_id, query_string=query)
 
         with open(f'excluded_files_{year}.pkl', 'wb') as fp:
             pickle.dump(files_not_load, fp)
         logging.info(f"Loaded {len(documents)} documents from Gdrive ")
         if documents:
-            logging.info("documents exist!")
             # Process each document to update metadata
             for doc in documents:
-                # Get the subfolder name
-                file_path = doc.metadata.get('full path')
-                company = file_path.split("/")[0]
-                # Update metadata
-                new_metadata = {
-                    'file name': doc.metadata.get('file name'),
-                    'file id': doc.metadata.get('file id'),
-                    'year': year,
-                    'company': company.capitalize(),
-                    'file type': doc.metadata.get('file suffix'),
-                    'modified at': doc.metadata.get('modified at'),
-                }
-                doc.metadata = new_metadata
+                doc.metadata = get_new_metadata(doc.metadata, year)
             with open(f'documents_{year}.pkl', 'wb') as f:
                 pickle.dump(documents, f)
             # all_docs.append(set_to_list(documents))
-            vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
-            storage_context = StorageContext.from_defaults(vector_store=vector_store)
-            try:
-               VectorStoreIndex.from_documents(documents, storage_context=storage_context,
-                                            embed_model=embed_model)
-               logging.info(f"Processed {len(documents)} documents in folder: {folder_name}")
-            except Exception as e:
-               file_index_logger.error(f"Error indexing the documents: {e}")
+            create_pinecone_index(pinecone_index, documents, folder_name) #TODO: make sure to turn this on
             if folder_name not in processed_folders:
                 processed_folders.append(folder_name)
         else:
             logging.info(f"No new or modified documents found in folder: {folder_name}")
 
-    all_processed = [x[0] for x in folders_to_process]+processed_folders
+    all_processed = [x[0] for x in folders_to_process] + processed_folders
     write_processed_folders(list(set(all_processed)))
     write_last_update_time(datetime.now(taipei_tz))
     return all_docs
+
+
 def main():
     credentials = authenticate_google_drive()
     # folder_id ='1UzLrdbCOVIQYUesYpw3z2KOxs5bfU18-'  #BP_test_olivia/Darwin 2023 BP/swif <-- success processed 1 documents
@@ -227,10 +248,11 @@ def main():
     # folder_id ='1ZIcgpzXzkIGfE2way2oh3viRK9Xpz6ud' #BP/Darwin 2023 BP/Olivia_test <-- no errors but processed zero documents
     # folder_id ='1W38m1nqmKrZ-Qykm6eB2toOLcTIOE0vt' #BP/Darwin 2023 BP/Olivia_test2 <-- no errors but processed zero documents
     # folder_id ='1flkALOgcO9X_oSmp9i-Hdb1xtzseJRsd' #BP_test_olivia  <-- no errors but processed zero documents
-    folder_id ='1p5_PIIvXEGckI1LP-Tvnn3Ajt0XDCtVH' #BP
+    folder_id = '1p5_PIIvXEGckI1LP-Tvnn3Ajt0XDCtVH'  #BP
     all_docs = process_google_drive(credentials, folder_id)
     # with open('all_docs.pickle', 'wb') as handle:
     #     pickle.dump(all_docs, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
 
 if __name__ == "__main__":
     main()

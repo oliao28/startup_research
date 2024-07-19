@@ -405,7 +405,6 @@ class GoogleDriveReader(BasePydanticReader):
                 )
             else:
                 new_file_name = filename
-                print(f"new_file_name is filename {filename}")
                 # Download file without conversion
                 request = service.files().get_media(fileId=fileid)
             # print(f'_download_file request is {list(request.keys())}') <-- NEVER DO THIS. IT BREAKS REQUEST SOMEHOW
