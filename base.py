@@ -450,8 +450,11 @@ class GoogleDriveReader(BasePydanticReader):
                     filepath = os.path.join(temp_dir, fileid)
                     file_suffix = temp_dir.suffix.lower()
                     if file_suffix is None or file_suffix == '':  # this should capture pdf files. Note that pdfparse will sepearate each page into a doc
-                        suffix = fileid_meta[2].split('.')[-1].lower()
-                        file_suffix = '.' + suffix
+                        suffix = fileid_meta[2].split('.')[-1].lower() #grab it from file name
+                        if len(suffix)>5:
+                            #use mimetype to infer
+                            print(f'mimetype is {fileid_meta[3]}')
+                        file_suffix = '.' + str(suffix or '') # if suffix is None, file_suffix is default to '.'. This ensures file_suffix can't be None
                     # Only add the metadata of the files we want to process to the list
                     if file_suffix in do_not_process_suffix or float(file_size) > 10**7: #10MB
                         files_not_load[fileid]={
@@ -472,7 +475,7 @@ class GoogleDriveReader(BasePydanticReader):
                             "created at": fileid_meta[4],
                             "modified at": fileid_meta[5],
                             "full path": fileid_meta[6],
-                            "file suffix": file_suffix,
+                            "file suffix": file_suffix,  #this has to be a string, can't be None
                         }
                 if metadata:
                     loader = SimpleDirectoryReader(

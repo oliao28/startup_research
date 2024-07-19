@@ -561,7 +561,7 @@ class SimpleDirectoryReader(BaseReader, ResourcesReaderMixin, FileSystemReaderMi
                     doc.id_ = f"{input_file!s}_part_{i}"
 
             documents.extend(docs)
-        else: # this include all files without suffix, which are mostly 'application/vnd.google-apps.document'
+        else: # this includes all files without suffix, which are mostly 'application/vnd.google-apps.document'
             # do standard read
             fs = fs or get_default_fs()
             with fs.open(input_file, errors=errors, encoding=encoding) as f:

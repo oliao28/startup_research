@@ -195,7 +195,7 @@ def process_google_drive(credentials, parent_folder_id):
                     'file id': doc.metadata.get('file id'),
                     'year': year,
                     'company': company.capitalize(),
-                    'file type': doc.metadata.get('file type'),
+                    'file type': doc.metadata.get('file suffix'),
                     'modified at': doc.metadata.get('modified at'),
                 }
                 doc.metadata = new_metadata
@@ -211,7 +211,7 @@ def process_google_drive(credentials, parent_folder_id):
             except Exception as e:
                file_index_logger.error(f"Error indexing the documents: {e}")
             if folder_name not in processed_folders:
-                processed_folders.add(folder_name)
+                processed_folders.append(folder_name)
         else:
             logging.info(f"No new or modified documents found in folder: {folder_name}")
 
