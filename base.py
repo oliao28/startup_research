@@ -174,14 +174,10 @@ class GoogleDriveReader(BasePydanticReader):
             creds = Credentials.from_authorized_user_info(
                 self.authorized_user_info, SCOPES
             )
-            # print(f'_get_credentials A creds expiry is {creds.expiry}')
-            # print(f'_get_credentials A creds is expired? {creds.expired}')
         elif self.service_account_key is not None:
             creds=service_account.Credentials.from_service_account_info(
                 self.service_account_key, scopes=SCOPES
             )
-            # print(f'_get_credentials B creds expiry is {creds.expiry}')
-            # print(f'_get_credentials B creds is expired? {creds.expired}')
             return creds
 
         # If there are no (valid) credentials available, let the user log in.
@@ -329,7 +325,6 @@ class GoogleDriveReader(BasePydanticReader):
                             else "Shared Drive"
                         )
                         if item["mimeType"]!='application/vnd.google-apps.shortcut':
-                            # print(f"item metadata key = {list(item.keys())}") # TODO: delete. This doesn't contain size for some files
                             full_path = f"{current_path}/{item['name']}" if current_path else item['name']
                             fileids_meta.append(
                                 (
@@ -380,7 +375,7 @@ class GoogleDriveReader(BasePydanticReader):
                 f"An error occurred while getting fileids metadata: {e}", exc_info=True
             )
 
-    def _download_file(self, fileid: str, filename: str, filemimetype: str, filesuffix: str) -> str:
+    def _download_file(self, fileid: str, filename: str, filemimetype: str) -> str:
         """Download the file with fileid and filename
         Args:
             fileid: file id of the file in google drive
@@ -396,14 +391,9 @@ class GoogleDriveReader(BasePydanticReader):
         try:
             # Get file details
             creds = self._creds
-            # if creds and creds.expired:
-            #     creds = self._get_credentials()
-
             service = build("drive", "v3", credentials=creds, cache_discovery=False)
-            # file = service.files().get(fileId=fileid, supportsAllDrives=True).execute() ## WHY?? Just to get file["mimeType"]?
-            print(f"_download_file filesuffix = {filesuffix}")
+            # file = service.files().get(fileId=fileid, supportsAllDrives=True).execute()
             if filemimetype in self._mimetypes:
-            # if file["mimeType"] in self._mimetypes:
                 download_mimetype = self._mimetypes[filemimetype]["mimetype"]
                 download_extension = self._mimetypes[filemimetype]["extension"]
                 new_file_name = filename + download_extension
@@ -417,7 +407,7 @@ class GoogleDriveReader(BasePydanticReader):
 
                 # Download file without conversion
                 request = service.files().get_media(fileId=fileid)
-            print(f"_download_file request = {list(request.keys())}")
+            # print(f'_download_file request is {list(request.keys())}') <-- NEVER DO THIS. IT BREAKS REQUEST SOMEHOW
             # Download file data
             file_data = BytesIO()
             downloader = MediaIoBaseDownload(file_data, request)
@@ -434,6 +424,7 @@ class GoogleDriveReader(BasePydanticReader):
             file_logger.error(
                 f"An error occurred while downloading file: {e}, {fileid}", exc_info=True
             )
+
 
     def _load_data_fileids_meta(self, fileids_meta: List[List[str]]) -> List[Document]:
         """Load data from fileids metadata
@@ -471,7 +462,7 @@ class GoogleDriveReader(BasePydanticReader):
                             "file size": file_size,
                         }
                     else: #this should capture many pptx file without suffix
-                        final_filepath = self._download_file(fileid, filepath, fileid_meta[3], file_suffix)
+                        final_filepath = self._download_file(fileid, filepath, fileid_meta[3])
                         # Add metadata of the file to metadata dictionary
                         metadata[final_filepath] = {
                             "file id": fileid_meta[0],
@@ -483,9 +474,7 @@ class GoogleDriveReader(BasePydanticReader):
                             "full path": fileid_meta[6],
                             "file suffix": file_suffix,
                         }
-
                 if metadata:
-                    print(f'{fileid_meta[0]}, {fileid_meta[2]}')
                     loader = SimpleDirectoryReader(
                         temp_dir,
                         file_extractor=self.file_extractor,
@@ -591,8 +580,6 @@ class GoogleDriveReader(BasePydanticReader):
             List[Document]: A list of documents.
         """
         self._creds = self._get_credentials()
-        # print(f'load_data creds expiry is {self._creds.expiry}')
-        # print(f'load_data creds is expired? {self._creds.expired}')
         # If no arguments are provided to load_data, default to the object attributes
         if drive_id is None:
             drive_id = self.drive_id

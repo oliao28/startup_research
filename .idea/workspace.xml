@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="reduce number of Google API calls by reusing file metadata">
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="reduce number of Google API calls by reusing file metadata. I can't fix the large file 403 error issue">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/update_pinecone.py" beforeDir="false" afterPath="$PROJECT_DIR$/update_pinecone.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,10 +23,11 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="qna_testing" />
+        <entry key="$PROJECT_DIR$" value="75687ce8bc1166b41a51301b6a21d8c96c4f23d6" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="SOFT" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -41,26 +41,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Python.app.executor": "Run",
-    "Python.base_reader.executor": "Run",
-    "Python.test.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "/Users/oywliao/Downloads",
-    "settings.editor.selected.configurable": "vcs.Subversion"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Python.app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.base_reader.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/oywliao/Downloads&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;vcs.Subversion&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
-      "Python",
-      "TEXT",
-      "yaml"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;Python&quot;,
+      &quot;TEXT&quot;,
+      &quot;yaml&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$USER_HOME$/Downloads" />
@@ -431,7 +431,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="add functionality to push the draft memo into Affinity" />
     <MESSAGE value="fixing syntext errors" />
     <MESSAGE value="fixing bugs so we only add a new entry to Affinity if it doesn't exist yet." />
     <MESSAGE value="add a function to extract startup name from the report" />
@@ -456,7 +455,8 @@
     <MESSAGE value="Fix the scope inconsistency" />
     <MESSAGE value="Fix the scope inconsistency, add fileter to exclude large files and wrong file types from processing" />
     <MESSAGE value="reduce number of Google API calls by reusing file metadata" />
-    <option name="LAST_COMMIT_MESSAGE" value="reduce number of Google API calls by reusing file metadata" />
+    <MESSAGE value="reduce number of Google API calls by reusing file metadata. I can't fix the large file 403 error issue" />
+    <option name="LAST_COMMIT_MESSAGE" value="reduce number of Google API calls by reusing file metadata. I can't fix the large file 403 error issue" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
