@@ -153,10 +153,10 @@ def process_google_drive(credentials, parent_folder_id):
     )
     num_folders = 2 if processed_folders else len(sorted_folders)
     folders_to_process = sorted_folders[:num_folders]  # Process only the latest two folders
-    folders_to_process = [x for x in folders_to_process if x[0]!="Darwin 2024 BP"]#TODO: delete this
+    folders_to_process = [x for x in folders_to_process if x[0] not in ["Darwin 2024 BP"]]#TODO: delete this
     logging.info(f"Folders to be processed: {folders_to_process}")
 
-    ## Create the embedding model
+    # Create the embedding model
     embed_model = HuggingFaceEmbedding(
         model_name="intfloat/multilingual-e5-base",
         device="cuda" if torch.cuda.is_available() else "cpu"
@@ -178,11 +178,12 @@ def process_google_drive(credentials, parent_folder_id):
                 logging.info(f"Processing all documents in folder: {folder_name} (no last update time found)")
 
         documents, files_not_load = gdrive_reader.load_data(folder_id=folder_id, query_string=query)
+
         with open(f'excluded_files_{year}.pkl', 'wb') as fp:
             pickle.dump(files_not_load, fp)
-
         logging.info(f"Loaded {len(documents)} documents from Gdrive ")
         if documents:
+            logging.info("documents exist!")
             # Process each document to update metadata
             for doc in documents:
                 # Get the subfolder name
@@ -198,7 +199,6 @@ def process_google_drive(credentials, parent_folder_id):
                     'modified at': doc.metadata.get('modified at'),
                 }
                 doc.metadata = new_metadata
-            import pickle
             with open(f'documents_{year}.pkl', 'wb') as f:
                 pickle.dump(documents, f)
             # all_docs.append(set_to_list(documents))
@@ -218,7 +218,7 @@ def process_google_drive(credentials, parent_folder_id):
     all_processed = [x[0] for x in folders_to_process]+processed_folders
     write_processed_folders(list(set(all_processed)))
     write_last_update_time(datetime.now(taipei_tz))
-
+    return all_docs
 def main():
     credentials = authenticate_google_drive()
     # folder_id ='1UzLrdbCOVIQYUesYpw3z2KOxs5bfU18-'  #BP_test_olivia/Darwin 2023 BP/swif <-- success processed 1 documents
@@ -229,8 +229,8 @@ def main():
     # folder_id ='1flkALOgcO9X_oSmp9i-Hdb1xtzseJRsd' #BP_test_olivia  <-- no errors but processed zero documents
     folder_id ='1p5_PIIvXEGckI1LP-Tvnn3Ajt0XDCtVH' #BP
     all_docs = process_google_drive(credentials, folder_id)
-    with open('all_docs.pickle', 'wb') as handle:
-        pickle.dump(all_docs, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    # with open('all_docs.pickle', 'wb') as handle:
+    #     pickle.dump(all_docs, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 if __name__ == "__main__":
     main()

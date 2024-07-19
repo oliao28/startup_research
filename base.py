@@ -3,7 +3,6 @@ import json
 import logging
 import os
 import pickle
-
 import tempfile
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
@@ -330,6 +329,7 @@ class GoogleDriveReader(BasePydanticReader):
                             else "Shared Drive"
                         )
                         if item["mimeType"]!='application/vnd.google-apps.shortcut':
+                            # print(f"item metadata key = {list(item.keys())}") # TODO: delete. This doesn't contain size for some files
                             full_path = f"{current_path}/{item['name']}" if current_path else item['name']
                             fileids_meta.append(
                                 (
@@ -340,7 +340,7 @@ class GoogleDriveReader(BasePydanticReader):
                                     item["createdTime"],
                                     item["modifiedTime"],
                                     full_path,
-                                    item["size"],
+                                    item.get("size") if item.get("size") else 0,
                                 )
                             )
             else:
@@ -370,7 +370,7 @@ class GoogleDriveReader(BasePydanticReader):
                             file["createdTime"],
                             file["modifiedTime"],
                             full_path,
-                            file["size"],
+                            file.get("size") if file.get("size") else 0,
                         )
                     )
             return fileids_meta
@@ -380,7 +380,7 @@ class GoogleDriveReader(BasePydanticReader):
                 f"An error occurred while getting fileids metadata: {e}", exc_info=True
             )
 
-    def _download_file(self, fileid: str, filename: str) -> str:
+    def _download_file(self, fileid: str, filename: str, filemimetype: str, filesuffix: str) -> str:
         """Download the file with fileid and filename
         Args:
             fileid: file id of the file in google drive
@@ -400,10 +400,12 @@ class GoogleDriveReader(BasePydanticReader):
             #     creds = self._get_credentials()
 
             service = build("drive", "v3", credentials=creds, cache_discovery=False)
-            file = service.files().get(fileId=fileid, supportsAllDrives=True).execute()
-            if file["mimeType"] in self._mimetypes:
-                download_mimetype = self._mimetypes[file["mimeType"]]["mimetype"]
-                download_extension = self._mimetypes[file["mimeType"]]["extension"]
+            # file = service.files().get(fileId=fileid, supportsAllDrives=True).execute() ## WHY?? Just to get file["mimeType"]?
+            print(f"_download_file filesuffix = {filesuffix}")
+            if filemimetype in self._mimetypes:
+            # if file["mimeType"] in self._mimetypes:
+                download_mimetype = self._mimetypes[filemimetype]["mimetype"]
+                download_extension = self._mimetypes[filemimetype]["extension"]
                 new_file_name = filename + download_extension
 
                 # Download and convert file
@@ -415,7 +417,7 @@ class GoogleDriveReader(BasePydanticReader):
 
                 # Download file without conversion
                 request = service.files().get_media(fileId=fileid)
-
+            print(f"_download_file request = {list(request.keys())}")
             # Download file data
             file_data = BytesIO()
             downloader = MediaIoBaseDownload(file_data, request)
@@ -468,8 +470,8 @@ class GoogleDriveReader(BasePydanticReader):
                             "file suffix": file_suffix,
                             "file size": file_size,
                         }
-                    else:
-                        final_filepath = self._download_file(fileid, filepath)
+                    else: #this should capture many pptx file without suffix
+                        final_filepath = self._download_file(fileid, filepath, fileid_meta[3], file_suffix)
                         # Add metadata of the file to metadata dictionary
                         metadata[final_filepath] = {
                             "file id": fileid_meta[0],
@@ -483,6 +485,7 @@ class GoogleDriveReader(BasePydanticReader):
                         }
 
                 if metadata:
+                    print(f'{fileid_meta[0]}, {fileid_meta[2]}')
                     loader = SimpleDirectoryReader(
                         temp_dir,
                         file_extractor=self.file_extractor,
@@ -560,8 +563,6 @@ class GoogleDriveReader(BasePydanticReader):
                 mime_types=mime_types,
                 query_string=query_string,
             )
-            with open('fileids_meta.pickle', 'wb') as handle:
-                pickle.dump(fileids_meta, handle, protocol=pickle.HIGHEST_PROTOCOL)
             return self._load_data_fileids_meta(fileids_meta)
         except Exception as e:
             logger.error(
