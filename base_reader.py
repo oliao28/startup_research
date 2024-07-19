@@ -89,6 +89,7 @@ def _try_loading_included_file_formats() -> Dict[str, Type[BaseReader]]:
         ".xls": PandasExcelReader,
         ".xlsx": PandasExcelReader,
         ".doc": UnstructuredReader,
+        ".gs": UnstructuredReader,
     }
     return default_file_reader_cls
 

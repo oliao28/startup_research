@@ -15,8 +15,9 @@ from llama_index.core.bridge.pydantic import Field, PrivateAttr
 from llama_index.core.readers.base import BasePydanticReader, BaseReader
 from llama_index.core.schema import Document
 from googleapiclient.errors import HttpError
-from base_reader import SimpleDirectoryReader ##copied the base file from llama_index to fix some errors
-from config import do_not_process_suffix
+from base_reader import SimpleDirectoryReader  ##copied the base file from llama_index to fix some errors
+from config import do_not_process_suffix, mimetype_suffix
+
 logger = logging.getLogger(__name__)
 
 # Set up a separate file handler for specific error messages
@@ -82,20 +83,20 @@ class GoogleDriveReader(BasePydanticReader):
     _mimetypes: dict = PrivateAttr()
 
     def __init__(
-        self,
-        drive_id: Optional[str] = None,
-        folder_id: Optional[str] = None,
-        file_ids: Optional[List[str]] = None,
-        query_string: Optional[str] = None,
-        is_cloud: Optional[bool] = False,
-        credentials_path: str = "credentials.json",
-        token_path: str = "token.json",
-        service_account_key_path: str = "service_account_key.json",
-        client_config: Optional[dict] = None,
-        authorized_user_info: Optional[dict] = None,
-        service_account_key: Optional[dict] = None,
-        file_extractor: Optional[Dict[str, Union[str, BaseReader]]] = None,
-        **kwargs: Any,
+            self,
+            drive_id: Optional[str] = None,
+            folder_id: Optional[str] = None,
+            file_ids: Optional[List[str]] = None,
+            query_string: Optional[str] = None,
+            is_cloud: Optional[bool] = False,
+            credentials_path: str = "credentials.json",
+            token_path: str = "token.json",
+            service_account_key_path: str = "service_account_key.json",
+            client_config: Optional[dict] = None,
+            authorized_user_info: Optional[dict] = None,
+            service_account_key: Optional[dict] = None,
+            file_extractor: Optional[Dict[str, Union[str, BaseReader]]] = None,
+            **kwargs: Any,
     ) -> None:
         """Initialize with parameters."""
         # Read the file contents so they can be serialized and stored.
@@ -112,9 +113,9 @@ class GoogleDriveReader(BasePydanticReader):
                 service_account_key = json.load(json_file)
 
         if (
-            client_config is None
-            and service_account_key is None
-            and authorized_user_info is None
+                client_config is None
+                and service_account_key is None
+                and authorized_user_info is None
         ):
             raise ValueError(
                 "Must specify `client_config` or `service_account_key` or `authorized_user_info`."
@@ -175,7 +176,7 @@ class GoogleDriveReader(BasePydanticReader):
                 self.authorized_user_info, SCOPES
             )
         elif self.service_account_key is not None:
-            creds=service_account.Credentials.from_service_account_info(
+            creds = service_account.Credentials.from_service_account_info(
                 self.service_account_key, scopes=SCOPES
             )
             return creds
@@ -208,14 +209,15 @@ class GoogleDriveReader(BasePydanticReader):
             # return '/'.join(path)
         except HttpError:
             return "Path not accessible"
+
     def _get_fileids_meta(
-        self,
-        drive_id: Optional[str] = None,
-        folder_id: Optional[str] = None,
-        file_id: Optional[str] = None,
-        mime_types: Optional[List[str]] = None,
-        query_string: Optional[str] = None,
-        current_path: str = ""
+            self,
+            drive_id: Optional[str] = None,
+            folder_id: Optional[str] = None,
+            file_id: Optional[str] = None,
+            mime_types: Optional[List[str]] = None,
+            query_string: Optional[str] = None,
+            current_path: str = ""
     ) -> List[List[str]]:
         """Get file ids present in folder/ file id
         Args:
@@ -254,8 +256,8 @@ class GoogleDriveReader(BasePydanticReader):
                     # to keep the recursiveness, we need to add folder_mime_type to the mime_types
                     # Change the parent folder of query_string
                     query_string_split = query_string.split()
-                    if query_string_split[2]=='parents':
-                        query_string_split[0] = "'"+folder_id+"'"
+                    if query_string_split[2] == 'parents':
+                        query_string_split[0] = "'" + folder_id + "'"
                     query_string = ' '.join(query_string_split)
                     query += (
                         f" and ((mimeType='{folder_mime_type}') or ({query_string}))"
@@ -324,7 +326,7 @@ class GoogleDriveReader(BasePydanticReader):
                             if not is_shared_drive
                             else "Shared Drive"
                         )
-                        if item["mimeType"]!='application/vnd.google-apps.shortcut':
+                        if item["mimeType"] != 'application/vnd.google-apps.shortcut':
                             full_path = f"{current_path}/{item['name']}" if current_path else item['name']
                             fileids_meta.append(
                                 (
@@ -397,14 +399,13 @@ class GoogleDriveReader(BasePydanticReader):
                 download_mimetype = self._mimetypes[filemimetype]["mimetype"]
                 download_extension = self._mimetypes[filemimetype]["extension"]
                 new_file_name = filename + download_extension
-
                 # Download and convert file
                 request = service.files().export_media(
                     fileId=fileid, mimeType=download_mimetype
                 )
             else:
                 new_file_name = filename
-
+                print(f"new_file_name is filename {filename}")
                 # Download file without conversion
                 request = service.files().get_media(fileId=fileid)
             # print(f'_download_file request is {list(request.keys())}') <-- NEVER DO THIS. IT BREAKS REQUEST SOMEHOW
@@ -415,7 +416,6 @@ class GoogleDriveReader(BasePydanticReader):
 
             while not done:
                 status, done = downloader.next_chunk()
-
             # Save the downloaded file
             with open(new_file_name, "wb") as f:
                 f.write(file_data.getvalue())
@@ -424,7 +424,6 @@ class GoogleDriveReader(BasePydanticReader):
             file_logger.error(
                 f"An error occurred while downloading file: {e}, {fileid}", exc_info=True
             )
-
 
     def _load_data_fileids_meta(self, fileids_meta: List[List[str]]) -> List[Document]:
         """Load data from fileids metadata
@@ -442,7 +441,7 @@ class GoogleDriveReader(BasePydanticReader):
 
                 temp_dir = Path(temp_dir)
                 metadata = {}
-                files_not_load={}
+                files_not_load = {}
                 for fileid_meta in fileids_meta:
                     # Download files and name them with their fileid
                     fileid = fileid_meta[0]
@@ -450,33 +449,43 @@ class GoogleDriveReader(BasePydanticReader):
                     filepath = os.path.join(temp_dir, fileid)
                     file_suffix = temp_dir.suffix.lower()
                     if file_suffix is None or file_suffix == '':  # this should capture pdf files. Note that pdfparse will sepearate each page into a doc
-                        suffix = fileid_meta[2].split('.')[-1].lower() #grab it from file name
-                        if len(suffix)>5:
-                            #use mimetype to infer
-                            print(f'mimetype is {fileid_meta[3]}')
-                        file_suffix = '.' + str(suffix or '') # if suffix is None, file_suffix is default to '.'. This ensures file_suffix can't be None
-                    # Only add the metadata of the files we want to process to the list
-                    if file_suffix in do_not_process_suffix or float(file_size) > 10**7: #10MB
-                        files_not_load[fileid]={
+                        # use file name to infer suffix
+                        suffix = fileid_meta[2].split('.')[-1].lower()
+                        file_suffix = '.' + str(
+                            suffix or '')  # if suffix is None, file_suffix is default to '.'. This ensures file_suffix can't be None
+                        if len(suffix) > 5 and fileid_meta[3] in mimetype_suffix:
+                            file_suffix = mimetype_suffix[fileid_meta[3]]
+                    if file_suffix in do_not_process_suffix or float(file_size) > 10 ** 7:  #10MB
+                        files_not_load[fileid] = {
                             "file id": fileid_meta[0],
                             "file name": fileid_meta[2],
                             "full path": fileid_meta[6],
                             "file suffix": file_suffix,
                             "file size": file_size,
                         }
-                    else: #this should capture many pptx file without suffix
+                    else:
+                        # Only add the metadata of the files we want to process to the list
                         final_filepath = self._download_file(fileid, filepath, fileid_meta[3])
-                        # Add metadata of the file to metadata dictionary
-                        metadata[final_filepath] = {
-                            "file id": fileid_meta[0],
-                            "author": fileid_meta[1],
-                            "file name": fileid_meta[2],
-                            "mime type": fileid_meta[3],
-                            "created at": fileid_meta[4],
-                            "modified at": fileid_meta[5],
-                            "full path": fileid_meta[6],
-                            "file suffix": file_suffix,  #this has to be a string, can't be None
-                        }
+                        if final_filepath:
+                            # Add metadata of the file to metadata dictionary
+                            metadata[final_filepath] = {
+                                "file id": fileid_meta[0],
+                                "author": fileid_meta[1],
+                                "file name": fileid_meta[2],
+                                "mime type": fileid_meta[3],
+                                "created at": fileid_meta[4],
+                                "modified at": fileid_meta[5],
+                                "full path": fileid_meta[6],
+                                "file suffix": file_suffix,  #this has to be a string, can't be None
+                            }
+                        else:
+                            files_not_load[fileid] = {
+                                "file id": fileid_meta[0],
+                                "file name": fileid_meta[2],
+                                "full path": fileid_meta[6],
+                                "file suffix": file_suffix,
+                                "file size": file_size,
+                            }
                 if metadata:
                     loader = SimpleDirectoryReader(
                         temp_dir,
@@ -498,11 +507,11 @@ class GoogleDriveReader(BasePydanticReader):
             )
 
     def _load_from_file_ids(
-        self,
-        drive_id: Optional[str],
-        file_ids: List[str],
-        mime_types: Optional[List[str]],
-        query_string: Optional[str],
+            self,
+            drive_id: Optional[str],
+            file_ids: List[str],
+            mime_types: Optional[List[str]],
+            query_string: Optional[str],
     ) -> List[Document]:
         """Load data from file ids
         Args:
@@ -531,11 +540,11 @@ class GoogleDriveReader(BasePydanticReader):
             )
 
     def _load_from_folder(
-        self,
-        drive_id: Optional[str],
-        folder_id: str,
-        mime_types: Optional[List[str]],
-        query_string: Optional[str],
+            self,
+            drive_id: Optional[str],
+            folder_id: str,
+            mime_types: Optional[List[str]],
+            query_string: Optional[str],
     ) -> List[Document]:
         """Load data from folder_id.
 
@@ -562,12 +571,12 @@ class GoogleDriveReader(BasePydanticReader):
             )
 
     def load_data(
-        self,
-        drive_id: Optional[str] = None,
-        folder_id: Optional[str] = None,
-        file_ids: Optional[List[str]] = None,
-        mime_types: Optional[List[str]] = None,  # Deprecated
-        query_string: Optional[str] = None,
+            self,
+            drive_id: Optional[str] = None,
+            folder_id: Optional[str] = None,
+            file_ids: Optional[List[str]] = None,
+            mime_types: Optional[List[str]] = None,  # Deprecated
+            query_string: Optional[str] = None,
     ) -> List[Document]:
         """Load data from the folder id or file ids.
 

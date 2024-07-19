@@ -71,3 +71,8 @@ walk me through your calculation and thought process step by step.
 """
 
 do_not_process_suffix = [".hwp",".mp3",".mp4",".epub",".mbox",".ipynb", ".heic", ".xml",  ".zip"]
+mimetype_suffix = {
+    "application/vnd.google-apps.document": ".doc",
+    "application/vnd.google-apps.spreadsheet": ".xls",
+    "application/vnd.google-apps.presentation": ".gs",
+}
