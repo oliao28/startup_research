@@ -24,15 +24,6 @@ load_dotenv(find_dotenv())
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Set up a separate file handler for specific error messages
-file_handler = logging.FileHandler('error_indexing_file.txt')
-file_handler.setLevel(logging.ERROR)
-file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s: %(message)s'))
-
-# Create a separate logger for file logging
-file_index_logger = logging.getLogger('file_index_logger')
-file_index_logger.addHandler(file_handler)
-file_index_logger.setLevel(logging.ERROR)
 
 # Set up Google Drive API
 SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
@@ -143,7 +134,11 @@ def set_to_list(item):
 
 def get_new_metadata(metadata, year):
     file_path = metadata.get('full path')
-    company = file_path.split("/")[0]
+    if isinstance(file_path, list):
+        company = file_path[2]
+        year = file_path[1].split()[1]
+    else:
+        company = file_path.split("/")[0]
     # Update metadata
     new_metadata = {
         'file name': metadata.get('file name'),
@@ -182,19 +177,26 @@ def get_folders_to_process(drive_service, parent_folder_id):
         key=lambda x: int(x[0].split()[1]),
         reverse=True
     )
-    num_folders = 2 if processed_folders else len(sorted_folders)
-    folders_to_process = sorted_folders[:num_folders]  # Process only the latest two folders
-    folders_to_process = [x for x in folders_to_process if x[0] not in ["Darwin 2024 BP", "Darwin 2023 BP", "Darwin 2022 BP"]]  #TODO: delete this
+    # num_folders = 2 if processed_folders else len(sorted_folders) #TODO: reverse this
+    # folders_to_process = sorted_folders[:num_folders]  # Process only the latest two folders #TODO: reverse this
+    folders_to_process = [x for x in sorted_folders if x[0] not in processed_folders]
     logging.info(f"Folders to be processed: {folders_to_process}")
     return processed_folders, folders_to_process
 
 
 def create_pinecone_index(pinecone_index, documents, folder_name):
-    vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
+    # Set up a separate file handler for specific error messages
+    file_handler = logging.FileHandler('error_indexing_file.txt')
+    file_handler.setLevel(logging.ERROR)
+    file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s: %(message)s'))
+    # Create a separate logger for file logging
+    file_index_logger = logging.getLogger('file_index_logger')
+    file_index_logger.addHandler(file_handler)
+    file_index_logger.setLevel(logging.ERROR)
+    vector_store = PineconeVectorStore(pinecone_index=pinecone_index, remove_text_from_metadata = True)
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
     try:
-        VectorStoreIndex.from_documents(documents, storage_context=storage_context,
-                                        embed_model=embed_model)
+        VectorStoreIndex.from_documents(documents, storage_context=storage_context)
         logging.info(f"Processed {len(documents)} documents in folder: {folder_name}")
     except Exception as e:
         file_index_logger.error(f"Error indexing the documents: {e}")
@@ -211,7 +213,7 @@ def process_google_drive(credentials, parent_folder_id):
         model_name="intfloat/multilingual-e5-base",
         device="cuda" if torch.cuda.is_available() else "cpu"
     )
-    Settings.embed_model = embed_model
+    Settings.embed_model = embed_model #Settings is a bundle of commonly used resources used during the indexing and querying stage in a LlamaIndex pipeline/application.
     all_docs = []
     for folder_name, folder_id in folders_to_process:
         year = folder_name.split()[1]  # Extract year from folder name

@@ -217,7 +217,8 @@ class GoogleDriveReader(BasePydanticReader):
             file_id: Optional[str] = None,
             mime_types: Optional[List[str]] = None,
             query_string: Optional[str] = None,
-            current_path: str = ""
+            current_path: str = "",
+            from_folder: bool = True,
     ) -> List[List[str]]:
         """Get file ids present in folder/ file id
         Args:
@@ -298,6 +299,7 @@ class GoogleDriveReader(BasePydanticReader):
                         break
                 for item in items:
                     if item["mimeType"] == folder_mime_type:
+                        print("surprising!")
                         new_path = f"{current_path}/{item['name']}" if current_path else item['name']
                         if drive_id:
                             fileids_meta.extend(
@@ -306,7 +308,8 @@ class GoogleDriveReader(BasePydanticReader):
                                     folder_id=item["id"],
                                     mime_types=mime_types,
                                     query_string=query_string,
-                                    current_path=new_path
+                                    current_path=new_path,
+                                    from_folder=True,
                                 )
                             )
                         else:
@@ -315,7 +318,8 @@ class GoogleDriveReader(BasePydanticReader):
                                     folder_id=item["id"],
                                     mime_types=mime_types,
                                     query_string=query_string,
-                                    current_path=new_path
+                                    current_path=new_path,
+                                    from_folder=True,
                                 )
                             )
                     else:
@@ -327,7 +331,10 @@ class GoogleDriveReader(BasePydanticReader):
                             else "Shared Drive"
                         )
                         if item["mimeType"] != 'application/vnd.google-apps.shortcut':
-                            full_path = f"{current_path}/{item['name']}" if current_path else item['name']
+                            if from_folder:
+                                full_path = f"{current_path}/{item['name']}" if current_path else item['name']
+                            else:
+                                full_path = self._get_file_path(item, service)
                             fileids_meta.append(
                                 (
                                     item["id"],
@@ -356,8 +363,10 @@ class GoogleDriveReader(BasePydanticReader):
                     else "Shared Drive"
                 )
                 if file["mimeType"] != 'application/vnd.google-apps.shortcut':
-                    full_path = f"{current_path}/{file['name']}" if current_path else file['name']
-                    # full_path = self._get_file_path(file, service) #TODO: switch it back
+                    if from_folder:
+                        full_path = f"{current_path}/{file['name']}" if current_path else file['name']
+                    else:
+                        full_path = self._get_file_path(file, service)
                     fileids_meta.append(
                         (
                             file["id"],
@@ -405,14 +414,15 @@ class GoogleDriveReader(BasePydanticReader):
                 )
             else:
                 new_file_name = filename
+                print(f'new_file_name 1 is {new_file_name}')
                 # Download file without conversion
                 request = service.files().get_media(fileId=fileid)
             # print(f'_download_file request is {list(request.keys())}') <-- NEVER DO THIS. IT BREAKS REQUEST SOMEHOW
             # Download file data
             file_data = BytesIO()
             downloader = MediaIoBaseDownload(file_data, request)
+            print(f'request.http is {request.uri}')
             done = False
-
             while not done:
                 status, done = downloader.next_chunk()
             # Save the downloaded file
@@ -455,6 +465,7 @@ class GoogleDriveReader(BasePydanticReader):
                         if len(suffix) > 5 and fileid_meta[3] in mimetype_suffix:
                             file_suffix = mimetype_suffix[fileid_meta[3]]
                     if file_suffix in do_not_process_suffix or float(file_size) > 10 ** 7:  #10MB
+                        print(f'{fileid} is not loaded because of wrong suffix or too big')
                         files_not_load[fileid] = {
                             "file id": fileid_meta[0],
                             "file name": fileid_meta[2],
@@ -478,6 +489,7 @@ class GoogleDriveReader(BasePydanticReader):
                                 "file suffix": file_suffix,  #this has to be a string, can't be None
                             }
                         else:
+                            print(f'{fileid} is not loaded because final_filepath is none')
                             files_not_load[fileid] = {
                                 "file id": fileid_meta[0],
                                 "file name": fileid_meta[2],
@@ -530,6 +542,7 @@ class GoogleDriveReader(BasePydanticReader):
                         file_id=file_id,
                         mime_types=mime_types,
                         query_string=query_string,
+                        from_folder=False,
                     )
                 )
             return self._load_data_fileids_meta(fileids_meta)
@@ -562,6 +575,7 @@ class GoogleDriveReader(BasePydanticReader):
                 folder_id=folder_id,
                 mime_types=mime_types,
                 query_string=query_string,
+                from_folder=True,
             )
             return self._load_data_fileids_meta(fileids_meta)
         except Exception as e:
