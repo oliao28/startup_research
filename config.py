@@ -74,5 +74,5 @@ do_not_process_suffix = [".hwp",".mp3",".mp4",".epub",".mbox",".ipynb", ".heic",
 mimetype_suffix = {
     "application/vnd.google-apps.document": ".doc",
     "application/vnd.google-apps.spreadsheet": ".xls",
-    "application/vnd.google-apps.presentation": ".gs",
+    "application/vnd.google-apps.presentation": ".ppt",
 }

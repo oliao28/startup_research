@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="Clean up process_google_drive into smaller sub functions.">
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="remove text from the metadata of Pinecone vector">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/update_pinecone.py" beforeDir="false" afterPath="$PROJECT_DIR$/update_pinecone.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base_reader.py" beforeDir="false" afterPath="$PROJECT_DIR$/base_reader.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,29 +43,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Python.app.executor": "Run",
-    "Python.base.executor": "Debug",
-    "Python.base_reader.executor": "Run",
-    "Python.reload_gdrive_file.executor": "Debug",
-    "Python.test.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "/Users/oywliao/Downloads",
-    "settings.editor.selected.configurable": "vcs.Subversion",
-    "two.files.diff.last.used.file": "/Users/oywliao/Documents/Finance research/reload_gdrive_file.py"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Python.app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.base.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.base_reader.executor&quot;: &quot;Run&quot;,
+    &quot;Python.reload_gdrive_file.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/oywliao/Downloads&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;vcs.Subversion&quot;,
+    &quot;two.files.diff.last.used.file&quot;: &quot;/Users/oywliao/Documents/Finance research/reload_gdrive_file.py&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
-      "Python",
-      "TEXT",
-      "yaml"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;Python&quot;,
+      &quot;TEXT&quot;,
+      &quot;yaml&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$USER_HOME$/Downloads" />
@@ -437,7 +438,15 @@
       <option name="project" value="LOCAL" />
       <updated>1721406096955</updated>
     </task>
-    <option name="localTasksCounter" value="44" />
+    <task id="LOCAL-00044" summary="remove text from the metadata of Pinecone vector">
+      <option name="closed" value="true" />
+      <created>1721573738872</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1721573738872</updated>
+    </task>
+    <option name="localTasksCounter" value="45" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -467,7 +476,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="change the secret keys" />
     <MESSAGE value="change the app name" />
     <MESSAGE value="fix affinity api key" />
     <MESSAGE value="fix minor errors" />
@@ -492,7 +500,8 @@
     <MESSAGE value="Fix file type vs file suffix" />
     <MESSAGE value="infer file types for more files without suffix. Use UnstructureReader for google slides that don't have a suffix and don't work well with pptxReader" />
     <MESSAGE value="Clean up process_google_drive into smaller sub functions." />
-    <option name="LAST_COMMIT_MESSAGE" value="Clean up process_google_drive into smaller sub functions." />
+    <MESSAGE value="remove text from the metadata of Pinecone vector" />
+    <option name="LAST_COMMIT_MESSAGE" value="remove text from the metadata of Pinecone vector" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

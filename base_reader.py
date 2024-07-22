@@ -72,7 +72,6 @@ def _try_loading_included_file_formats() -> Dict[str, Type[BaseReader]]:
         ".pdf": PyMuPDFReader,
         ".docx": DocxReader,
         ".pptx": PptxReader,
-        ".ppt": PptxReader,
         ".pptm": PptxReader,
         ".gif": ImageReader,
         ".jpg": ImageReader,
@@ -90,6 +89,7 @@ def _try_loading_included_file_formats() -> Dict[str, Type[BaseReader]]:
         ".xlsx": PandasExcelReader,
         ".doc": UnstructuredReader,
         ".gs": UnstructuredReader,
+        ".ppt": UnstructuredReader,
     }
     return default_file_reader_cls
 
@@ -144,7 +144,6 @@ def default_file_metadata_func(  #This is not used by GoogleReader
         "last_modified_date": last_modified_date,
         "last_accessed_date": last_accessed_date,
     }
-    print(f'default_file_metadata_func is {default_meta}')
 
     # Return not null value
     return {
@@ -554,7 +553,7 @@ class SimpleDirectoryReader(BaseReader, ResourcesReaderMixin, FileSystemReaderMi
                     f"Failed to load file {input_file} with error: {e}. Skipping...",
                     flush=True,
                 )
-                return []
+                return [], metadata
 
             # iterate over docs if needed
             if filename_as_id:
@@ -574,7 +573,7 @@ class SimpleDirectoryReader(BaseReader, ResourcesReaderMixin, FileSystemReaderMi
 
             documents.append(doc)
 
-        return documents
+        return documents, None
 
     async def aload_file(self, input_file: Path) -> List[Document]:
         """Load file asynchronously."""
@@ -658,7 +657,7 @@ class SimpleDirectoryReader(BaseReader, ResourcesReaderMixin, FileSystemReaderMi
             List[Document]: A list of documents.
         """
         documents = []
-
+        fails = []
         files_to_process = self.input_files
         fs = fs or self.fs
 
@@ -690,8 +689,7 @@ class SimpleDirectoryReader(BaseReader, ResourcesReaderMixin, FileSystemReaderMi
                     self.input_files, desc="Loading files", unit="file"
                 )
             for input_file in files_to_process:
-                documents.extend(
-                    SimpleDirectoryReader.load_file(
+                success, fail = SimpleDirectoryReader.load_file(
                         input_file=input_file,
                         file_metadata=self.file_metadata,
                         file_extractor=self.file_extractor,
@@ -700,10 +698,13 @@ class SimpleDirectoryReader(BaseReader, ResourcesReaderMixin, FileSystemReaderMi
                         errors=self.errors,
                         raise_on_error=self.raise_on_error,
                         fs=fs,
-                    )
                 )
+                if success:
+                    documents.extend(success)
+                else:
+                    fails.append(fail)
 
-        return self._exclude_metadata(documents)
+        return self._exclude_metadata(documents), fails
 
     async def aload_data(
         self,

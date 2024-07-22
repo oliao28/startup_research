@@ -142,19 +142,53 @@ class GoogleDriveReader(BasePydanticReader):
             "application/vnd.google-apps.document": {
                 "mimetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 "extension": ".docx",
+                "new_uri":"https://docs.google.com/document/export?exportFormat=docx&id=",
+            },
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {
+                "mimetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                "extension": ".docx",
+                "new_uri": "https://docs.google.com/document/export?exportFormat=docx&id=",
             },
             "application/vnd.google-apps.spreadsheet": {
                 "mimetype": (
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 ),
                 "extension": ".xlsx",
+                "new_uri": "https://docs.google.com/spreadsheets/export?exportFormat=xlsx&id=",
+            },
+            "application/msword": {
+                "mimetype": "application/msword",
+                "extension": ".doc",
+                "new_uri": "https://docs.google.com/document/export?exportFormat=doc&id=",
+            },
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                "mimetype": (
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                ),
+                "extension": ".xlsx",
+                "new_uri": "https://docs.google.com/spreadsheets/export?exportFormat=xlsx&id=",
             },
             "application/vnd.google-apps.presentation": {
                 "mimetype": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
                 "extension": ".pptx",
+                "new_uri":"https://docs.google.com/presentation/export?exportFormat=pptx&id=",
+            },
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation": {
+                "mimetype": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                "extension": ".pptx",
+                "new_uri": "https://docs.google.com/presentation/export?exportFormat=pptx&id=",
+            },
+            "application/vnd.ms-powerpoint": {
+                "mimetype": "application/vnd.ms-powerpoint",
+                "extension": ".ppt",
+                "new_uri": "https://docs.google.com/presentation/export?exportFormat=ppt&id=",
+            },
+            "application/pdf": {
+                "mimetype": "application/pdf",
+                "extension": ".pdf",
+                "new_uri":"https://drive.usercontent.google.com/u/0/uc?export=download&id=",
             },
         }
-
     @classmethod
     def class_name(cls) -> str:
         return "GoogleDriveReader"
@@ -299,7 +333,6 @@ class GoogleDriveReader(BasePydanticReader):
                         break
                 for item in items:
                     if item["mimeType"] == folder_mime_type:
-                        print("surprising!")
                         new_path = f"{current_path}/{item['name']}" if current_path else item['name']
                         if drive_id:
                             fileids_meta.extend(
@@ -386,7 +419,7 @@ class GoogleDriveReader(BasePydanticReader):
                 f"An error occurred while getting fileids metadata: {e}", exc_info=True
             )
 
-    def _download_file(self, fileid: str, filename: str, filemimetype: str) -> str:
+    def _download_file(self, fileid: str, filename: str, filemimetype: str, retry: bool=False) -> str:
         """Download the file with fileid and filename
         Args:
             fileid: file id of the file in google drive
@@ -408,23 +441,29 @@ class GoogleDriveReader(BasePydanticReader):
                 download_mimetype = self._mimetypes[filemimetype]["mimetype"]
                 download_extension = self._mimetypes[filemimetype]["extension"]
                 new_file_name = filename + download_extension
+                # print(f'new_file_name is {new_file_name}')
                 # Download and convert file
                 request = service.files().export_media(
                     fileId=fileid, mimeType=download_mimetype
                 )
             else:
                 new_file_name = filename
-                print(f'new_file_name 1 is {new_file_name}')
                 # Download file without conversion
                 request = service.files().get_media(fileId=fileid)
             # print(f'_download_file request is {list(request.keys())}') <-- NEVER DO THIS. IT BREAKS REQUEST SOMEHOW
+            if retry:
+                if filemimetype in self._mimetypes:
+                    request.uri=self._mimetypes[filemimetype]["new_uri"]+fileid
+                else:
+                    print(f'{fileid} is retried, but of unknown mimetype {filemimetype}')
+                    return None
             # Download file data
             file_data = BytesIO()
             downloader = MediaIoBaseDownload(file_data, request)
-            print(f'request.http is {request.uri}')
             done = False
             while not done:
                 status, done = downloader.next_chunk()
+                #when error happens during this step, it'll just break and return None. I'm not able to capture the error before or after this stop
             # Save the downloaded file
             with open(new_file_name, "wb") as f:
                 f.write(file_data.getvalue())
@@ -464,18 +503,24 @@ class GoogleDriveReader(BasePydanticReader):
                             suffix or '')  # if suffix is None, file_suffix is default to '.'. This ensures file_suffix can't be None
                         if len(suffix) > 5 and fileid_meta[3] in mimetype_suffix:
                             file_suffix = mimetype_suffix[fileid_meta[3]]
-                    if file_suffix in do_not_process_suffix or float(file_size) > 10 ** 7:  #10MB
-                        print(f'{fileid} is not loaded because of wrong suffix or too big')
+                    if file_suffix in do_not_process_suffix :  #10MB
+                        print(f'{fileid} is not loaded because of wrong suffix')
                         files_not_load[fileid] = {
                             "file id": fileid_meta[0],
                             "file name": fileid_meta[2],
                             "full path": fileid_meta[6],
                             "file suffix": file_suffix,
                             "file size": file_size,
+                            "reason": "wrong file type"
                         }
                     else:
                         # Only add the metadata of the files we want to process to the list
-                        final_filepath = self._download_file(fileid, filepath, fileid_meta[3])
+                        if float(file_size) > 10 ** 7:
+                            final_filepath = self._download_file(fileid, filepath, fileid_meta[3], retry=True)
+                        else:
+                            final_filepath = self._download_file(fileid, filepath, fileid_meta[3])
+                            if final_filepath is None:
+                                final_filepath = self._download_file(fileid, filepath, fileid_meta[3], retry=True)
                         if final_filepath:
                             # Add metadata of the file to metadata dictionary
                             metadata[final_filepath] = {
@@ -489,13 +534,15 @@ class GoogleDriveReader(BasePydanticReader):
                                 "file suffix": file_suffix,  #this has to be a string, can't be None
                             }
                         else:
-                            print(f'{fileid} is not loaded because final_filepath is none')
+                            # this is most often due to??
+                            print(f'{fileid} is not loaded because final_filepath is none even after fixing uri')
                             files_not_load[fileid] = {
                                 "file id": fileid_meta[0],
                                 "file name": fileid_meta[2],
                                 "full path": fileid_meta[6],
                                 "file suffix": file_suffix,
                                 "file size": file_size,
+                                "reason": "final_filepath is none",
                             }
                 if metadata:
                     loader = SimpleDirectoryReader(
@@ -504,7 +551,14 @@ class GoogleDriveReader(BasePydanticReader):
                         file_metadata=get_metadata,
                     )
                     ### HERE is where loader is defined!!
-                    documents = loader.load_data()
+                    documents, fails = loader.load_data()
+                    # SimpleDirectoryReader process a batch of documents together. If any doc fail to load, it just get silently eliminated in the return
+                    # if SimpleDirectoryReader fails, write the file to files_not_load
+                    if fails:
+                        for meta in fails:
+                            # this is most often b/c mismatch in tensor dimension for pptx files
+                            meta['reason'] = 'SimpleDirectoryReader failed'
+                            files_not_load[meta.get('file id')] = meta
                     for doc in documents:
                         doc.id_ = doc.metadata.get("file id", doc.id_)
 
