@@ -123,7 +123,7 @@ with st.echo():
       finally:
         driver.quit()
 
-      if text_content and len(text_content) > 1500:
+      if text_content != None and len(text_content) > 1500:
         text_content = text_content[0:1500]
 
 
