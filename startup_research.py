@@ -12,10 +12,7 @@ from gpt_researcher import GPTResearcher
 
 import streamlit as st
 
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
+
 
 async def get_report(source: str, prompt: str, report_type: str, agent=None,role=None,config_path = None, verbose = True) -> str:
     researcher = GPTResearcher(prompt, report_type, report_source=source, config_path = config_path, agent= agent, role=role, verbose = verbose)
@@ -55,84 +52,95 @@ def combine_reports(prompt, offline, online):
     response = str(completion.choices[0].message.content)
     return response
 
-@st.cache_resource
-def get_driver():
-    return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
+with st.echo():
+    from selenium import webdriver
+    from selenium.webdriver.chrome.options import Options
+    from selenium.webdriver.chrome.service import Service
+    from webdriver_manager.chrome import ChromeDriverManager
 
-#this function is called by check_point to generate a company summary.
-def generate_summary(link):
-    options = Options()
-    options.add_argument('--disable-gpu')
-    options.add_argument('--headless')
+    @st.cache_resource
+    def get_driver():
+          return webdriver.Chrome(
+              service=Service(
+                  ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()
+              ),
+              options=options,
+          )
 
-    driver = get_driver()
+    #this function is called by check_point to generate a company summary.
+    def generate_summary(link):
+      options = Options()
+      options.add_argument('--disable-gpu')
+      options.add_argument('--headless')
 
-    try:
-      driver.get(link)
-      # Wait until the page is fully loaded
-      WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+      driver = get_driver()
 
-      # Wait for specific element to ensure page is fully loaded
-      driver.implicitly_wait(50)  # Adjust the timeout as needed
-
-      # Example: Scroll down the page
       try:
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-      except:
-        print("fail at scroll")
+        driver.get(link)
+        # Wait until the page is fully loaded
+        WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+
+        # Wait for specific element to ensure page is fully loaded
+        driver.implicitly_wait(50)  # Adjust the timeout as needed
+
+        # Example: Scroll down the page
+        try:
+          driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        except:
+          print("fail at scroll")
 
 
-      # Example: Extract text data from paragraphs
-      paragraphs = driver.find_elements(By.TAG_NAME, "p")
-      
-      print(paragraphs)
-      text_content = extract_text_from_elements(paragraphs)
+        # Example: Extract text data from paragraphs
+        paragraphs = driver.find_elements(By.TAG_NAME, "p")
+        
+        print(paragraphs)
+        text_content = extract_text_from_elements(paragraphs)
 
-      # Alternatively, you can extract from other elements like divs, spans, etc.
-      divs = driver.find_elements(By.TAG_NAME, "div")
-      text_content += extract_text_from_elements(divs)
+        # Alternatively, you can extract from other elements like divs, spans, etc.
+        divs = driver.find_elements(By.TAG_NAME, "div")
+        text_content += extract_text_from_elements(divs)
 
-      # Alternatively, you can extract from other elements like spans, etc.
-      span = driver.find_elements(By.TAG_NAME, "span")
-      text_content += extract_text_from_elements(span)
+        # Alternatively, you can extract from other elements like spans, etc.
+        span = driver.find_elements(By.TAG_NAME, "span")
+        text_content += extract_text_from_elements(span)
 
-      body = driver.find_elements(By.TAG_NAME, "body")
-      text_content += extract_text_from_elements(body)
+        body = driver.find_elements(By.TAG_NAME, "body")
+        text_content += extract_text_from_elements(body)
 
-      # Print or use text_content as needed
-      print("Extracted Text Content:")
-      print(text_content)
+        # Print or use text_content as needed
+        print("Extracted Text Content:")
+        print(text_content)
 
-      # Get the page source
-      page_source = st.code(driver.page_source)
-
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
-    finally:
-      driver.quit()
-
-    if len(text_content) > 1500:
-      text_content = text_content[0:1500]
+        # Get the page source
+        page_source = st.code(driver.page_source)
 
 
-    client = OpenAI()
+      except Exception as e:
+          print(f"An error occurred: {e}")
 
-    completion = client.chat.completions.create(
-    model="gpt-3.5-turbo",
-    messages=[
-      {"role": "system", "content": "You are a helpful assistant that explains business concepts, technical verticals, and industries for non-experts. Please return all answers as HTML."},
-      {"role": "user", "content": "Summarize the company:" + data_list[0] + ". The HTML for its website is " + text_content + "We know the following about it: " + data_list[2]},
-      {"role": "assistant", "content": " Create a 5-sentence paragraph summarizing the company with the following structure. Sentence 1: What industry does it operate in? Sentence 2: What does its’ industry or technical vertical seek to improve or sell Sentence 3: What products does the company sell? Sentence 4: What problem is this company trying to solve? Sentence 5: Who is the end-user of this company’ products?"}
-    ]
-    )
+      finally:
+        driver.quit()
 
-    response = str(completion.choices[0].message.content)
+      if len(text_content) > 1500:
+        text_content = text_content[0:1500]
 
 
-    return 
+      client = OpenAI()
+
+      completion = client.chat.completions.create(
+      model="gpt-3.5-turbo",
+      messages=[
+        {"role": "system", "content": "You are a helpful assistant that explains business concepts, technical verticals, and industries for non-experts. Please return all answers as HTML."},
+        {"role": "user", "content": "Summarize the company:" + data_list[0] + ". The HTML for its website is " + text_content + "We know the following about it: " + data_list[2]},
+        {"role": "assistant", "content": " Create a 5-sentence paragraph summarizing the company with the following structure. Sentence 1: What industry does it operate in? Sentence 2: What does its’ industry or technical vertical seek to improve or sell Sentence 3: What products does the company sell? Sentence 4: What problem is this company trying to solve? Sentence 5: Who is the end-user of this company’ products?"}
+      ]
+      )
+
+      response = str(completion.choices[0].message.content)
+
+
+      return response
 
 
 #this is the checkpoint function, it takes in a report, website, and company description
