@@ -61,21 +61,21 @@ with st.echo():
     from webdriver_manager.core.os_manager import ChromeType
 
     @st.cache_resource
-    def get_driver(options):
+    def get_driver(option):
           return webdriver.Chrome(
               service=Service(
                   ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()
               ),
-              options=options,
+              options=option,
           )
 
     #this function is called by check_point to generate a company summary.
     def generate_summary(link):
-      options = Options()
-      options.add_argument('--disable-gpu')
-      options.add_argument('--headless')
+      opts = Options()
+      opts.add_argument('--disable-gpu')
+      opts.add_argument('--headless')
 
-      driver = get_driver(options)
+      driver = get_driver(opts)
 
       try:
         driver.get(link)
