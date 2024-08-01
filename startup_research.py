@@ -61,12 +61,12 @@ with st.echo():
     from webdriver_manager.core.os_manager import ChromeType
 
     @st.cache_resource
-    def get_driver(_option):
+    def get_driver(_options):
           return webdriver.Chrome(
               service=Service(
                   ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()
               ),
-              options=_option,
+              options=_options,
           )
 
     #this function is called by check_point to generate a company summary.
