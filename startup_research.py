@@ -76,7 +76,7 @@ with st.echo():
       opts.add_argument('--headless')
 
       driver = get_driver(opts)
-
+      text_content = ""
       try:
         driver.get(link)
         # Wait until the page is fully loaded
