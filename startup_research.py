@@ -55,7 +55,7 @@ def combine_reports(prompt, offline, online):
     response = str(completion.choices[0].message.content)
     return response
 
-@st.experimental_singleton
+@st.experimental_memo
 def get_driver():
     return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
