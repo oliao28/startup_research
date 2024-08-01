@@ -123,17 +123,17 @@ with st.echo():
       finally:
         driver.quit()
 
-      if len(text_content) > 1500:
+      if text_content and len(text_content) > 1500:
         text_content = text_content[0:1500]
 
 
       client = OpenAI()
 
       completion = client.chat.completions.create(
-      model="gpt-3.5-turbo",
+      model="gpt-4o",
       messages=[
         {"role": "system", "content": "You are a helpful assistant that explains business concepts, technical verticals, and industries for non-experts. Please return all answers as HTML."},
-        {"role": "user", "content": "Summarize the company:" + data_list[0] + ". The HTML for its website is " + text_content + "We know the following about it: " + data_list[2]},
+        {"role": "user", "content": "Summarize the company:" + link + ". The HTML for its website is " + text_content},
         {"role": "assistant", "content": " Create a 5-sentence paragraph summarizing the company with the following structure. Sentence 1: What industry does it operate in? Sentence 2: What does its’ industry or technical vertical seek to improve or sell Sentence 3: What products does the company sell? Sentence 4: What problem is this company trying to solve? Sentence 5: Who is the end-user of this company’ products?"}
       ]
       )
