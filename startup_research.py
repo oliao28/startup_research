@@ -55,6 +55,9 @@ def combine_reports(prompt, offline, online):
     response = str(completion.choices[0].message.content)
     return response
 
+@st.experimental_singleton
+def get_driver():
+    return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 
 #this function is called by check_point to generate a company summary.
@@ -63,7 +66,7 @@ def generate_summary(link):
     options.add_argument('--disable-gpu')
     options.add_argument('--headless')
 
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    driver = get_driver()
 
     try:
       driver.get(link)
