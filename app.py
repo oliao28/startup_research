@@ -2,7 +2,7 @@ import streamlit as st
 import json
 import financial_analysis as fa
 from config import all_metrics, sorted_currency, research_config
-from startup_research import get_report, build_prompt, get_company_name, export_pdf, combine_reports
+from startup_research import get_report, build_prompt, get_company_name, export_pdf, combine_reports, check_point
 import os
 import re
 import asyncio
@@ -59,8 +59,6 @@ async def main():
         link = st.text_input('Add a link to a pitch deck')
         write_credentials_to_files()
 
-        pitch_text = ""
-
         if link: #if link is not empty 
             file_id = re.search(r'/d/([a-zA-Z0-9_-]+)', link).group(1)            
             export_pdf(file_id)
@@ -76,13 +74,19 @@ async def main():
                 offline_report = await get_report("local", prompt, research_config["report_type"], 
                         research_config["agent"], research_config["role"], verbose=False)
                 
+                offline_report = check_point(offline_report, website=link, summary=description)
+
                 online_report = await get_report("web", prompt, research_config["report_type"],
                         research_config["agent"], research_config["role"], verbose=False)
+                
+                online_report = check_point(online_report, website=link, summary=description)
 
                 report = combine_reports(research_config["prompt"], offline_report, online_report)
             else:
                 online_report = await get_report("web", prompt, research_config["report_type"],
                         research_config["agent"], research_config["role"], verbose=False)
+                online_report = check_point(online_report, website=link, summary=description)
+
                 report = online_report
             
             

@@ -10,6 +10,13 @@ from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
 from gpt_researcher import GPTResearcher
 
+import streamlit as st
+
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+
 async def get_report(source: str, prompt: str, report_type: str, agent=None,role=None,config_path = None, verbose = True) -> str:
     researcher = GPTResearcher(prompt, report_type, report_source=source, config_path = config_path, agent= agent, role=role, verbose = verbose)
     research_result = await researcher.conduct_research()
@@ -49,6 +56,104 @@ def combine_reports(prompt, offline, online):
     return response
 
 
+
+#this function is called by check_point to generate a company summary.
+def generate_summary(link):
+    options = Options()
+    options.add_argument('--disable-gpu')
+    options.add_argument('--headless')
+
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
+    try:
+      driver.get(link)
+      # Wait until the page is fully loaded
+      WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+
+      # Wait for specific element to ensure page is fully loaded
+      driver.implicitly_wait(50)  # Adjust the timeout as needed
+
+      # Example: Scroll down the page
+      try:
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+      except:
+        print("fail at scroll")
+
+
+      # Example: Extract text data from paragraphs
+      paragraphs = driver.find_elements(By.TAG_NAME, "p")
+      
+      print(paragraphs)
+      text_content = extract_text_from_elements(paragraphs)
+
+      # Alternatively, you can extract from other elements like divs, spans, etc.
+      divs = driver.find_elements(By.TAG_NAME, "div")
+      text_content += extract_text_from_elements(divs)
+
+      # Alternatively, you can extract from other elements like spans, etc.
+      span = driver.find_elements(By.TAG_NAME, "span")
+      text_content += extract_text_from_elements(span)
+
+      body = driver.find_elements(By.TAG_NAME, "body")
+      text_content += extract_text_from_elements(body)
+
+      # Print or use text_content as needed
+      print("Extracted Text Content:")
+      print(text_content)
+
+      # Get the page source
+      page_source = st.code(driver.page_source)
+
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+    finally:
+      driver.quit()
+
+    if len(text_content) > 1500:
+      text_content = text_content[0:1500]
+
+
+    client = OpenAI()
+
+    completion = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=[
+      {"role": "system", "content": "You are a helpful assistant that explains business concepts, technical verticals, and industries for non-experts. Please return all answers as HTML."},
+      {"role": "user", "content": "Summarize the company:" + data_list[0] + ". The HTML for its website is " + text_content + "We know the following about it: " + data_list[2]},
+      {"role": "assistant", "content": " Create a 5-sentence paragraph summarizing the company with the following structure. Sentence 1: What industry does it operate in? Sentence 2: What does its’ industry or technical vertical seek to improve or sell Sentence 3: What products does the company sell? Sentence 4: What problem is this company trying to solve? Sentence 5: Who is the end-user of this company’ products?"}
+    ]
+    )
+
+    response = str(completion.choices[0].message.content)
+
+
+    return 
+
+
+#this is the checkpoint function, it takes in a report, website, and company description
+#it then uses GPT to do online research and check the validity of any claims. 
+#It seeks to correct the information and outputs the corrected report
+#it is called after each report it made. If no description exists, it makes the description.
+def check_point(report, website, summary):
+    if summary == "":
+      summary = generate_summary(website)
+
+    client = OpenAI()
+
+    completion = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+      {"role": "system", "content": "You are a helpful assistant that fact checks reports. In addition to fact-checking, you also modify fonts, colors, and text to standardize formats"},
+      {"role": "user", "content": "Using this website: " + website + " and this company description: \'" + summary + "\' First understand what the company does. Then, going one bullet point at a time, fact check the following report \'" + report + "\'"},
+      {"role": "assistant", "content": "Stick to the same format as the report. There are eight sections: Website, Team, Market, Product, Traction, Exit Strategy, Concerns, and Deal Structure. Each section begins with factual statements regarding the section topic and is followed by a Questions section. Do not modify the Questions section."}
+    ]
+    )
+
+    response = str(completion.choices[0].message.content)
+    return response
+   
 
 #This function takes in a real_file_id and downloads the pdf to "pitchdeck.pdf"
 #there is no return value
