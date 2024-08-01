@@ -13,3 +13,4 @@ openai
 streamlit
 seleniumbase
 webdriver-manager
+selenium
