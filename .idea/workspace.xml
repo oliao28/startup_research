@@ -4,11 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="remove text from the metadata of Pinecone vector">
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="improve error logging of files failed to download from Gdrive; improve handling for minority file type and large file sizes.">
+      <change afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/base_reader.py" beforeDir="false" afterPath="$PROJECT_DIR$/base_reader.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gdrive_qna.py" beforeDir="false" afterPath="$PROJECT_DIR$/gdrive_qna.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/startup_research.py" beforeDir="false" afterPath="$PROJECT_DIR$/startup_research.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,29 +45,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Python.app.executor&quot;: &quot;Run&quot;,
-    &quot;Python.base.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.base_reader.executor&quot;: &quot;Run&quot;,
-    &quot;Python.reload_gdrive_file.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.test.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/oywliao/Downloads&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;vcs.Subversion&quot;,
-    &quot;two.files.diff.last.used.file&quot;: &quot;/Users/oywliao/Documents/Finance research/reload_gdrive_file.py&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Python.app.executor": "Run",
+    "Python.base.executor": "Debug",
+    "Python.base_reader.executor": "Run",
+    "Python.config.executor": "Debug",
+    "Python.reload_gdrive_file.executor": "Debug",
+    "Python.test.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "/Users/oywliao/Downloads",
+    "settings.editor.selected.configurable": "vcs.Subversion",
+    "two.files.diff.last.used.file": "/Users/oywliao/Documents/Finance research/reload_gdrive_file.py"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
-      &quot;Python&quot;,
-      &quot;TEXT&quot;,
-      &quot;yaml&quot;
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "Python",
+      "TEXT",
+      "yaml"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$USER_HOME$/Downloads" />
@@ -446,7 +449,15 @@
       <option name="project" value="LOCAL" />
       <updated>1721573738872</updated>
     </task>
-    <option name="localTasksCounter" value="45" />
+    <task id="LOCAL-00045" summary="improve error logging of files failed to download from Gdrive; improve handling for minority file type and large file sizes.">
+      <option name="closed" value="true" />
+      <created>1721638444473</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1721638444473</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -476,7 +487,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="change the app name" />
     <MESSAGE value="fix affinity api key" />
     <MESSAGE value="fix minor errors" />
     <MESSAGE value="add logging message when note is successfully added" />
@@ -501,7 +511,8 @@
     <MESSAGE value="infer file types for more files without suffix. Use UnstructureReader for google slides that don't have a suffix and don't work well with pptxReader" />
     <MESSAGE value="Clean up process_google_drive into smaller sub functions." />
     <MESSAGE value="remove text from the metadata of Pinecone vector" />
-    <option name="LAST_COMMIT_MESSAGE" value="remove text from the metadata of Pinecone vector" />
+    <MESSAGE value="improve error logging of files failed to download from Gdrive; improve handling for minority file type and large file sizes." />
+    <option name="LAST_COMMIT_MESSAGE" value="improve error logging of files failed to download from Gdrive; improve handling for minority file type and large file sizes." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -522,7 +533,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/gdrive_qna.py</url>
-          <line>183</line>
+          <line>181</line>
           <option name="timeStamp" value="8" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -534,11 +545,6 @@
           <url>file://$PROJECT_DIR$/base.py</url>
           <line>36</line>
           <option name="timeStamp" value="12" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/test_evaluation.py</url>
-          <line>54</line>
-          <option name="timeStamp" value="17" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

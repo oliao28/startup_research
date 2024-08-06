@@ -43,7 +43,7 @@ class LengthAwareSimilarityPostprocessor(SimilarityPostprocessor):
 
 
 @st.cache_resource
-def get_query_engine(question_info = None):
+def get_query_engine(question_info = None,similarity_top_k=20, alpha=0.5):
     global index, llm #, performance_callback
     # if performance_callback is None:
     #     performance_callback = PerformanceCallback()
@@ -73,8 +73,8 @@ def get_query_engine(question_info = None):
     query_engine = index.as_query_engine(
         vector_store_query_mode="hybrid",
         node_postprocessors=[reorder],
-        similarity_top_k=20, #5,
-        alpha=0.5,  # This controls the balance between vector and keyword search
+        similarity_top_k=similarity_top_k, #5,
+        alpha=alpha,  # This controls the balance between vector and keyword search
         # filters=filters,
         vector_store_kwargs={
             "filter": question_info,
@@ -127,19 +127,17 @@ class CustomLongContextReorder(BaseNodePostprocessor):
     @classmethod
     def class_name(cls) -> str:
         return "CustomLongContextReorder"
-    file_type_weights: ClassVar[Dict[str, float]] = {
-        ".docx": 1.15,
-        ".xlsx": 1.25
+    weights: ClassVar[Dict[str, float]] = {
+        "doc": 1.15,
+        "sheet":1.25,
     }
-    @classmethod
-    def with_custom_weights(cls, docx_weight: float = 1.2, xlsx_weight: float = 1.15):
-        instance = cls()
-        instance.file_type_weights = {
-            ".docx": docx_weight,
-            ".xlsx": xlsx_weight,
-            ".xls": xlsx_weight
-        }
-        return instance
+    file_type_weights: ClassVar[Dict[str, float]] = {
+        ".docx": weights['doc'],
+        ".doc": weights['doc'],
+        ".xlsx": weights['sheet'],
+        ".xls": weights['sheet'],
+        ".csv": weights['sheet'],
+    }
 
     def _process_nodes_long_context(
         self,
@@ -164,8 +162,8 @@ class CustomLongContextReorder(BaseNodePostprocessor):
     ) -> List[NodeWithScore]:
         """Postprocess nodes."""
         # Apply file type weights to scores
-        node_first: List[NodeWithScore] = []
-        node_secondary: List[NodeWithScore] = []
+        node_first: List[NodeWithScore] = [] # doc and sheet files
+        node_secondary: List[NodeWithScore] = [] #all other files
         for node in nodes:
             file_type = node.node.metadata.get("file type", "unknown")
             weight = self.file_type_weights.get(file_type, 1.0)

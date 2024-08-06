@@ -43,7 +43,7 @@ async def main():
 
         if st.button("Draft call memo"):
             report = await sr.get_report(prompt, research_config["report_type"],
-                        research_config["agent"], research_config["role"], verbose=False)
+                        research_config["agent"], research_config["role"], config_path='config.json', verbose=False)
             # Store the report in session state
             st.session_state.report = report
         # Display the report if it exists in session state
