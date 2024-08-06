@@ -51,8 +51,9 @@ async def main():
             """Use this app to get a preliminary research of a startup based on its 
             website and public information. The app will draft a call memo and recommend
             critical questions you should ask during due diligence. Add the startup and memo directly
-            to Affinity or copy paste the draft into your favorite notes talking app.            
-            """)
+            to Affinity or copy paste the draft into your favorite notes talking app. Check out the full
+            documentation [here](%s)          
+            """ % https://docs.google.com/document/d/1vlrP3R-BN_hMecRINpNS4y8ZVQ1EnpLABahc10u0Cy8/edit?usp=sharing)
         website = st.text_input('Enter company website URL')
         description = st.text_input('Describe the company in a few sentences (or leave blank if website is provided)')
         #first get a link to a pitchdeck
