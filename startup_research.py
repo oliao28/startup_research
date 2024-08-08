@@ -53,7 +53,6 @@ def combine_reports(prompt, offline, online):
 def extract_text_from_elements(elements):
     return " ".join([element.text for element in elements if element.text.strip()])
 
-
 with st.echo():
     from selenium import webdriver
     from selenium.webdriver.chrome.options import Options
@@ -89,7 +88,11 @@ with st.echo():
 
         # Example: Scroll down the page
         try:
-          driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+          # Scroll and wait to load dynamic content
+          for _ in range(3):  # Scroll multiple times to handle infinite scrolling
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            driver.implicitly_wait(2)  # Wait for content to load
+
         except:
           print("fail at scroll")
 
