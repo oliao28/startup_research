@@ -12,8 +12,6 @@ from gpt_researcher import GPTResearcher
 
 import streamlit as st
 
-
-
 async def get_report(source: str, prompt: str, report_type: str, agent=None,role=None,config_path = None, verbose = True) -> str:
     researcher = GPTResearcher(prompt, report_type, report_source=source, config_path = config_path, agent= agent, role=role, verbose = verbose)
     research_result = await researcher.conduct_research()
@@ -91,7 +89,6 @@ with st.echo():
         except:
           print("fail at scroll")
 
-
         # Example: Extract text data from paragraphs
         paragraphs = driver.find_elements(By.TAG_NAME, "p")
         
@@ -133,13 +130,12 @@ with st.echo():
       model="gpt-4o",
       messages=[
         {"role": "system", "content": "You are a helpful assistant that explains business concepts, technical verticals, and industries for non-experts. Please return all answers as HTML."},
-        {"role": "user", "content": "Summarize the company:" + link + ". The HTML for its website is " + text_content},
+        {"role": "user", "content": "Summarize the company:" + link + ". The text content on the website is " + text_content},
         {"role": "assistant", "content": " Create a 5-sentence paragraph summarizing the company with the following structure. Sentence 1: What industry does it operate in? Sentence 2: What does its’ industry or technical vertical seek to improve or sell Sentence 3: What products does the company sell? Sentence 4: What problem is this company trying to solve? Sentence 5: Who is the end-user of this company’ products?"}
       ]
       )
 
       response = str(completion.choices[0].message.content)
-
 
       return response
 
@@ -218,13 +214,3 @@ def export_pdf(real_file_id):
     print(f"An error occurred: {error}")
     file = None
  
-def parse_pitch_deck():
-  #extract text
-  file_path = os.path.join("company", "pitchdeck.pdf")
-
-  doc = pymupdf.open(file_path) # open a document
-  text = ""
-  for page in doc: # iterate the document pages
-      text += page.get_text() # get plain text 
-  print(text)
-  return text
