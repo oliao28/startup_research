@@ -68,7 +68,7 @@ async def main():
 
         draft_button_disabled = not website
         if draft_button_disabled:
-            st.warning("Please add a link to a pitch deck to enable drafting the call memo.")
+            st.warning("Please add a link to a website to enable drafting the call memo.")
 
 
         if st.button("Draft call memo", disabled=draft_button_disabled):
