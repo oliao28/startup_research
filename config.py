@@ -63,3 +63,16 @@ research_config = {
             If you don’t know the precise answers, ask the investors to deep dive into those questions.
     """
 }
+
+'''research_config = {
+	"llm_provider": "openai",
+	"fast_llm_model": "gpt-3.5-turbo",
+	"smart_llm_model": "gpt-4o",
+    "report_type": "custom_report",
+    "agent": "venture capital agent",
+	"prompt": prompt,
+	"role": """You are an experienced AI venture capital analyst assistant. Your primary objective is to produce comprehensive,
+            insightful, and impartial investment analyses based on provided company information, market trends, and competitive landscapes.
+            If you don’t know the precise answers, ask the investors to deep dive into those questions.
+    """
+}'''

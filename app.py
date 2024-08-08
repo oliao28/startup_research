@@ -1,8 +1,10 @@
 import streamlit as st
+import json
 import financial_analysis as fa
 from config import all_metrics, sorted_currency, research_config
-from startup_research import get_report, build_prompt, get_company_name
+from startup_research import get_report, build_prompt, get_company_name, export_pdf, combine_reports, check_point
 import os
+import re
 import asyncio
 import affinity_utils  as au
 # from dotenv import load_dotenv
@@ -18,7 +20,23 @@ os.environ["ANTHROPIC_API_KEY"]= st.secrets["anthropic_api_key"]
 os.environ["LLM_PROVIDER"]=research_config["llm_provider"]
 os.environ["FAST_LLM_MODEL"]=research_config["fast_llm_model"]
 os.environ["SMART_LLM_MODEL"]=research_config["smart_llm_model"]
+os.environ["DOC_PATH"] = os.path.join("company")
+
 AFFINITY_API_KEY = st.secrets["affinity_api_key"]
+
+GOOGLE_CRED = json.loads(str(st.secrets["GOOGLE_CRED"]))
+GOOGLE_TOKEN = json.loads(str(st.secrets["GOOGLE_TOKEN"]))
+
+
+
+# Function to write credentials to JSON files
+#By writing locally, it allows for the potential to update the credentials
+def write_credentials_to_files():
+    with open('credentials.json', 'w') as cred_file:
+        json.dump(GOOGLE_CRED, cred_file, indent=4)
+
+    with open('token.json', 'w') as token_file:
+        json.dump(GOOGLE_TOKEN, token_file, indent=4)
 
 
 async def main():
@@ -33,15 +51,47 @@ async def main():
             """Use this app to get a preliminary research of a startup based on its 
             website and public information. The app will draft a call memo and recommend
             critical questions you should ask during due diligence. Add the startup and memo directly
-            to Affinity or copy paste the draft into your favorite notes talking app.            
-            """)
+            to Affinity or copy paste the draft into your favorite notes talking app. Check out the full
+            introduction [here.](https://docs.google.com/document/d/1vlrP3R-BN_hMecRINpNS4y8ZVQ1EnpLABahc10u0Cy8/edit?usp=sharing)         
+            """ )
         website = st.text_input('Enter company website URL')
         description = st.text_input('Describe the company in a few sentences (or leave blank if website is provided)')
+        #first get a link to a pitchdeck
+        link = st.text_input('Add a link to a pitch deck')
+        write_credentials_to_files()
+
+        if link: #if link is not empty 
+            file_id = re.search(r'/d/([a-zA-Z0-9_-]+)', link).group(1)            
+            export_pdf(file_id)
+
         prompt = build_prompt(research_config["prompt"], website, description)
 
-        if st.button("Draft call memo"):
-            report = await get_report(prompt, research_config["report_type"],
+        draft_button_disabled = not website
+        if draft_button_disabled:
+            st.warning("Please add a link to a website to enable drafting the call memo.")
+
+
+        if st.button("Draft call memo", disabled=draft_button_disabled):
+            
+            if link: #if link to pitchdeck is not empty 
+                offline_report = await get_report("local", prompt, research_config["report_type"], 
                         research_config["agent"], research_config["role"], verbose=False)
+                
+                offline_report = check_point(offline_report, website=link, summary=description)
+
+                online_report = await get_report("web", prompt, research_config["report_type"],
+                        research_config["agent"], research_config["role"], verbose=False)
+                
+                online_report = check_point(online_report, website=link, summary=description)
+
+                report = combine_reports(research_config["prompt"], offline_report, online_report)
+            else:
+                online_report = await get_report("web", prompt, research_config["report_type"],
+                        research_config["agent"], research_config["role"], verbose=False)
+                online_report = check_point(online_report, website=link, summary=description)
+
+                report = online_report
+            
             # Store the report in session state
             st.session_state.report = report
         # Display the report if it exists in session state
@@ -53,6 +103,7 @@ async def main():
                 # Replace LIST_ID with the actual ID of your Affinity list
                 list_id = '143881'
                 company_name = get_company_name(st.session_state.report, website)
+
                 company_data = {
                     "name": company_name,
                     "domain": website,

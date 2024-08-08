@@ -4,4 +4,12 @@ gpt-researcher==0.7.0
 streamlit
 numpy==1.26.4
 pandas==2.0.3
-requests
+pymupdf
+google-api-python-client 
+google-auth-httplib2 
+google-auth-oauthlib
+google.auth
+openai
+seleniumbase
+webdriver-manager
+selenium
