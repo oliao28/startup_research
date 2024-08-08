@@ -97,7 +97,8 @@ with st.echo():
           print("fail at scroll")
 
         # Extract text data from common content containers
-        containers = driver.find_elements(By.CSS_SELECTOR, "p, div, span, body")
+        containers = driver.find_elements(By.CSS_SELECTOR,  "main", "article", "[role='main']", ".main-content", ".article-body", 
+            "p", "div", "span", "body")
         text_content = extract_text_from_elements(containers)
 
         # Print or use text_content as needed
