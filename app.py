@@ -58,11 +58,6 @@ async def main():
         description = st.text_input('Describe the company in a few sentences (or leave blank if website is provided)')
         #first get a link to a pitchdeck
         link = st.text_input('Add a link to a pitch deck')
-        write_credentials_to_files()
-
-        if link: #if link is not empty 
-            file_id = re.search(r'/d/([a-zA-Z0-9_-]+)', link).group(1)            
-            export_pdf(file_id)
 
         prompt = build_prompt(research_config["prompt"], website, description)
 
@@ -74,7 +69,10 @@ async def main():
         if st.button("Draft call memo", disabled=draft_button_disabled):
             
             if link: #if link to pitchdeck is not empty 
-                offline_report = await get_report("local", prompt, research_config["report_type"], 
+                write_credentials_to_files()
+                file_id = re.search(r'/d/([a-zA-Z0-9_-]+)', link).group(1)
+                await export_pdf(file_id)
+                offline_report = await get_report("local", prompt, research_config["report_type"],
                         research_config["agent"], research_config["role"], verbose=False)
                 
                 offline_report = check_point(offline_report, website=link, summary=description)

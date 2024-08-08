@@ -159,7 +159,7 @@ def check_point(report, website, summary):
 #there is no return value
 #This function is called by app.py and reutrns to the main flow
 SCOPES = ["https://www.googleapis.com/auth/drive"]
-def export_pdf(real_file_id):
+async def export_pdf(real_file_id):
   """Download a Document file in PDF format.
   Args:
       real_file_id : file ID of any workspace document format file
@@ -195,6 +195,7 @@ def export_pdf(real_file_id):
     # Download the file
     request = service.files().get_media(fileId=real_file_id)
     file_path = os.path.join("company", "pitchdeck.pdf")
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
     with io.FileIO(file_path, 'wb') as fh:
         downloader = MediaIoBaseDownload(fh, request)
         done = False
