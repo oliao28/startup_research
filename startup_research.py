@@ -132,13 +132,7 @@ with st.echo():
 
       response = str(completion.choices[0].message.content)
 
-    '''query = "Create a 5-sentence paragraph summarizing the company with the following structure. Sentence 1: What industry does it operate in? Sentence 2: What does its’ industry or technical vertical seek to improve or sell Sentence 3: What products does the company sell? Sentence 4: What problem is this company trying to solve? Sentence 5: Who is the end-user of this company’ products?"
-    report_type = "research_report"
-    sources = [link]
-
-    report = asyncio.run(get_report(query, report_type, sources))
-
-    return response'''
+      return response
 
 
 #this is the checkpoint function, it takes in a report, website, and company description
