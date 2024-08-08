@@ -20,9 +20,11 @@ async def get_report(source: str, prompt: str, report_type: str, agent=None,role
 
 def build_prompt(prompt: str, company_website: str, company_description: str):
     if company_description == '':
-        return "Based on the website of this startup, the subdomains of this domain, and other available that is specific to this company and this industry:" + company_website  + ", first understand what it does. Then," + prompt 
+       company_description = generate_summary(company_website)
     else:
         return company_description + "\n   Here's it's  website:" + company_website + "\n" + prompt
+        ###return "Based on the website of this startup, the subdomains of this domain, and other available that is specific to this company and this industry:" + company_website  + ", first understand what it does. Then," + prompt 
+
 
 def get_company_name(report: str, company_website: str):
     name = report.split('\n')[0]
@@ -49,7 +51,6 @@ def combine_reports(prompt, offline, online):
 
     response = str(completion.choices[0].message.content)
     return response
-
 
 with st.echo():
     from selenium import webdriver
@@ -113,7 +114,6 @@ with st.echo():
         # Get the page source
         page_source = st.code(driver.page_source)
 
-
       except Exception as e:
           print(f"An error occurred: {e}")
 
@@ -122,7 +122,6 @@ with st.echo():
 
       if text_content != None and len(text_content) > 1500:
         text_content = text_content[0:1500]
-
 
       client = OpenAI()
 
