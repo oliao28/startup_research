@@ -21,7 +21,7 @@ async def get_report(source: str, prompt: str, report_type: str, agent=None,role
 def build_prompt(prompt: str, company_website: str, company_description: str):
     if company_description == '':
        company_description = generate_summary(company_website)
-    return "Based on the website of this startup, this summary of the company \'" + company_description + "\' the subdomains of this domain, and other available that is specific to this company and this industry:" + company_website  + ", first understand what it does. Then," + prompt 
+    return f"Based on the website of this startup: {company_website}, this summary of the company \'{company_description}\', and other available information about this company and its industry, first understand what it does. Then, {prompt}"
 
 
 def get_company_name(report: str, company_website: str):
