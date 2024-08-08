@@ -193,7 +193,8 @@ async def export_pdf(real_file_id):
   try:
     service = build("drive", "v3", credentials=creds)
 
-    # Download the file
+    # Download the file to Streamlit temp folder
+    # Note: this could be a security risk we need to fix
     request = service.files().get_media(fileId=real_file_id)
     file_path = os.path.join("company", "pitchdeck.pdf")
     os.makedirs(os.path.dirname(file_path), exist_ok=True)

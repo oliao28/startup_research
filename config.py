@@ -56,6 +56,7 @@ research_config = {
 	"llm_provider": "openai", ##"anthropic",
 	"fast_llm_model": "gpt-4o-mini", #"claude-2.1",
 	"smart_llm_model": "gpt-4o", #"claude-3-5-sonnet-20240620",
+    "max_iterations": "6",
     "report_type": "custom_report",
     "agent": "venture capital agent",
 	"prompt": prompt,
