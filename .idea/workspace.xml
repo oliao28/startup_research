@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="fix minor errors">
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="attempt to fix the export_pdf filenotfound error">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/startup_research.py" beforeDir="false" afterPath="$PROJECT_DIR$/startup_research.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -259,7 +259,15 @@
       <option name="project" value="LOCAL" />
       <updated>1719914537783</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="attempt to fix the export_pdf filenotfound error">
+      <option name="closed" value="true" />
+      <created>1723125126506</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1723125126506</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -294,7 +302,8 @@
     <MESSAGE value="change the app name" />
     <MESSAGE value="fix affinity api key" />
     <MESSAGE value="fix minor errors" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix minor errors" />
+    <MESSAGE value="attempt to fix the export_pdf filenotfound error" />
+    <option name="LAST_COMMIT_MESSAGE" value="attempt to fix the export_pdf filenotfound error" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

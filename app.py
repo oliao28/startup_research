@@ -2,7 +2,7 @@ import streamlit as st
 import json
 import financial_analysis as fa
 from config import all_metrics, sorted_currency, research_config
-from startup_research import get_report, build_prompt, get_company_name, export_pdf, combine_reports, check_point
+from startup_research import * #get_report, build_prompt, get_company_name, export_pdf, combine_reports, check_point
 import os
 import re
 import asyncio
