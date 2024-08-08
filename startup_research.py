@@ -13,7 +13,13 @@ from gpt_researcher import GPTResearcher
 import streamlit as st
 
 async def get_report(source: str, prompt: str, report_type: str, agent=None,role=None,config_path = None, verbose = True) -> str:
-    researcher = GPTResearcher(prompt, report_type, report_source=source, config_path = config_path, agent= agent, role=role, verbose = verbose)
+    try:
+        researcher = GPTResearcher(prompt, report_type, report_source=source, config_path = config_path, agent= agent, role=role, verbose = verbose)
+    except anthropic.InternalServerError:
+        os.environ["LLM_PROVIDER"] = "openai"
+        os.environ["FAST_LLM_MODEL"] = "gpt-4o-mini"
+        os.environ["SMART_LLM_MODEL"] ="gpt-4o"
+        researcher = GPTResearcher(prompt, report_type, report_source=source, config_path = config_path, agent= agent, role=role, verbose = verbose)
     research_result = await researcher.conduct_research()
     report = await researcher.write_report()
     return report
