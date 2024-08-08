@@ -21,7 +21,8 @@ sorted_currency = sorted(all_currency, key=lambda x: frequent_currency.index(x) 
 #-------------------------------------
 # Variables for startup research
 #-------------------------------------
-prompt = """Write a short report containing the following sections, using simple bullet points whenever possible. Do NOT use markdown formatting.
+prompt = """Write a short report containing the following sections, using simple bullet points whenever possible. 
+Do NOT use markdown formatting. Remove any font formatting.
 The title of the report is the company name. Only the listed sections are needed in the report, nothing else. Within each section, ask the investors to deep dive into critical questions that we do not yet know the answers of.
 1. Website URL of the company on top
 2. Team
@@ -52,9 +53,9 @@ You MUST write all used source urls at the end of the report as references, and 
 """
 prompt = prompt+"\n" + reference_prompt
 research_config = {
-	"llm_provider": "anthropic",
-	"fast_llm_model": "claude-2.1",
-	"smart_llm_model": "claude-3-5-sonnet-20240620",
+	"llm_provider": "openai", ##"anthropic",
+	"fast_llm_model": "gpt-4o-mini", #"claude-2.1",
+	"smart_llm_model": "gpt-4o", #"claude-3-5-sonnet-20240620",
     "report_type": "custom_report",
     "agent": "venture capital agent",
 	"prompt": prompt,
@@ -63,16 +64,3 @@ research_config = {
             If you don’t know the precise answers, ask the investors to deep dive into those questions.
     """
 }
-
-'''research_config = {
-	"llm_provider": "openai",
-	"fast_llm_model": "gpt-3.5-turbo",
-	"smart_llm_model": "gpt-4o",
-    "report_type": "custom_report",
-    "agent": "venture capital agent",
-	"prompt": prompt,
-	"role": """You are an experienced AI venture capital analyst assistant. Your primary objective is to produce comprehensive,
-            insightful, and impartial investment analyses based on provided company information, market trends, and competitive landscapes.
-            If you don’t know the precise answers, ask the investors to deep dive into those questions.
-    """
-}'''

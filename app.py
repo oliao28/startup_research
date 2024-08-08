@@ -2,24 +2,18 @@ import streamlit as st
 import json
 import financial_analysis as fa
 from config import all_metrics, sorted_currency, research_config
-from startup_research import * #get_report, build_prompt, get_company_name, export_pdf, combine_reports, check_point
+from startup_research import *
 import os
 import re
 import asyncio
 import affinity_utils  as au
-# from dotenv import load_dotenv
-# load_dotenv()  # take environment variables from .env.
-# open_api_key = os.getenv("OPENAI_API_KEY")
-# tavily_api_key = os.getenv("TAVILY_API_KEY")
-# anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
-# AFFINITY_API_KEY = os.getenv('AFFINITY_API_KEY')
 
 os.environ["OPENAI_API_KEY"] =  st.secrets["openai_api_key"] # Set the OpenAI API key as an environment variable
 os.environ["TAVILY_API_KEY"] = st.secrets["tavily_api_key"] # Set the Tavyly API key as an environment variable
 os.environ["ANTHROPIC_API_KEY"]= st.secrets["anthropic_api_key"]
-os.environ["LLM_PROVIDER"]="openai" #research_config["llm_provider"]
-os.environ["FAST_LLM_MODEL"]="gpt-4o-mini" #research_config["fast_llm_model"]
-os.environ["SMART_LLM_MODEL"]="gpt-4o" #research_config["smart_llm_model"]
+os.environ["LLM_PROVIDER"]=research_config["llm_provider"]
+os.environ["FAST_LLM_MODEL"]=research_config["fast_llm_model"]
+os.environ["SMART_LLM_MODEL"]=research_config["smart_llm_model"]
 os.environ["DOC_PATH"] = os.path.join("company")
 
 AFFINITY_API_KEY = st.secrets["affinity_api_key"]
