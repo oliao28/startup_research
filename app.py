@@ -64,12 +64,11 @@ async def main():
             file_id = re.search(r'/d/([a-zA-Z0-9_-]+)', link).group(1)            
             export_pdf(file_id)
 
-            #call to parse this is deprecated as the gpt researcher now cannabalizes the documents
-            #pitch_text = parse_pitch_deck()
-
         prompt = build_prompt(research_config["prompt"], website, description)
 
-        if st.button("Draft call memo"):
+        draft_button_disabled = not website
+
+        if st.button("Draft call memo", disabled=draft_button_disabled):
             
             if link: #if link to pitchdeck is not empty 
                 offline_report = await get_report("local", prompt, research_config["report_type"], 
@@ -89,9 +88,6 @@ async def main():
                 online_report = check_point(online_report, website=link, summary=description)
 
                 report = online_report
-            
-            
-            
             
             # Store the report in session state
             st.session_state.report = report
