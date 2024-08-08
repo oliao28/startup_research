@@ -50,6 +50,10 @@ def combine_reports(prompt, offline, online):
     response = str(completion.choices[0].message.content)
     return response
 
+def extract_text_from_elements(elements):
+    return " ".join([element.text for element in elements if element.text.strip()])
+
+
 with st.echo():
     from selenium import webdriver
     from selenium.webdriver.chrome.options import Options
@@ -89,22 +93,9 @@ with st.echo():
         except:
           print("fail at scroll")
 
-        # Example: Extract text data from paragraphs
-        paragraphs = driver.find_elements(By.TAG_NAME, "p")
-        
-        print(paragraphs)
-        text_content = extract_text_from_elements(paragraphs)
-
-        # Alternatively, you can extract from other elements like divs, spans, etc.
-        divs = driver.find_elements(By.TAG_NAME, "div")
-        text_content += extract_text_from_elements(divs)
-
-        # Alternatively, you can extract from other elements like spans, etc.
-        span = driver.find_elements(By.TAG_NAME, "span")
-        text_content += extract_text_from_elements(span)
-
-        body = driver.find_elements(By.TAG_NAME, "body")
-        text_content += extract_text_from_elements(body)
+        # Extract text data from common content containers
+        containers = driver.find_elements(By.CSS_SELECTOR, "p, div, span, body")
+        text_content = extract_text_from_elements(containers)
 
         # Print or use text_content as needed
         print("Extracted Text Content:")
