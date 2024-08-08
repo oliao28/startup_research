@@ -120,6 +120,8 @@ with st.echo():
 
       if text_content != None and len(text_content) > 1500:
         text_content = text_content[0:1500]
+      else:
+         text_content += page_source[0:1500-len(text_content)]
 
       client = OpenAI()
 
