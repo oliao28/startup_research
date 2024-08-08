@@ -74,6 +74,7 @@ with st.echo():
 
       driver = get_driver(opts)
       text_content = ""
+      page_source = ""
       try:
         driver.get(link)
         # Wait until the page is fully loaded
