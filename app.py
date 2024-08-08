@@ -67,6 +67,9 @@ async def main():
         prompt = build_prompt(research_config["prompt"], website, description)
 
         draft_button_disabled = not website
+        if draft_button_disabled:
+            st.warning("Please add a link to a pitch deck to enable drafting the call memo.")
+
 
         if st.button("Draft call memo", disabled=draft_button_disabled):
             
