@@ -119,20 +119,26 @@ with st.echo():
       else:
          text_content += page_source[0:1500-len(text_content)]
       print(text_content)
-      client = OpenAI()
+      '''client = OpenAI()
 
       completion = client.chat.completions.create(
       model="gpt-4o",
       messages=[
         {"role": "system", "content": "You are a helpful assistant that explains business concepts, technical verticals, and industries for non-experts. Please return all answers as HTML."},
-        {"role": "user", "content": "Summarize the company:" + link + ". The text content on the website is " + text_content},
+        {"role": "user", "content": "Summarize the company from its website:" + link + ". The text content on the website is " + text_content},
         {"role": "assistant", "content": " Create a 5-sentence paragraph summarizing the company with the following structure. Sentence 1: What industry does it operate in? Sentence 2: What does its’ industry or technical vertical seek to improve or sell Sentence 3: What products does the company sell? Sentence 4: What problem is this company trying to solve? Sentence 5: Who is the end-user of this company’ products?"}
       ]
       )
 
-      response = str(completion.choices[0].message.content)
+      response = str(completion.choices[0].message.content)'''
 
-      return response
+    query = "Create a 5-sentence paragraph summarizing the company with the following structure. Sentence 1: What industry does it operate in? Sentence 2: What does its’ industry or technical vertical seek to improve or sell Sentence 3: What products does the company sell? Sentence 4: What problem is this company trying to solve? Sentence 5: Who is the end-user of this company’ products?"
+    report_type = "research_report"
+    sources = [link]
+
+    report = asyncio.run(get_report(query, report_type, sources))
+
+    return response
 
 
 #this is the checkpoint function, it takes in a report, website, and company description
