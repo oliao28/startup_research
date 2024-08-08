@@ -40,13 +40,13 @@ def write_credentials_to_files():
 
 
 async def main():
-    tab_startup, tab_peer = st.tabs(["BETA Startup Research", "DEPRECATED Peer Comparison"])
+    tab_startup, tab_peer = st.tabs(["Startup Research", "Peer Comparison"])
     # Initialize session state variables
     if 'report' not in st.session_state:
         st.session_state.report = None
 
     with tab_startup:
-        st.header("BETA TESTING Research a startup and draft the call memo")
+        st.header("Research a startup and draft the call memo")
         st.markdown(
             """Use this app to get a preliminary research of a startup based on its 
             website and public information. The app will draft a call memo and recommend
