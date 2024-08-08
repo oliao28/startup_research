@@ -61,7 +61,18 @@ async def main():
 
 
         if st.button("Draft call memo", disabled=draft_button_disabled):
-            
+            try:
+                online_report = await get_report("web", prompt, research_config["report_type"],
+                                             research_config["agent"], research_config["role"], verbose=False)
+            except anthropic.InternalServerError:
+                os.environ["LLM_PROVIDER"] = "openai"
+                os.environ["FAST_LLM_MODEL"] = "gpt-4o-mini"
+                os.environ["SMART_LLM_MODEL"] = "gpt-4o"
+                online_report = await get_report("web", prompt, research_config["report_type"],
+                                             research_config["agent"], research_config["role"], verbose=False)
+
+            online_report = check_point(online_report, website=link, summary=description)
+
             if link: #if link to pitchdeck is not empty 
                 write_credentials_to_files()
                 file_id = re.search(r'/d/([a-zA-Z0-9_-]+)', link).group(1)
@@ -71,17 +82,8 @@ async def main():
                 
                 offline_report = check_point(offline_report, website=link, summary=description)
 
-                online_report = await get_report("web", prompt, research_config["report_type"],
-                        research_config["agent"], research_config["role"], verbose=False)
-                
-                online_report = check_point(online_report, website=link, summary=description)
-
                 report = combine_reports(research_config["prompt"], offline_report, online_report)
             else:
-                online_report = await get_report("web", prompt, research_config["report_type"],
-                        research_config["agent"], research_config["role"], verbose=False)
-                online_report = check_point(online_report, website=link, summary=description)
-
                 report = online_report
             
             # Store the report in session state
