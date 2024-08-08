@@ -21,8 +21,7 @@ async def get_report(source: str, prompt: str, report_type: str, agent=None,role
 def build_prompt(prompt: str, company_website: str, company_description: str):
     if company_description == '':
        company_description = generate_summary(company_website)
-    return company_description + "\n   Here's it's  website:" + company_website + "\n" + prompt
-    ###return "Based on the website of this startup, the subdomains of this domain, and other available that is specific to this company and this industry:" + company_website  + ", first understand what it does. Then," + prompt 
+    return "Based on the website of this startup, this summary of the company \'" + company_description + "\' the subdomains of this domain, and other available that is specific to this company and this industry:" + company_website  + ", first understand what it does. Then," + prompt 
 
 
 def get_company_name(report: str, company_website: str):
@@ -143,9 +142,6 @@ with st.echo():
 #It seeks to correct the information and outputs the corrected report
 #it is called after each report it made. If no description exists, it makes the description.
 def check_point(report, website, summary):
-    if summary == "":
-      summary = generate_summary(website)
-
     client = OpenAI()
 
     completion = client.chat.completions.create(
