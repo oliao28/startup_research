@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="remove redudant display">
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="remove persistent display of company description field">
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -91,14 +91,6 @@
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
       <updated>1719232007136</updated>
-    </task>
-    <task id="LOCAL-00016" summary="fixing syntext errors">
-      <option name="closed" value="true" />
-      <created>1719903008402</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1719903008402</updated>
     </task>
     <task id="LOCAL-00017" summary="fixing bugs so we only add a new entry to Affinity if it doesn't exist yet.">
       <option name="closed" value="true" />
@@ -468,7 +460,15 @@
       <option name="project" value="LOCAL" />
       <updated>1723207430850</updated>
     </task>
-    <option name="localTasksCounter" value="63" />
+    <task id="LOCAL-00063" summary="remove persistent display of company description field">
+      <option name="closed" value="true" />
+      <created>1723207595044</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1723207595044</updated>
+    </task>
+    <option name="localTasksCounter" value="64" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -486,7 +486,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="change streamlit version to 1.36.0" />
     <MESSAGE value="change streamlit back to 1.37.0" />
     <MESSAGE value="remove tested button relationship" />
     <MESSAGE value="edit nested button relationship" />
@@ -511,7 +510,8 @@
     <MESSAGE value="relax gpt-researcher version to resolve dependency conflicts" />
     <MESSAGE value="remove debugging logging" />
     <MESSAGE value="remove redudant display" />
-    <option name="LAST_COMMIT_MESSAGE" value="remove redudant display" />
+    <MESSAGE value="remove persistent display of company description field" />
+    <option name="LAST_COMMIT_MESSAGE" value="remove persistent display of company description field" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

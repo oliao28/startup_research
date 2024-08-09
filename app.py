@@ -94,7 +94,7 @@ async def main():
                     offline_report = await get_report("local", prompt, research_config["report_type"],
                             research_config["agent"], research_config["role"], verbose=False)
 
-                    offline_report = check_point(offline_report, website=link, summary=description)
+                    offline_report = check_point(offline_report, website=link, summary=st.session_state.company_description)
 
                     report = combine_reports(research_config["prompt"], offline_report, online_report)
                 else:
