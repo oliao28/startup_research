@@ -26,7 +26,7 @@ def build_prompt(prompt: str, company_website: str, company_description: str):
 
 def get_company_name(report: str, company_website: str):
     name = report.split('\n')[0]
-    name = name.replace("*", "").replace(" report", "").replace(", inc.", "")
+    name = name.replace("*", "").replace(" report", "")
     if len(name)<3 or len(name)>20:  # this is an arbitrary threshold assuming no one would name a company with more than 20 characters
       tmp = company_website.split('.')
       if "www" in tmp[0]:
