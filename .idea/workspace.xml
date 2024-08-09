@@ -4,7 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="specify dependency name">
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="improve the accuracy on getting company_name">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -436,7 +437,15 @@
       <option name="project" value="LOCAL" />
       <updated>1723184652939</updated>
     </task>
-    <option name="localTasksCounter" value="46" />
+    <task id="LOCAL-00046" summary="improve the accuracy on getting company_name">
+      <option name="closed" value="true" />
+      <created>1723185171851</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1723185171851</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -454,7 +463,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="add a function to extract startup name from the report" />
     <MESSAGE value="change the secret keys" />
     <MESSAGE value="change the app name" />
     <MESSAGE value="fix affinity api key" />
@@ -479,7 +487,8 @@
     <MESSAGE value="Add clarity to UI message when adding to Affinity" />
     <MESSAGE value="fix bug" />
     <MESSAGE value="specify dependency name" />
-    <option name="LAST_COMMIT_MESSAGE" value="specify dependency name" />
+    <MESSAGE value="improve the accuracy on getting company_name" />
+    <option name="LAST_COMMIT_MESSAGE" value="improve the accuracy on getting company_name" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
