@@ -113,7 +113,6 @@ async def main():
                 "domain": st.session_state.website,
             }
             org_preexist, org_result = au.create_organization_in_affinity(AFFINITY_API_KEY, company_data)
-            st.write(st.session_state.report)
             if org_result:
                 if org_preexist:
                     st.success(f"Organization ID: {org_result['id']} already exists in Affinity", icon="✅")
