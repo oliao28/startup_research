@@ -1,6 +1,6 @@
 yahooquery==2.3.7
 CurrencyConverter==0.17.23
-gpt-researcher==0.7.0
+gpt-researcher
 streamlit==1.37.0
 numpy==1.26.4
 pandas==2.0.3
