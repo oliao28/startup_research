@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="change or to and;">
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="reset affinity state when new memo is drafted">
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -91,14 +91,6 @@
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
       <updated>1719232007136</updated>
-    </task>
-    <task id="LOCAL-00003" summary="add initial files">
-      <option name="closed" value="true" />
-      <created>1719232757780</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1719232757780</updated>
     </task>
     <task id="LOCAL-00004" summary="add initial files">
       <option name="closed" value="true" />
@@ -468,7 +460,15 @@
       <option name="project" value="LOCAL" />
       <updated>1723187325798</updated>
     </task>
-    <option name="localTasksCounter" value="50" />
+    <task id="LOCAL-00050" summary="reset affinity state when new memo is drafted">
+      <option name="closed" value="true" />
+      <created>1723187750865</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1723187750867</updated>
+    </task>
+    <option name="localTasksCounter" value="51" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -486,7 +486,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="fix minor errors" />
     <MESSAGE value="attempt to fix the export_pdf filenotfound error" />
     <MESSAGE value="Upgrade gptresarcher version and import syntax" />
     <MESSAGE value="temporarily fall back to openAI b/c anthropic claude outage" />
@@ -511,7 +510,8 @@
     <MESSAGE value="pin down dependency version" />
     <MESSAGE value="update streamlit version" />
     <MESSAGE value="change or to and;" />
-    <option name="LAST_COMMIT_MESSAGE" value="change or to and;" />
+    <MESSAGE value="reset affinity state when new memo is drafted" />
+    <option name="LAST_COMMIT_MESSAGE" value="reset affinity state when new memo is drafted" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
