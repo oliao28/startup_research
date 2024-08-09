@@ -6,7 +6,7 @@ from startup_research import *
 import os
 import re
 import asyncio
-from affinity_utils import *
+import affinity_utils as au
 import anthropic
 
 os.environ["OPENAI_API_KEY"] =  st.secrets["openai_api_key"] # Set the OpenAI API key as an environment variable
@@ -104,16 +104,16 @@ async def main():
                         "name": company_name,
                         "domain": website,
                     }
-                    org_preexist, org_result = create_organization_in_affinity(AFFINITY_API_KEY, company_data)
+                    org_preexist, org_result = au.create_organization_in_affinity(AFFINITY_API_KEY, company_data)
                     if org_result:
                         if org_preexist:
                             st.success(f"Organization ID: {org_result['id']} already exists in Affinity", icon="✅")
                         else:
                             st.success(f"Created organization ID: {org_result['id']} in Affinity", icon="✅")
-                            add_entry_to_list(AFFINITY_API_KEY, deal_list_id, org_result['id'])
+                            au.add_entry_to_list(AFFINITY_API_KEY, au.deal_list_id, org_result['id'])
 
                         # Now add notes to the organization
-                        note_result = add_notes_to_company(AFFINITY_API_KEY, org_result['id'], st.session_state.report)
+                        note_result = au.add_notes_to_company(AFFINITY_API_KEY, org_result['id'], st.session_state.report)
                         if note_result:
                             st.success(f"Added note to: {company_name}", icon="✅")
                     else:
