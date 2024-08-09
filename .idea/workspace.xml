@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="change website to st.session_state.website" />
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="pin down dependency version">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -39,19 +42,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Python.config.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/oywliao/Documents/Finance research&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Python.config.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "/Users/oywliao/Downloads",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings"
+  },
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "TEXT"
+    ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$USER_HOME$/Downloads" />
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
@@ -89,22 +98,6 @@
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
       <updated>1719232007136</updated>
-    </task>
-    <task id="LOCAL-00020" summary="change the app name">
-      <option name="closed" value="true" />
-      <created>1719910138515</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1719910138515</updated>
-    </task>
-    <task id="LOCAL-00021" summary="change the app name">
-      <option name="closed" value="true" />
-      <created>1719910148787</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1719910148787</updated>
     </task>
     <task id="LOCAL-00022" summary="fix affinity api key">
       <option name="closed" value="true" />
@@ -466,7 +459,23 @@
       <option name="project" value="LOCAL" />
       <updated>1723211219320</updated>
     </task>
-    <option name="localTasksCounter" value="67" />
+    <task id="LOCAL-00067" summary="update streamlit version">
+      <option name="closed" value="true" />
+      <created>1723211479588</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1723211479588</updated>
+    </task>
+    <task id="LOCAL-00068" summary="pin down dependency version">
+      <option name="closed" value="true" />
+      <created>1723211935206</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1723211935206</updated>
+    </task>
+    <option name="localTasksCounter" value="69" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -489,8 +498,6 @@
     <MESSAGE value="Add clarity to UI message when adding to Affinity" />
     <MESSAGE value="specify dependency name" />
     <MESSAGE value="improve the accuracy on getting company_name" />
-    <MESSAGE value="pin down dependency version" />
-    <MESSAGE value="update streamlit version" />
     <MESSAGE value="change or to and;" />
     <MESSAGE value="reset affinity state when new memo is drafted" />
     <MESSAGE value="uncomment meat" />
@@ -509,7 +516,9 @@
     <MESSAGE value="fix bug" />
     <MESSAGE value="pin down gpt-researcher and duckduckgo version" />
     <MESSAGE value="change website to st.session_state.website" />
-    <option name="LAST_COMMIT_MESSAGE" value="change website to st.session_state.website" />
+    <MESSAGE value="update streamlit version" />
+    <MESSAGE value="pin down dependency version" />
+    <option name="LAST_COMMIT_MESSAGE" value="pin down dependency version" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
