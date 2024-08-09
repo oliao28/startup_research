@@ -35,7 +35,8 @@ def write_credentials_to_files():
         json.dump(GOOGLE_TOKEN, token_file, indent=4)
 def draft_memo():
     st.session_state.memo_drafted = True
-
+def add_affinity():
+    st.session_state.affinity_added = True
 async def main():
     tab_startup, tab_peer = st.tabs(["Startup Research", "Peer Comparison"])
     # Initialize session state variables
@@ -55,8 +56,8 @@ async def main():
         # prompt = build_prompt(research_config["prompt"], website, description)
         #first get a link to a pitchdeck
         link = st.text_input('Add a link to a pitch deck')
-        memo_drafted = st.button("Draft call memo", on_click=draft_memo)
-        if memo_drafted:
+        st.button("Draft call memo", on_click=draft_memo)
+        if st.session_state.memo_drafted:
             # if not website or not link:
             #     st.warning("Please add a link to a website or pitchdeck to enable drafting the call memo.", icon="🚨")
             # else:
@@ -91,7 +92,8 @@ async def main():
             if st.session_state.report:
                 st.write(st.session_state.report)
                 # Add to Affinity
-                if st.button("Add to Affinity"):
+                st.button("Add to Affinity", on_click=add_affinity)
+                if st.session_state.affinity_added:
                     # Replace LIST_ID with the actual ID of your Affinity list
                     list_id = '143881'
                     company_name = get_company_name(st.session_state.report, website)
