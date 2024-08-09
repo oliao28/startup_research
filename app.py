@@ -84,7 +84,7 @@ async def main():
             #         report = online_report
 
                 # Store the report in session state
-                st.session_state.report = "test report"
+            st.session_state.report = "test report"
             # Display the report if it exists in session state
             if st.session_state.report:
                 st.write(st.session_state.report)
