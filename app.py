@@ -44,6 +44,8 @@ async def main():
         st.session_state.company_description = None
     if 'report' not in st.session_state:
         st.session_state.report = None
+    if 'website' not in st.session_state:
+        st.session_state.website = None
     if 'stage' not in st.session_state:
         st.session_state.stage = 0
 
@@ -55,8 +57,11 @@ async def main():
                You can add the startup and memo directly to Affinity or copy and paste the draft into your favorite note-taking app. 
                Check out the full introduction [here.](https://docs.google.com/document/d/1vlrP3R-BN_hMecRINpNS4y8ZVQ1EnpLABahc10u0Cy8/edit?usp=sharing)         
             """ )
-        website = st.text_input('Enter company website URL')
-        description = st.text_input('Describe the company in a few sentences (or leave blank if website is provided)')
+        website = st.text_input('Enter company website URL', value = st.session_state.website)
+        st.session_state.website = website
+        st.session_state.company_description = st.text_input(
+            'Describe the company in a few sentences (or leave blank if website is provided)',
+            value = st.session_state.company_description)
         # first get a link to a pitchdeck
         link = st.text_input('Add a link to a pitch deck')
         st.button("Draft call memo", on_click=set_stage, args=(1,))
@@ -66,7 +71,9 @@ async def main():
             else:
                 try:
                     # Use Anthropic Claude model. If it has outages, fall back to open AI
-                    st.session_state.company_description = await generate_summary(website)
+                    if not st.session_state.company_description:
+                        st.session_state.company_description = await generate_summary(website)
+                        st.success("description generated!")
                     prompt = build_prompt(research_config["prompt"], website, st.session_state.company_description)
                     online_report = await get_report("web", prompt, research_config["report_type"],
                                                  research_config["agent"], research_config["role"], verbose=False)
@@ -79,7 +86,8 @@ async def main():
                     online_report = await get_report("web", prompt, research_config["report_type"],
                                                  research_config["agent"], research_config["role"], verbose=False)
 
-                online_report = check_point(online_report, website=link, summary=description)
+                #TODO: Change the link to website?
+                online_report = check_point(online_report, website=link, summary=st.session_state.company_description)
 
                 if link: #if link to pitchdeck is not empty
                     write_credentials_to_files()
@@ -96,13 +104,14 @@ async def main():
 
                 # Store the report in session state
                 st.session_state.report = report
-                st.write(st.session_state.report)
-                # Add to Affinity
-                st.button("Add to Affinity", on_click=set_stage, args=(2,))
+        if st.session_state.stage>=1:
+            st.write(st.session_state.report)
+            # Add to Affinity
+            st.button("Add to Affinity", on_click=set_stage, args=(2,))
         if st.session_state.stage==2:
             company_data = {
                 "report": st.session_state.report,
-                "domain": website,
+                "domain": st.session_state.website,
             }
             org_preexist, org_result = au.create_organization_in_affinity(AFFINITY_API_KEY, company_data)
             st.write(st.session_state.report)
