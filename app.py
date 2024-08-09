@@ -42,7 +42,10 @@ async def main():
     # Initialize session state variables
     if 'report' not in st.session_state:
         st.session_state.report = None
-
+    if 'memo_drafted' not in st.session_state:
+        st.session_state.memo_drafted = False
+    if 'affinity_added' not in st.session_state:
+        st.session_state.affinity_added = False
     with tab_startup:
         st.header("Research a startup and draft the call memo")
         st.markdown(
