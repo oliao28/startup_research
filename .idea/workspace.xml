@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="unnested Add to Affinity and Draft memo button">
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="clean up unused code">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,14 +91,6 @@
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
       <updated>1719232007136</updated>
-    </task>
-    <task id="LOCAL-00010" summary="Revert &quot;Add startup research functionality to the app&quot;&#10;&#10;This reverts commit ba0d2178">
-      <option name="closed" value="true" />
-      <created>1719848611691</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1719848611691</updated>
     </task>
     <task id="LOCAL-00011" summary="Add startup research functionality to the app">
       <option name="closed" value="true" />
@@ -470,7 +460,15 @@
       <option name="project" value="LOCAL" />
       <updated>1723202765961</updated>
     </task>
-    <option name="localTasksCounter" value="57" />
+    <task id="LOCAL-00057" summary="clean up unused code">
+      <option name="closed" value="true" />
+      <created>1723202937662</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1723202937662</updated>
+    </task>
+    <option name="localTasksCounter" value="58" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -488,7 +486,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="go back to anthropic" />
     <MESSAGE value="if anthropic experienced an outage, fall back to using openAI" />
     <MESSAGE value="revise the log for checking anthropic outages" />
     <MESSAGE value="revert &quot;remove Inc. from company name when pushing to Affinity&quot;" />
@@ -513,7 +510,8 @@
     <MESSAGE value="do not reset memo state" />
     <MESSAGE value="uncomment LLM" />
     <MESSAGE value="unnested Add to Affinity and Draft memo button" />
-    <option name="LAST_COMMIT_MESSAGE" value="unnested Add to Affinity and Draft memo button" />
+    <MESSAGE value="clean up unused code" />
+    <option name="LAST_COMMIT_MESSAGE" value="clean up unused code" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

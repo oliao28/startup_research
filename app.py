@@ -96,17 +96,16 @@ async def main():
 
                 # Store the report in session state
                 st.session_state.report = report
-            # Display the report if it exists in session state
-            if st.session_state.report:
                 st.write(st.session_state.report)
                 # Add to Affinity
-            st.button("Add to Affinity", on_click=set_stage, args=(2,))
+                st.button("Add to Affinity", on_click=set_stage, args=(2,))
         if st.session_state.stage==2:
             company_data = {
                 "report": st.session_state.report,
                 "domain": website,
             }
             org_preexist, org_result = au.create_organization_in_affinity(AFFINITY_API_KEY, company_data)
+            st.write(st.session_state.report)
             if org_result:
                 if org_preexist:
                     st.success(f"Organization ID: {org_result['id']} already exists in Affinity", icon="✅")
