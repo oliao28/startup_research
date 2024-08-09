@@ -6,7 +6,7 @@ url_affinity_note = "https://api.affinity.co/notes"
 url_affinity_persons = "https://api.affinity.co/persons"
 url_affinity_field_values = "https://api.affinity.co/field-values"
 url_affinity_list = "https://api.affinity.co/lists"
-
+deal_list_id = '143881'
 def affinity_authorization(affinity_api_key):
     username = ""
     pwd = affinity_api_key
@@ -18,6 +18,11 @@ def affinity_authorization(affinity_api_key):
 
 
 def create_organization_in_affinity(affinity_api_key, organization_data):
+    """
+    return
+        whether the org already exists in Affinity,
+        org details
+    """
     # Create headers with authentication
     headers = affinity_authorization(affinity_api_key)
 
@@ -29,21 +34,16 @@ def create_organization_in_affinity(affinity_api_key, organization_data):
         search_results = search_response.json()
         if search_results["organizations"]:
             # Organization already exists
-            print("Organization already exists!")
-            return search_results["organizations"][0]
+            return True, search_results["organizations"][0]
 
     # Make the POST request
     response = requests.post(url_affinity_organizations, json=organization_data, headers=headers)
 
     # Check if the request was successful
-    # if response.status_code == 201:
     if response.status_code in [200, 201]:
-        print("Organization created successfully!")
-        return response.json()  #response will contains entity_id of the new organization
+        return False, response.json()  #response will contains entity_id of the new organization
     else:
-        print(f"Failed to create organization. Status code: {response.status_code}")
-        print(f"Response: {response.text}")
-        return None
+        return False, None
 
 def add_entry_to_list(affinity_api_key, list_id, entity_id):# list_id is 143881
     headers = affinity_authorization(affinity_api_key)
