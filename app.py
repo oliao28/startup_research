@@ -51,13 +51,17 @@ async def main():
             """ )
         website = st.text_input('Enter company website URL')
         description = st.text_input('Describe the company in a few sentences (or leave blank if website is provided)')
-        prompt = build_prompt(research_config["prompt"], website, description)
         #first get a link to a pitchdeck
         link = st.text_input('Add a link to a pitch deck')
         if st.button("Draft call memo"):
             if not website or not link:
                 st.warning("Please add a link to a website or pitchdeck to enable drafting the call memo.", icon="🚨")
             else:
+                if not description and link: #if there is no description, but there is a link
+                    description = generate_summary(link)
+
+                prompt = build_prompt(research_config["prompt"], website, description)
+
                 try: #Use Anthropic Claude model. If it has outages, fall back to open AI
                     online_report = await get_report("web", prompt, research_config["report_type"],
                                                  research_config["agent"], research_config["role"], verbose=False)
@@ -87,6 +91,7 @@ async def main():
                 st.session_state.report = report
             # Display the report if it exists in session state
             if st.session_state.report:
+                st.write(description)
                 st.write(st.session_state.report)
                 # Add to Affinity
                 if st.button("Add to Affinity"):
