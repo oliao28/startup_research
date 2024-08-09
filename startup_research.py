@@ -21,11 +21,12 @@ async def get_report(source: str, prompt: str, report_type: str, agent=None,role
 def build_prompt(prompt: str, company_website: str, company_description: str):
     if company_description == '':
        company_description = generate_summary(company_website)
-    return "Based on the website of this startup, this summary of the company \'" + company_description + "\' the subdomains of this domain, and other available that is specific to this company and this industry:" + company_website  + ", first understand what it does. Then," + prompt 
+    return f"Based on the website of this startup: {company_website}, this summary of the company \'{company_description}\', and other available information about this company and its industry, first understand what it does. Then, {prompt}"
 
 
 def get_company_name(report: str, company_website: str):
     name = report.split('\n')[0]
+    name = name.replace("*", "").replace(" report", "")
     if len(name)<3 or len(name)>20:  # this is an arbitrary threshold assuming no one would name a company with more than 20 characters
       tmp = company_website.split('.')
       if "www" in tmp[0]:
@@ -159,7 +160,7 @@ def check_point(report, website, summary):
 #there is no return value
 #This function is called by app.py and reutrns to the main flow
 SCOPES = ["https://www.googleapis.com/auth/drive"]
-def export_pdf(real_file_id):
+async def export_pdf(real_file_id):
   """Download a Document file in PDF format.
   Args:
       real_file_id : file ID of any workspace document format file
@@ -192,9 +193,11 @@ def export_pdf(real_file_id):
   try:
     service = build("drive", "v3", credentials=creds)
 
-    # Download the file
+    # Download the file to Streamlit temp folder
+    # Note: this could be a security risk we need to fix
     request = service.files().get_media(fileId=real_file_id)
     file_path = os.path.join("company", "pitchdeck.pdf")
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
     with io.FileIO(file_path, 'wb') as fh:
         downloader = MediaIoBaseDownload(fh, request)
         done = False
