@@ -38,7 +38,6 @@ def draft_memo():
     st.session_state.affinity_added = False
 def add_affinity():
     st.session_state.affinity_added = True
-    st.session_state.memo_drafted = False
 async def main():
     tab_startup, tab_peer = st.tabs(["Startup Research", "Peer Comparison"])
     # Initialize session state variables
