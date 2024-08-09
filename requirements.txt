@@ -2,7 +2,7 @@ yahooquery==2.3.7
 CurrencyConverter==0.17.23
 duckduckgo-search==5.3.1b1
 gpt-researcher==0.7.0
-streamlit==1.37.0
+streamlit==1.37.1
 numpy==1.26.4
 pandas==2.0.3
 pymupdf==1.24.9

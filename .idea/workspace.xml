@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="fix bug">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-    </list>
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="change website to st.session_state.website" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -92,22 +89,6 @@
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
       <updated>1719232007136</updated>
-    </task>
-    <task id="LOCAL-00018" summary="add a function to extract startup name from the report">
-      <option name="closed" value="true" />
-      <created>1719908403748</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1719908403748</updated>
-    </task>
-    <task id="LOCAL-00019" summary="change the secret keys">
-      <option name="closed" value="true" />
-      <created>1719908914197</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1719908914197</updated>
     </task>
     <task id="LOCAL-00020" summary="change the app name">
       <option name="closed" value="true" />
@@ -469,7 +450,23 @@
       <option name="project" value="LOCAL" />
       <updated>1723207804388</updated>
     </task>
-    <option name="localTasksCounter" value="65" />
+    <task id="LOCAL-00065" summary="pin down gpt-researcher and duckduckgo version">
+      <option name="closed" value="true" />
+      <created>1723211042225</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1723211042226</updated>
+    </task>
+    <task id="LOCAL-00066" summary="change website to st.session_state.website">
+      <option name="closed" value="true" />
+      <created>1723211219320</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1723211219320</updated>
+    </task>
+    <option name="localTasksCounter" value="67" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -487,8 +484,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="change streamlit back to 1.37.0" />
-    <MESSAGE value="remove tested button relationship" />
     <MESSAGE value="edit nested button relationship" />
     <MESSAGE value="set default session_state" />
     <MESSAGE value="Add clarity to UI message when adding to Affinity" />
@@ -512,7 +507,9 @@
     <MESSAGE value="remove redudant display" />
     <MESSAGE value="remove persistent display of company description field" />
     <MESSAGE value="fix bug" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix bug" />
+    <MESSAGE value="pin down gpt-researcher and duckduckgo version" />
+    <MESSAGE value="change website to st.session_state.website" />
+    <option name="LAST_COMMIT_MESSAGE" value="change website to st.session_state.website" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
