@@ -73,7 +73,6 @@ async def main():
                     # Use Anthropic Claude model. If it has outages, fall back to open AI
                     if not st.session_state.company_description:
                         st.session_state.company_description = await generate_summary(website)
-                        st.success("description generated!")
                     prompt = build_prompt(research_config["prompt"], website, st.session_state.company_description)
                     online_report = await get_report("web", prompt, research_config["report_type"],
                                                  research_config["agent"], research_config["role"], verbose=False)
