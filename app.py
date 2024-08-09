@@ -61,36 +61,37 @@ async def main():
         link = st.text_input('Add a link to a pitch deck')
         st.button("Draft call memo", on_click=draft_memo)
         if st.session_state.memo_drafted:
-            if not website or not link:
+            if not website and not link:
                 st.warning("Please add a link to a website or pitchdeck to enable drafting the call memo.", icon="🚨")
             else:
-                try:
-                    # Use Anthropic Claude model. If it has outages, fall back to open AI
-                    online_report = await get_report("web", prompt, research_config["report_type"],
-                                                 research_config["agent"], research_config["role"], verbose=False)
-                except anthropic.InternalServerError:
-                    os.environ["LLM_PROVIDER"] = "openai"
-                    os.environ["FAST_LLM_MODEL"] = "gpt-4o-mini"
-                    os.environ["SMART_LLM_MODEL"] = "gpt-4o"
-                    online_report = await get_report("web", prompt, research_config["report_type"],
-                                                 research_config["agent"], research_config["role"], verbose=False)
-
-                online_report = check_point(online_report, website=link, summary=description)
-
-                if link: #if link to pitchdeck is not empty
-                    write_credentials_to_files()
-                    file_id = re.search(r'/d/([a-zA-Z0-9_-]+)', link).group(1)
-                    await export_pdf(file_id)
-                    offline_report = await get_report("local", prompt, research_config["report_type"],
-                            research_config["agent"], research_config["role"], verbose=False)
-
-                    offline_report = check_point(offline_report, website=link, summary=description)
-
-                    report = combine_reports(research_config["prompt"], offline_report, online_report)
-                else:
-                    report = online_report
+                # try:
+                #     # Use Anthropic Claude model. If it has outages, fall back to open AI
+                #     online_report = await get_report("web", prompt, research_config["report_type"],
+                #                                  research_config["agent"], research_config["role"], verbose=False)
+                # except anthropic.InternalServerError:
+                #     os.environ["LLM_PROVIDER"] = "openai"
+                #     os.environ["FAST_LLM_MODEL"] = "gpt-4o-mini"
+                #     os.environ["SMART_LLM_MODEL"] = "gpt-4o"
+                #     online_report = await get_report("web", prompt, research_config["report_type"],
+                #                                  research_config["agent"], research_config["role"], verbose=False)
+                #
+                # online_report = check_point(online_report, website=link, summary=description)
+                #
+                # if link: #if link to pitchdeck is not empty
+                #     write_credentials_to_files()
+                #     file_id = re.search(r'/d/([a-zA-Z0-9_-]+)', link).group(1)
+                #     await export_pdf(file_id)
+                #     offline_report = await get_report("local", prompt, research_config["report_type"],
+                #             research_config["agent"], research_config["role"], verbose=False)
+                #
+                #     offline_report = check_point(offline_report, website=link, summary=description)
+                #
+                #     report = combine_reports(research_config["prompt"], offline_report, online_report)
+                # else:
+                #     report = online_report
 
                 # Store the report in session state
+                report = 'test report'
                 st.session_state.report = report
             # Display the report if it exists in session state
             if st.session_state.report:
