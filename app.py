@@ -33,11 +33,7 @@ def write_credentials_to_files():
 
     with open('token.json', 'w') as token_file:
         json.dump(GOOGLE_TOKEN, token_file, indent=4)
-# def draft_memo(): #DO NOT CHANGE THIS
-#     st.session_state.memo_drafted = True
-#     st.session_state.affinity_added = False
-# def add_affinity(): #DO NOT CHANGE THIS
-#     st.session_state.affinity_added = True
+
 def set_stage(stage):
     st.session_state.stage = stage
 
@@ -50,10 +46,7 @@ async def main():
         st.session_state.report = None
     if 'stage' not in st.session_state:
         st.session_state.stage = 0
-    # if 'memo_drafted' not in st.session_state:
-    #     st.session_state.memo_drafted = False
-    # if 'affinity_added' not in st.session_state:
-    #     st.session_state.affinity_added = False
+
     with tab_startup:
         st.header("Research a startup and draft the call memo")
         st.markdown(
@@ -67,21 +60,22 @@ async def main():
         # first get a link to a pitchdeck
         link = st.text_input('Add a link to a pitch deck')
         st.button("Draft call memo", on_click=set_stage, args=(1,))
-        # if st.session_state.memo_drafted:
         if st.session_state.stage==1:
             if not website:
                 st.warning("Please add the startup website to enable drafting the call memo.", icon="🚨")
             else:
                 try:
+                    # Use Anthropic Claude model. If it has outages, fall back to open AI
                     st.session_state.company_description = await generate_summary(website)
                     prompt = build_prompt(research_config["prompt"], website, st.session_state.company_description)
-                    # Use Anthropic Claude model. If it has outages, fall back to open AI
                     online_report = await get_report("web", prompt, research_config["report_type"],
                                                  research_config["agent"], research_config["role"], verbose=False)
                 except anthropic.InternalServerError:
                     os.environ["LLM_PROVIDER"] = "openai"
                     os.environ["FAST_LLM_MODEL"] = "gpt-4o-mini"
                     os.environ["SMART_LLM_MODEL"] = "gpt-4o"
+                    st.session_state.company_description = await generate_summary(website)
+                    prompt = build_prompt(research_config["prompt"], website, st.session_state.company_description)
                     online_report = await get_report("web", prompt, research_config["report_type"],
                                                  research_config["agent"], research_config["role"], verbose=False)
 
