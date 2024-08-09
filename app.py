@@ -54,7 +54,7 @@ async def main():
         # prompt = build_prompt(research_config["prompt"], website, description)
         #first get a link to a pitchdeck
         link = st.text_input('Add a link to a pitch deck')
-        if st.button("Draft call memo"):
+        if st.button("Add to Affinity"):
             # if not website or not link:
             #     st.warning("Please add a link to a website or pitchdeck to enable drafting the call memo.", icon="🚨")
             # else:
@@ -86,28 +86,28 @@ async def main():
                 # Store the report in session state
             st.session_state.report = "test report"
             # Display the report if it exists in session state
-            if st.session_state.report:
-                st.write(st.session_state.report)
-                # Add to Affinity
-                if st.button("Add to Affinity"):
+            # if st.session_state.report:
+            #     st.write(st.session_state.report)
+            #     # Add to Affinity
+            #     if st.button("Add to Affinity"):
                     # Replace LIST_ID with the actual ID of your Affinity list
-                    list_id = '143881'
-                    company_name = get_company_name(st.session_state.report, website)
+            list_id = '143881'
+            company_name = get_company_name(st.session_state.report, website)
 
-                    company_data = {
-                        "name": company_name,
-                        "domain": website,
-                    }
-                    org_result = au.create_organization_in_affinity(AFFINITY_API_KEY, company_data)
-                    if org_result:
-                        st.success(f"Created organization ID: {org_result['id']}", icon="✅")
-                        # Now, add the organization to the list
-                        au.add_entry_to_list(AFFINITY_API_KEY, list_id, org_result['id'])
+            company_data = {
+                "name": company_name,
+                "domain": website,
+            }
+            org_result = au.create_organization_in_affinity(AFFINITY_API_KEY, company_data)
+            if org_result:
+                st.success(f"Created organization ID: {org_result['id']}", icon="✅")
+                # Now, add the organization to the list
+                au.add_entry_to_list(AFFINITY_API_KEY, list_id, org_result['id'])
 
-                        # Now add notes to the organization
-                        note_result = au.add_notes_to_company(AFFINITY_API_KEY, org_result['id'], st.session_state.report)
-                        if note_result:
-                            st.success(f"Added note to: {company_name}", icon="✅")
+                # Now add notes to the organization
+                note_result = au.add_notes_to_company(AFFINITY_API_KEY, org_result['id'], st.session_state.report)
+                if note_result:
+                    st.success(f"Added note to: {company_name}", icon="✅")
                     # else:
                     #     st.error("Failed to create organization")
     # with tab_peer:
