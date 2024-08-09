@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="import anthropic">
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="remove Inc. from company name when pushing to Affinity">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/startup_research.py" beforeDir="false" afterPath="$PROJECT_DIR$/startup_research.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -347,7 +347,15 @@
       <option name="project" value="LOCAL" />
       <updated>1723131159372</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="remove Inc. from company name when pushing to Affinity">
+      <option name="closed" value="true" />
+      <created>1723131841505</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1723131841505</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -365,7 +373,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="clean up library dependency" />
     <MESSAGE value="update numpy version" />
     <MESSAGE value="add short description of what the app does" />
     <MESSAGE value="remove secret key" />
@@ -390,7 +397,8 @@
     <MESSAGE value="if anthropic experienced an outage, fall back to using openAI" />
     <MESSAGE value="revise the log for checking anthropic outages" />
     <MESSAGE value="import anthropic" />
-    <option name="LAST_COMMIT_MESSAGE" value="import anthropic" />
+    <MESSAGE value="remove Inc. from company name when pushing to Affinity" />
+    <option name="LAST_COMMIT_MESSAGE" value="remove Inc. from company name when pushing to Affinity" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

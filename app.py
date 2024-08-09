@@ -51,70 +51,65 @@ async def main():
             """ )
         website = st.text_input('Enter company website URL')
         description = st.text_input('Describe the company in a few sentences (or leave blank if website is provided)')
+        prompt = build_prompt(research_config["prompt"], website, description)
         #first get a link to a pitchdeck
         link = st.text_input('Add a link to a pitch deck')
-
-        prompt = build_prompt(research_config["prompt"], website, description)
-
-        draft_button_disabled = not website
-        if draft_button_disabled:
-            st.warning("Please add a link to a website to enable drafting the call memo.")
-
-
-        if st.button("Draft call memo", disabled=draft_button_disabled):
-            try:
-                online_report = await get_report("web", prompt, research_config["report_type"],
-                                             research_config["agent"], research_config["role"], verbose=False)
-            except anthropic.InternalServerError:
-                os.environ["LLM_PROVIDER"] = "openai"
-                os.environ["FAST_LLM_MODEL"] = "gpt-4o-mini"
-                os.environ["SMART_LLM_MODEL"] = "gpt-4o"
-                online_report = await get_report("web", prompt, research_config["report_type"],
-                                             research_config["agent"], research_config["role"], verbose=False)
-
-            online_report = check_point(online_report, website=link, summary=description)
-
-            if link: #if link to pitchdeck is not empty 
-                write_credentials_to_files()
-                file_id = re.search(r'/d/([a-zA-Z0-9_-]+)', link).group(1)
-                await export_pdf(file_id)
-                offline_report = await get_report("local", prompt, research_config["report_type"],
-                        research_config["agent"], research_config["role"], verbose=False)
-                
-                offline_report = check_point(offline_report, website=link, summary=description)
-
-                report = combine_reports(research_config["prompt"], offline_report, online_report)
+        if st.button("Draft call memo"):
+            if not website or not link:
+                st.warning("Please add a link to a website or pitchdeck to enable drafting the call memo.", icon="🚨")
             else:
-                report = online_report
-            
-            # Store the report in session state
-            st.session_state.report = report
-        # Display the report if it exists in session state
-        if st.session_state.report:
-            # st.subheader("Draft memo")
-            st.write(st.session_state.report)
-            # Add to Affinity
-            if st.button("Add to Affinity"):
-                # Replace LIST_ID with the actual ID of your Affinity list
-                list_id = '143881'
-                company_name = get_company_name(st.session_state.report, website)
+                try: #Use Anthropic Claude model. If it has outages, fall back to open AI
+                    online_report = await get_report("web", prompt, research_config["report_type"],
+                                                 research_config["agent"], research_config["role"], verbose=False)
+                except anthropic.InternalServerError:
+                    os.environ["LLM_PROVIDER"] = "openai"
+                    os.environ["FAST_LLM_MODEL"] = "gpt-4o-mini"
+                    os.environ["SMART_LLM_MODEL"] = "gpt-4o"
+                    online_report = await get_report("web", prompt, research_config["report_type"],
+                                                 research_config["agent"], research_config["role"], verbose=False)
 
-                company_data = {
-                    "name": company_name,
-                    "domain": website,
-                }
-                org_result = au.create_organization_in_affinity(AFFINITY_API_KEY, company_data)
-                if org_result:
-                    st.success(f"Created organization ID: {org_result['id']}", icon="✅")
-                    # Now, add the organization to the list
-                    au.add_entry_to_list(AFFINITY_API_KEY, list_id, org_result['id'])
+                online_report = check_point(online_report, website=link, summary=description)
 
-                    # Now add notes to the organization
-                    note_result = au.add_notes_to_company(AFFINITY_API_KEY, org_result['id'], st.session_state.report)
-                    if note_result:
-                        st.success(f"Added note to: {company_name}", icon="✅")
-                # else:
-                #     st.error("Failed to create organization")
+                if link: #if link to pitchdeck is not empty
+                    write_credentials_to_files()
+                    file_id = re.search(r'/d/([a-zA-Z0-9_-]+)', link).group(1)
+                    await export_pdf(file_id)
+                    offline_report = await get_report("local", prompt, research_config["report_type"],
+                            research_config["agent"], research_config["role"], verbose=False)
+
+                    offline_report = check_point(offline_report, website=link, summary=description)
+
+                    report = combine_reports(research_config["prompt"], offline_report, online_report)
+                else:
+                    report = online_report
+
+                # Store the report in session state
+                st.session_state.report = report
+            # Display the report if it exists in session state
+            if st.session_state.report:
+                st.write(st.session_state.report)
+                # Add to Affinity
+                if st.button("Add to Affinity"):
+                    # Replace LIST_ID with the actual ID of your Affinity list
+                    list_id = '143881'
+                    company_name = get_company_name(st.session_state.report, website)
+
+                    company_data = {
+                        "name": company_name,
+                        "domain": website,
+                    }
+                    org_result = au.create_organization_in_affinity(AFFINITY_API_KEY, company_data)
+                    if org_result:
+                        st.success(f"Created organization ID: {org_result['id']}", icon="✅")
+                        # Now, add the organization to the list
+                        au.add_entry_to_list(AFFINITY_API_KEY, list_id, org_result['id'])
+
+                        # Now add notes to the organization
+                        note_result = au.add_notes_to_company(AFFINITY_API_KEY, org_result['id'], st.session_state.report)
+                        if note_result:
+                            st.success(f"Added note to: {company_name}", icon="✅")
+                    # else:
+                    #     st.error("Failed to create organization")
     with tab_peer:
         st.header('Peer Comparison Analysis')
         st.markdown(
