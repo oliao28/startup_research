@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="remove indent" />
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="change streamlit version to 1.36.0" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -360,7 +360,15 @@
       <option name="project" value="LOCAL" />
       <updated>1723177596214</updated>
     </task>
-    <option name="localTasksCounter" value="37" />
+    <task id="LOCAL-00037" summary="change streamlit version to 1.36.0">
+      <option name="closed" value="true" />
+      <created>1723178998831</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1723178998831</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -378,7 +386,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="add short description of what the app does" />
     <MESSAGE value="remove secret key" />
     <MESSAGE value="Revert &quot;Add startup research functionality to the app&quot;&#10;&#10;This reverts commit ba0d2178" />
     <MESSAGE value="Add startup research functionality to the app" />
@@ -403,7 +410,8 @@
     <MESSAGE value="revert &quot;remove Inc. from company name when pushing to Affinity&quot;" />
     <MESSAGE value="make simple report for testing" />
     <MESSAGE value="remove indent" />
-    <option name="LAST_COMMIT_MESSAGE" value="remove indent" />
+    <MESSAGE value="change streamlit version to 1.36.0" />
+    <option name="LAST_COMMIT_MESSAGE" value="change streamlit version to 1.36.0" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
