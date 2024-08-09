@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="if anthropic experienced an outage, fall back to using openAI">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/startup_research.py" beforeDir="false" afterPath="$PROJECT_DIR$/startup_research.py" afterDir="false" />
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="pin down dependency version">
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,10 +22,12 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="qna_testing" />
+        <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -48,12 +48,18 @@
     "Python.config.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "/Users/oywliao/Documents/Finance research",
+    "last_opened_file_path": "/Users/oywliao/Downloads",
     "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings"
+  },
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "TEXT"
+    ]
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$USER_HOME$/Downloads" />
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
@@ -91,166 +97,6 @@
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
       <updated>1719232007136</updated>
-    </task>
-    <task id="LOCAL-00003" summary="add initial files">
-      <option name="closed" value="true" />
-      <created>1719232757780</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1719232757780</updated>
-    </task>
-    <task id="LOCAL-00004" summary="add initial files">
-      <option name="closed" value="true" />
-      <created>1719232802564</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1719232802564</updated>
-    </task>
-    <task id="LOCAL-00005" summary="add initial files">
-      <option name="closed" value="true" />
-      <created>1719235089246</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1719235089246</updated>
-    </task>
-    <task id="LOCAL-00006" summary="clean up library dependency">
-      <option name="closed" value="true" />
-      <created>1719242809476</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1719242809476</updated>
-    </task>
-    <task id="LOCAL-00007" summary="update numpy version">
-      <option name="closed" value="true" />
-      <created>1719243698360</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1719243698360</updated>
-    </task>
-    <task id="LOCAL-00008" summary="add short description of what the app does">
-      <option name="closed" value="true" />
-      <created>1719276747107</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1719276747107</updated>
-    </task>
-    <task id="LOCAL-00009" summary="Add startup research functionality to the app">
-      <option name="closed" value="true" />
-      <created>1719848023370</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1719848023371</updated>
-    </task>
-    <task id="LOCAL-00010" summary="Revert &quot;Add startup research functionality to the app&quot;&#10;&#10;This reverts commit ba0d2178">
-      <option name="closed" value="true" />
-      <created>1719848611691</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1719848611691</updated>
-    </task>
-    <task id="LOCAL-00011" summary="Add startup research functionality to the app">
-      <option name="closed" value="true" />
-      <created>1719848680754</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1719848680754</updated>
-    </task>
-    <task id="LOCAL-00012" summary="Add startup research functionality to the app">
-      <option name="closed" value="true" />
-      <created>1719848695719</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1719848695719</updated>
-    </task>
-    <task id="LOCAL-00013" summary="Add startup research functionality to the app">
-      <option name="closed" value="true" />
-      <created>1719848916432</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1719848916432</updated>
-    </task>
-    <task id="LOCAL-00014" summary="Add files needed for startup research">
-      <option name="closed" value="true" />
-      <created>1719849045367</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1719849045367</updated>
-    </task>
-    <task id="LOCAL-00015" summary="add functionality to push the draft memo into Affinity">
-      <option name="closed" value="true" />
-      <created>1719900844020</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1719900844020</updated>
-    </task>
-    <task id="LOCAL-00016" summary="fixing syntext errors">
-      <option name="closed" value="true" />
-      <created>1719903008402</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1719903008402</updated>
-    </task>
-    <task id="LOCAL-00017" summary="fixing bugs so we only add a new entry to Affinity if it doesn't exist yet.">
-      <option name="closed" value="true" />
-      <created>1719904363082</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1719904363082</updated>
-    </task>
-    <task id="LOCAL-00018" summary="add a function to extract startup name from the report">
-      <option name="closed" value="true" />
-      <created>1719908403748</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1719908403748</updated>
-    </task>
-    <task id="LOCAL-00019" summary="change the secret keys">
-      <option name="closed" value="true" />
-      <created>1719908914197</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1719908914197</updated>
-    </task>
-    <task id="LOCAL-00020" summary="change the app name">
-      <option name="closed" value="true" />
-      <created>1719910138515</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1719910138515</updated>
-    </task>
-    <task id="LOCAL-00021" summary="change the app name">
-      <option name="closed" value="true" />
-      <created>1719910148787</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1719910148787</updated>
-    </task>
-    <task id="LOCAL-00022" summary="fix affinity api key">
-      <option name="closed" value="true" />
-      <created>1719910983481</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1719910983481</updated>
     </task>
     <task id="LOCAL-00023" summary="fix minor errors">
       <option name="closed" value="true" />
@@ -332,7 +178,304 @@
       <option name="project" value="LOCAL" />
       <updated>1723129873146</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="revise the log for checking anthropic outages">
+      <option name="closed" value="true" />
+      <created>1723130312312</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1723130312312</updated>
+    </task>
+    <task id="LOCAL-00034" summary="revert &quot;remove Inc. from company name when pushing to Affinity&quot;">
+      <option name="closed" value="true" />
+      <created>1723175906792</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1723175906792</updated>
+    </task>
+    <task id="LOCAL-00035" summary="make simple report for testing">
+      <option name="closed" value="true" />
+      <created>1723176525108</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1723176525108</updated>
+    </task>
+    <task id="LOCAL-00036" summary="remove indent">
+      <option name="closed" value="true" />
+      <created>1723177596214</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1723177596214</updated>
+    </task>
+    <task id="LOCAL-00037" summary="change streamlit version to 1.36.0">
+      <option name="closed" value="true" />
+      <created>1723178998831</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1723178998831</updated>
+    </task>
+    <task id="LOCAL-00038" summary="change streamlit back to 1.37.0">
+      <option name="closed" value="true" />
+      <created>1723179587414</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1723179587414</updated>
+    </task>
+    <task id="LOCAL-00039" summary="remove tested button relationship">
+      <option name="closed" value="true" />
+      <created>1723181483233</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1723181483233</updated>
+    </task>
+    <task id="LOCAL-00040" summary="edit nested button relationship">
+      <option name="closed" value="true" />
+      <created>1723182275020</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1723182275020</updated>
+    </task>
+    <task id="LOCAL-00041" summary="edit nested button relationship">
+      <option name="closed" value="true" />
+      <created>1723182815451</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1723182815451</updated>
+    </task>
+    <task id="LOCAL-00042" summary="set default session_state">
+      <option name="closed" value="true" />
+      <created>1723182988899</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1723182988899</updated>
+    </task>
+    <task id="LOCAL-00043" summary="Add clarity to UI message when adding to Affinity">
+      <option name="closed" value="true" />
+      <created>1723183575382</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1723183575382</updated>
+    </task>
+    <task id="LOCAL-00044" summary="fix bug">
+      <option name="closed" value="true" />
+      <created>1723183681954</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1723183681954</updated>
+    </task>
+    <task id="LOCAL-00045" summary="specify dependency name">
+      <option name="closed" value="true" />
+      <created>1723184652939</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1723184652939</updated>
+    </task>
+    <task id="LOCAL-00046" summary="improve the accuracy on getting company_name">
+      <option name="closed" value="true" />
+      <created>1723185171851</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1723185171851</updated>
+    </task>
+    <task id="LOCAL-00047" summary="pin down dependency version">
+      <option name="closed" value="true" />
+      <created>1723185985626</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1723185985626</updated>
+    </task>
+    <task id="LOCAL-00048" summary="update streamlit version">
+      <option name="closed" value="true" />
+      <created>1723186141542</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1723186141542</updated>
+    </task>
+    <task id="LOCAL-00049" summary="change or to and;">
+      <option name="closed" value="true" />
+      <created>1723187325798</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1723187325798</updated>
+    </task>
+    <task id="LOCAL-00050" summary="reset affinity state when new memo is drafted">
+      <option name="closed" value="true" />
+      <created>1723187750865</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1723187750867</updated>
+    </task>
+    <task id="LOCAL-00051" summary="uncomment meat">
+      <option name="closed" value="true" />
+      <created>1723187922871</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1723187922874</updated>
+    </task>
+    <task id="LOCAL-00052" summary="reset memo state">
+      <option name="closed" value="true" />
+      <created>1723188395392</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1723188395392</updated>
+    </task>
+    <task id="LOCAL-00053" summary="comment out LLM for testing">
+      <option name="closed" value="true" />
+      <created>1723189180701</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1723189180702</updated>
+    </task>
+    <task id="LOCAL-00054" summary="do not reset memo state">
+      <option name="closed" value="true" />
+      <created>1723189314391</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1723189314391</updated>
+    </task>
+    <task id="LOCAL-00055" summary="uncomment LLM">
+      <option name="closed" value="true" />
+      <created>1723189935030</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1723189935030</updated>
+    </task>
+    <task id="LOCAL-00056" summary="unnested Add to Affinity and Draft memo button">
+      <option name="closed" value="true" />
+      <created>1723202765961</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1723202765961</updated>
+    </task>
+    <task id="LOCAL-00057" summary="clean up unused code">
+      <option name="closed" value="true" />
+      <created>1723202937662</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1723202937662</updated>
+    </task>
+    <task id="LOCAL-00058" summary="persist report display">
+      <option name="closed" value="true" />
+      <created>1723205606412</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1723205606412</updated>
+    </task>
+    <task id="LOCAL-00059" summary="make the input field persist">
+      <option name="closed" value="true" />
+      <created>1723207149718</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1723207149718</updated>
+    </task>
+    <task id="LOCAL-00060" summary="relax gpt-researcher version to resolve dependency conflicts">
+      <option name="closed" value="true" />
+      <created>1723207193025</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1723207193025</updated>
+    </task>
+    <task id="LOCAL-00061" summary="remove debugging logging">
+      <option name="closed" value="true" />
+      <created>1723207311986</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1723207311986</updated>
+    </task>
+    <task id="LOCAL-00062" summary="remove redudant display">
+      <option name="closed" value="true" />
+      <created>1723207430850</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1723207430850</updated>
+    </task>
+    <task id="LOCAL-00063" summary="remove persistent display of company description field">
+      <option name="closed" value="true" />
+      <created>1723207595044</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1723207595044</updated>
+    </task>
+    <task id="LOCAL-00064" summary="fix bug">
+      <option name="closed" value="true" />
+      <created>1723207804388</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1723207804388</updated>
+    </task>
+    <task id="LOCAL-00065" summary="pin down gpt-researcher and duckduckgo version">
+      <option name="closed" value="true" />
+      <created>1723211042225</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1723211042226</updated>
+    </task>
+    <task id="LOCAL-00066" summary="change website to st.session_state.website">
+      <option name="closed" value="true" />
+      <created>1723211219320</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1723211219320</updated>
+    </task>
+    <task id="LOCAL-00067" summary="update streamlit version">
+      <option name="closed" value="true" />
+      <created>1723211479588</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1723211479588</updated>
+    </task>
+    <task id="LOCAL-00068" summary="pin down dependency version">
+      <option name="closed" value="true" />
+      <created>1723211935206</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1723211935206</updated>
+    </task>
+    <task id="LOCAL-00069" summary="pin down dependency version">
+      <option name="closed" value="true" />
+      <created>1723213592986</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1723213592986</updated>
+    </task>
+    <option name="localTasksCounter" value="70" />
+
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -350,32 +493,34 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="Create a financial analysis repo" />
-    <MESSAGE value="add initial files" />
-    <MESSAGE value="clean up library dependency" />
-    <MESSAGE value="update numpy version" />
-    <MESSAGE value="add short description of what the app does" />
-    <MESSAGE value="remove secret key" />
-    <MESSAGE value="Revert &quot;Add startup research functionality to the app&quot;&#10;&#10;This reverts commit ba0d2178" />
-    <MESSAGE value="Add startup research functionality to the app" />
-    <MESSAGE value="Add files needed for startup research" />
-    <MESSAGE value="add functionality to push the draft memo into Affinity" />
-    <MESSAGE value="fixing syntext errors" />
-    <MESSAGE value="fixing bugs so we only add a new entry to Affinity if it doesn't exist yet." />
-    <MESSAGE value="add a function to extract startup name from the report" />
-    <MESSAGE value="change the secret keys" />
-    <MESSAGE value="change the app name" />
-    <MESSAGE value="fix affinity api key" />
-    <MESSAGE value="fix minor errors" />
-    <MESSAGE value="attempt to fix the export_pdf filenotfound error" />
-    <MESSAGE value="Upgrade gptresarcher version and import syntax" />
-    <MESSAGE value="temporarily fall back to openAI b/c anthropic claude outage" />
-    <MESSAGE value="ask LLM not to bold text, udpate get_company_name" />
-    <MESSAGE value="update MAX_ITERATIONS, add some more comments" />
-    <MESSAGE value="edit user instruction" />
-    <MESSAGE value="go back to anthropic" />
-    <MESSAGE value="if anthropic experienced an outage, fall back to using openAI" />
-    <option name="LAST_COMMIT_MESSAGE" value="if anthropic experienced an outage, fall back to using openAI" />
+
+    <MESSAGE value="edit nested button relationship" />
+    <MESSAGE value="set default session_state" />
+    <MESSAGE value="Add clarity to UI message when adding to Affinity" />
+    <MESSAGE value="specify dependency name" />
+    <MESSAGE value="improve the accuracy on getting company_name" />
+    <MESSAGE value="change or to and;" />
+    <MESSAGE value="reset affinity state when new memo is drafted" />
+    <MESSAGE value="uncomment meat" />
+    <MESSAGE value="reset memo state" />
+    <MESSAGE value="comment out LLM for testing" />
+    <MESSAGE value="do not reset memo state" />
+    <MESSAGE value="uncomment LLM" />
+    <MESSAGE value="unnested Add to Affinity and Draft memo button" />
+    <MESSAGE value="clean up unused code" />
+    <MESSAGE value="persist report display" />
+    <MESSAGE value="make the input field persist" />
+    <MESSAGE value="relax gpt-researcher version to resolve dependency conflicts" />
+    <MESSAGE value="remove debugging logging" />
+    <MESSAGE value="remove redudant display" />
+    <MESSAGE value="remove persistent display of company description field" />
+    <MESSAGE value="fix bug" />
+    <MESSAGE value="pin down gpt-researcher and duckduckgo version" />
+    <MESSAGE value="change website to st.session_state.website" />
+    <MESSAGE value="update streamlit version" />
+    <MESSAGE value="pin down dependency version" />
+    <option name="LAST_COMMIT_MESSAGE" value="pin down dependency version" />
+
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

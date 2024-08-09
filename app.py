@@ -6,7 +6,9 @@ from startup_research import *
 import os
 import re
 import asyncio
-import affinity_utils  as au
+
+import affinity_utils as au
+import anthropic
 
 os.environ["OPENAI_API_KEY"] =  st.secrets["openai_api_key"] # Set the OpenAI API key as an environment variable
 os.environ["TAVILY_API_KEY"] = st.secrets["tavily_api_key"] # Set the Tavyly API key as an environment variable
@@ -16,6 +18,7 @@ os.environ["FAST_LLM_MODEL"]=research_config["fast_llm_model"]
 os.environ["SMART_LLM_MODEL"]=research_config["smart_llm_model"]
 os.environ["MAX_ITERATIONS"]=research_config["max_iterations"]
 os.environ["DOC_PATH"] = os.path.join("company")
+
 
 AFFINITY_API_KEY = st.secrets["affinity_api_key"]
 
@@ -33,12 +36,20 @@ def write_credentials_to_files():
     with open('token.json', 'w') as token_file:
         json.dump(GOOGLE_TOKEN, token_file, indent=4)
 
+def set_stage(stage):
+    st.session_state.stage = stage
 
 async def main():
     tab_startup, tab_peer = st.tabs(["Startup Research", "Peer Comparison"])
     # Initialize session state variables
+    if 'company_description' not in st.session_state:
+        st.session_state.company_description = None
     if 'report' not in st.session_state:
         st.session_state.report = None
+    if 'website' not in st.session_state:
+        st.session_state.website = None
+    if 'stage' not in st.session_state:
+        st.session_state.stage = 0
 
     with tab_startup:
         st.header("Research a startup and draft the call memo")
@@ -48,26 +59,35 @@ async def main():
                You can add the startup and memo directly to Affinity or copy and paste the draft into your favorite note-taking app. 
                Check out the full introduction [here.](https://docs.google.com/document/d/1vlrP3R-BN_hMecRINpNS4y8ZVQ1EnpLABahc10u0Cy8/edit?usp=sharing)         
             """ )
-        website = st.text_input('Enter company website URL')
-        description = st.text_input('Describe the company in a few sentences (or leave blank if website is provided)')
-        prompt = build_prompt(research_config["prompt"], website, description)
-        #first get a link to a pitchdeck
+        website = st.text_input('Enter company website URL', value = st.session_state.website)
+        st.session_state.website = website
+        st.session_state.company_description = st.text_input(
+            'Describe the company in a few sentences (or leave blank if website is provided)')
+        # first get a link to a pitchdeck
         link = st.text_input('Add a link to a pitch deck')
-        if st.button("Draft call memo"):
-            if not website or not link:
-                st.warning("Please add a link to a website or pitchdeck to enable drafting the call memo.", icon="🚨")
+        st.button("Draft call memo", on_click=set_stage, args=(1,))
+        if st.session_state.stage==1:
+            if not website:
+                st.warning("Please add the startup website to enable drafting the call memo.", icon="🚨")
             else:
-                try: #Use Anthropic Claude model. If it has outages, fall back to open AI
+                try:
+                    # Use Anthropic Claude model. If it has outages, fall back to open AI
+                    if not st.session_state.company_description:
+                        st.session_state.company_description = await generate_summary(st.session_state.website)
+                    prompt = build_prompt(research_config["prompt"], st.session_state.website, st.session_state.company_description)
                     online_report = await get_report("web", prompt, research_config["report_type"],
                                                  research_config["agent"], research_config["role"], verbose=False)
                 except anthropic.InternalServerError:
                     os.environ["LLM_PROVIDER"] = "openai"
                     os.environ["FAST_LLM_MODEL"] = "gpt-4o-mini"
                     os.environ["SMART_LLM_MODEL"] = "gpt-4o"
+                    st.session_state.company_description = await generate_summary(website)
+                    prompt = build_prompt(research_config["prompt"], website, st.session_state.company_description)
                     online_report = await get_report("web", prompt, research_config["report_type"],
                                                  research_config["agent"], research_config["role"], verbose=False)
 
-                online_report = check_point(online_report, website=link, summary=description)
+                #TODO: Change the link to website?
+                online_report = check_point(online_report, website=link, summary=st.session_state.company_description)
 
                 if link: #if link to pitchdeck is not empty
                     write_credentials_to_files()
@@ -76,7 +96,7 @@ async def main():
                     offline_report = await get_report("local", prompt, research_config["report_type"],
                             research_config["agent"], research_config["role"], verbose=False)
 
-                    offline_report = check_point(offline_report, website=link, summary=description)
+                    offline_report = check_point(offline_report, website=link, summary=st.session_state.company_description)
 
                     report = combine_reports(research_config["prompt"], offline_report, online_report)
                 else:
@@ -84,31 +104,31 @@ async def main():
 
                 # Store the report in session state
                 st.session_state.report = report
-            # Display the report if it exists in session state
-            if st.session_state.report:
-                st.write(st.session_state.report)
-                # Add to Affinity
-                if st.button("Add to Affinity"):
-                    # Replace LIST_ID with the actual ID of your Affinity list
-                    list_id = '143881'
-                    company_name = get_company_name(st.session_state.report, website)
+        if st.session_state.stage>=1:
+            st.write(st.session_state.report)
+            # Add to Affinity
+            st.button("Add to Affinity", on_click=set_stage, args=(2,))
+        if st.session_state.stage==2:
+            company_data = {
+                "report": st.session_state.report,
+                "domain": st.session_state.website,
+            }
+            org_preexist, org_result = au.create_organization_in_affinity(AFFINITY_API_KEY, company_data)
+            if org_result:
+                if org_preexist:
+                    st.success(f"Organization ID: {org_result['id']} already exists in Affinity", icon="✅")
+                else:
+                    st.success(f"Created organization ID: {org_result['id']} in Affinity", icon="✅")
+                    au.add_entry_to_list(AFFINITY_API_KEY, au.deal_list_id, org_result['id'])
 
-                    company_data = {
-                        "name": company_name,
-                        "domain": website,
-                    }
-                    org_result = au.create_organization_in_affinity(AFFINITY_API_KEY, company_data)
-                    if org_result:
-                        st.success(f"Created organization ID: {org_result['id']}", icon="✅")
-                        # Now, add the organization to the list
-                        au.add_entry_to_list(AFFINITY_API_KEY, list_id, org_result['id'])
+                # Now add notes to the organization
+                note_result = au.add_notes_to_company(AFFINITY_API_KEY, org_result['id'], st.session_state.report)
+                if note_result:
+                    st.success(f"Added note to: {org_result['name']}", icon="✅")
+            else:
+                st.error("Failed to create the organization in Affinity", icon="🚨")
 
-                        # Now add notes to the organization
-                        note_result = au.add_notes_to_company(AFFINITY_API_KEY, org_result['id'], st.session_state.report)
-                        if note_result:
-                            st.success(f"Added note to: {company_name}", icon="✅")
-                    # else:
-                    #     st.error("Failed to create organization")
+
     with tab_peer:
         st.header('Peer Comparison Analysis')
         st.markdown(
