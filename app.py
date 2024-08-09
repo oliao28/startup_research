@@ -51,6 +51,8 @@ async def main():
             """ )
         website = st.text_input('Enter company website URL')
         description = st.text_input('Describe the company in a few sentences (or leave blank if website is provided)')
+        prompt = build_prompt(research_config["prompt"], website, description)
+
         #first get a link to a pitchdeck
         link = st.text_input('Add a link to a pitch deck')
         if st.button("Draft call memo"):
@@ -59,8 +61,6 @@ async def main():
             else:
                 if not description and link: #if there is no description, but there is a link
                     description = generate_summary(link)
-
-                prompt = build_prompt(research_config["prompt"], website, description)
 
                 try: #Use Anthropic Claude model. If it has outages, fall back to open AI
                     online_report = await get_report("web", prompt, research_config["report_type"],
