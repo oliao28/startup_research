@@ -60,8 +60,7 @@ async def main():
         website = st.text_input('Enter company website URL', value = st.session_state.website)
         st.session_state.website = website
         st.session_state.company_description = st.text_input(
-            'Describe the company in a few sentences (or leave blank if website is provided)',
-            value = st.session_state.company_description)
+            'Describe the company in a few sentences (or leave blank if website is provided)')
         # first get a link to a pitchdeck
         link = st.text_input('Add a link to a pitch deck')
         st.button("Draft call memo", on_click=set_stage, args=(1,))

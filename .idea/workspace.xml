@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="relax gpt-researcher version to resolve dependency conflicts">
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="remove redudant display">
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -91,22 +91,6 @@
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
       <updated>1719232007136</updated>
-    </task>
-    <task id="LOCAL-00014" summary="Add files needed for startup research">
-      <option name="closed" value="true" />
-      <created>1719849045367</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1719849045367</updated>
-    </task>
-    <task id="LOCAL-00015" summary="add functionality to push the draft memo into Affinity">
-      <option name="closed" value="true" />
-      <created>1719900844020</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1719900844020</updated>
     </task>
     <task id="LOCAL-00016" summary="fixing syntext errors">
       <option name="closed" value="true" />
@@ -468,7 +452,23 @@
       <option name="project" value="LOCAL" />
       <updated>1723207193025</updated>
     </task>
-    <option name="localTasksCounter" value="61" />
+    <task id="LOCAL-00061" summary="remove debugging logging">
+      <option name="closed" value="true" />
+      <created>1723207311986</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1723207311986</updated>
+    </task>
+    <task id="LOCAL-00062" summary="remove redudant display">
+      <option name="closed" value="true" />
+      <created>1723207430850</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1723207430850</updated>
+    </task>
+    <option name="localTasksCounter" value="63" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -486,8 +486,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="make simple report for testing" />
-    <MESSAGE value="remove indent" />
     <MESSAGE value="change streamlit version to 1.36.0" />
     <MESSAGE value="change streamlit back to 1.37.0" />
     <MESSAGE value="remove tested button relationship" />
@@ -511,7 +509,9 @@
     <MESSAGE value="persist report display" />
     <MESSAGE value="make the input field persist" />
     <MESSAGE value="relax gpt-researcher version to resolve dependency conflicts" />
-    <option name="LAST_COMMIT_MESSAGE" value="relax gpt-researcher version to resolve dependency conflicts" />
+    <MESSAGE value="remove debugging logging" />
+    <MESSAGE value="remove redudant display" />
+    <option name="LAST_COMMIT_MESSAGE" value="remove redudant display" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
