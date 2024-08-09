@@ -35,6 +35,7 @@ def write_credentials_to_files():
         json.dump(GOOGLE_TOKEN, token_file, indent=4)
 def draft_memo():
     st.session_state.memo_drafted = True
+    st.session_state.affinity_added = False
 def add_affinity():
     st.session_state.affinity_added = True
 async def main():
