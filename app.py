@@ -7,7 +7,6 @@ import os
 import re
 import asyncio
 import affinity_utils  as au
-import anthropic
 
 os.environ["OPENAI_API_KEY"] =  st.secrets["openai_api_key"] # Set the OpenAI API key as an environment variable
 os.environ["TAVILY_API_KEY"] = st.secrets["tavily_api_key"] # Set the Tavyly API key as an environment variable
