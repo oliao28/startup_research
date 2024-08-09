@@ -27,6 +27,7 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -379,7 +380,15 @@
       <option name="project" value="LOCAL" />
       <updated>1723179587414</updated>
     </task>
-    <option name="localTasksCounter" value="39" />
+    <task id="LOCAL-00039" summary="remove tested button relationship">
+      <option name="closed" value="true" />
+      <created>1723181483233</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1723181483233</updated>
+    </task>
+    <option name="localTasksCounter" value="40" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -397,7 +406,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="Revert &quot;Add startup research functionality to the app&quot;&#10;&#10;This reverts commit ba0d2178" />
     <MESSAGE value="Add startup research functionality to the app" />
     <MESSAGE value="Add files needed for startup research" />
     <MESSAGE value="add functionality to push the draft memo into Affinity" />
@@ -422,7 +430,8 @@
     <MESSAGE value="remove indent" />
     <MESSAGE value="change streamlit version to 1.36.0" />
     <MESSAGE value="change streamlit back to 1.37.0" />
-    <option name="LAST_COMMIT_MESSAGE" value="change streamlit back to 1.37.0" />
+    <MESSAGE value="remove tested button relationship" />
+    <option name="LAST_COMMIT_MESSAGE" value="remove tested button relationship" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
