@@ -17,6 +17,17 @@ def affinity_authorization(affinity_api_key):
     return headers
 
 
+def get_company_name(report: str, company_website: str):
+    name = report.split('\n')[0]
+    name = name.replace("*", "").replace(" report", "")
+    if len(name)<3 or len(name)>20:  # this is an arbitrary threshold assuming no one would name a company with more than 20 characters
+      tmp = company_website.split('.')
+      if "www" in tmp[0]:
+          name = tmp[1]
+      else:
+          name = tmp[0]
+    return name.capitalize()
+
 def create_organization_in_affinity(affinity_api_key, organization_data):
     """
     return
@@ -37,7 +48,9 @@ def create_organization_in_affinity(affinity_api_key, organization_data):
             return True, search_results["organizations"][0]
 
     # Make the POST request
-    response = requests.post(url_affinity_organizations, json=organization_data, headers=headers)
+    company_name = get_company_name(organization_data.get("report"),organization_data.get("domain"))
+    response = requests.post(url_affinity_organizations,
+                             json={"name": company_name, "domain": organization_data["domain"]}, headers=headers)
 
     # Check if the request was successful
     if response.status_code in [200, 201]:

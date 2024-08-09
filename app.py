@@ -97,11 +97,8 @@ async def main():
                 # Add to Affinity
                 st.button("Add to Affinity", on_click=add_affinity)
                 if st.session_state.affinity_added:
-                    # Replace LIST_ID with the actual ID of your Affinity list
-                    company_name = get_company_name(st.session_state.report, website)
-
                     company_data = {
-                        "name": company_name,
+                        "report": st.session_state.report,
                         "domain": website,
                     }
                     org_preexist, org_result = au.create_organization_in_affinity(AFFINITY_API_KEY, company_data)
@@ -115,7 +112,7 @@ async def main():
                         # Now add notes to the organization
                         note_result = au.add_notes_to_company(AFFINITY_API_KEY, org_result['id'], st.session_state.report)
                         if note_result:
-                            st.success(f"Added note to: {company_name}", icon="✅")
+                            st.success(f"Added note to: {org_result['name']}", icon="✅")
                     else:
                         st.error("Failed to create the organization in Affinity", icon="🚨")
     # with tab_peer:
