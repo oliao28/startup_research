@@ -63,15 +63,15 @@ async def main():
                     sources = [website]
                     description = await new_generate_summary(website, sources)
 
-                try: #Use Anthropic Claude model. If it has outages, fall back to open AI
+                '''try: #Use Anthropic Claude model. If it has outages, fall back to open AI
                     online_report = await get_report("web", prompt, research_config["report_type"],
                                                  research_config["agent"], research_config["role"], verbose=False)
-                except anthropic.InternalServerError:
-                    os.environ["LLM_PROVIDER"] = "openai"
-                    os.environ["FAST_LLM_MODEL"] = "gpt-4o-mini"
-                    os.environ["SMART_LLM_MODEL"] = "gpt-4o"
-                    online_report = await get_report("web", prompt, research_config["report_type"],
-                                                 research_config["agent"], research_config["role"], verbose=False)
+                except anthropic.InternalServerError:'''
+                os.environ["LLM_PROVIDER"] = "openai"
+                os.environ["FAST_LLM_MODEL"] = "gpt-4o-mini"
+                os.environ["SMART_LLM_MODEL"] = "gpt-4o"
+                online_report = await get_report("web", prompt, research_config["report_type"],
+                                                research_config["agent"], research_config["role"], verbose=False)
 
                 online_report = check_point(online_report, website=website, summary=description)
 
