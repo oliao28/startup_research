@@ -56,10 +56,10 @@ async def main():
         #first get a link to a pitchdeck
         link = st.text_input('Add a link to a pitch deck')
         if st.button("Draft call memo"):
-            if not website and not link:
-                st.warning("Please add a link to a website or pitchdeck to enable drafting the call memo.", icon="🚨")
+            if not website:
+                st.warning("Please add a link to a website to enable drafting the call memo.", icon="🚨")
             else:
-                if not description and link: #if there is no description, but there is a link
+                if not description: #if there is no description
                     sources = [website]
                     description = await new_generate_summary(website, sources)
 
