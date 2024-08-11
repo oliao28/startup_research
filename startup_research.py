@@ -77,66 +77,14 @@ def check_point(report, website, summary):
 
     response = str(completion.choices[0].message.content)
     return response
-   
 
-#This function takes in a real_file_id and downloads the pdf to "pitchdeck.pdf"
-#there is no return value
-#This function is called by app.py and reutrns to the main flow
-SCOPES = ["https://www.googleapis.com/auth/drive"]
-async def export_pdf(real_file_id):
-  """Download a Document file in PDF format.
-  Args:
-      real_file_id : file ID of any workspace document format file
-  Returns : IO object with location
 
-  Load pre-authorized user credentials from the environment.
-  TODO(developer) - See https://developers.google.com/identity
-  for guides on implementing OAuth2 for the application.
-  """
-
-  creds = None
-  # The file token.json stores the user's access and refresh tokens, and is
-  # created automatically when the authorization flow completes for the first
-  # time.
-  if os.path.exists("token.json"):
-    creds = Credentials.from_authorized_user_file("token.json", SCOPES)
-  # If there are no (valid) credentials available, let the user log in.
-  if not creds or not creds.valid:
-    if creds and creds.expired and creds.refresh_token:
-      creds.refresh(Request())
-    else:
-      flow = InstalledAppFlow.from_client_secrets_file(
-          "credentials.json", SCOPES
-      )
-      creds = flow.run_local_server(port=0)
-    # Save the credentials for the next run
-    with open("token.json", "w") as token:
-      token.write(creds.to_json())
-
-  try:
-    service = build("drive", "v3", credentials=creds)
-
-    # Download the file to Streamlit temp folder
-    # Note: this could be a security risk we need to fix
-    request = service.files().get_media(fileId=real_file_id)
-    file_path = os.path.join("company", "pitchdeck.pdf")
-    os.makedirs(os.path.dirname(file_path), exist_ok=True)
-    with io.FileIO(file_path, 'wb') as fh:
-        downloader = MediaIoBaseDownload(fh, request)
-        done = False
-        while not done:
-            status, done = downloader.next_chunk()
-            print(f"Download {int(status.progress() * 100)}%.")
-
-  except HttpError as error:
-    print(f"An error occurred: {error}")
-    file = None
- 
+#this downloads the file
 async def new_export_pdf(uploaded_file):
   # Save the file
   file_path = os.path.join("company", "pitchdeck.pdf")
   os.makedirs("company", exist_ok=True)
-  
+
   with open(file_path, "wb") as f:
     f.write(uploaded_file.getbuffer())
     
