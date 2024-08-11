@@ -135,7 +135,8 @@ async def export_pdf(real_file_id):
 async def new_export_pdf(uploaded_file):
   # Save the file
   file_path = os.path.join("company", "pitchdeck.pdf")
-    
+  os.makedirs("company", exist_ok=True)
+  
   with open(file_path, "wb") as f:
     f.write(uploaded_file.getbuffer())
     
