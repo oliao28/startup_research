@@ -63,9 +63,6 @@ async def main():
                     sources = [website]
                     description = await new_generate_summary(website, sources)
 
-                os.environ["LLM_PROVIDER"] = "openai"
-                os.environ["FAST_LLM_MODEL"] = "gpt-4o-mini"
-                os.environ["SMART_LLM_MODEL"] = "gpt-4o"
                 online_report = await get_report("web", prompt, research_config["report_type"],
                                                 research_config["agent"], research_config["role"], verbose=False)
 
