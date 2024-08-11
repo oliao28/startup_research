@@ -54,7 +54,7 @@ async def main():
         prompt = build_prompt(research_config["prompt"], website, description)
 
         #first get a link to a pitchdeck
-        link = st.text_input('Add a link to a pitch deck')
+        uploaded_files = st.file_uploader("Upload any documents you have from the company.")
         if st.button("Draft call memo"):
             if not website:
                 st.warning("Please add a link to a website to enable drafting the call memo.", icon="🚨")
@@ -92,6 +92,7 @@ async def main():
                 st.session_state.report = report
             # Display the report if it exists in session state
             if st.session_state.report:
+                st.write("Company Description")
                 st.write(description)
                 st.write(st.session_state.report)
                 # Add to Affinity
