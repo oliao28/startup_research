@@ -60,8 +60,8 @@ async def main():
                 st.warning("Please add a link to a website or pitchdeck to enable drafting the call memo.", icon="🚨")
             else:
                 if not description and link: #if there is no description, but there is a link
-                    sources = [link]
-                    description = await new_generate_summary(link, sources)
+                    sources = [website]
+                    description = await new_generate_summary(website, sources)
 
                 try: #Use Anthropic Claude model. If it has outages, fall back to open AI
                     online_report = await get_report("web", prompt, research_config["report_type"],
