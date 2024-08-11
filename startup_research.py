@@ -133,9 +133,9 @@ with st.echo():
 
       return response
 
-async def new_generate_summary(sources):
+async def new_generate_summary(link, sources):
   report_type = "custom_report"
-  query = "Create a 5-sentence paragraph summarizing the company with the following structure. Sentence 1: What industry does it operate in? Sentence 2: What does its’ industry or technical vertical seek to improve or sell Sentence 3: What products does the company sell? Sentence 4: What problem is this company trying to solve? Sentence 5: Who is the end-user of this company’ products?"
+  query = "Create a 5-sentence paragraph summarizing the with the following website: " + link + " following structure. Sentence 1: What industry does it operate in? Sentence 2: What does its’ industry or technical vertical seek to improve or sell Sentence 3: What products does the company sell? Sentence 4: What problem is this company trying to solve? Sentence 5: Who is the end-user of this company’ products?"
 
   researcher = GPTResearcher(query=query, report_type=report_type, source_urls=sources)
   await researcher.conduct_research()

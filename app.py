@@ -61,7 +61,7 @@ async def main():
             else:
                 if not description and link: #if there is no description, but there is a link
                     sources = [link]
-                    description = await new_generate_summary(sources)
+                    description = await new_generate_summary(link, sources)
 
                 try: #Use Anthropic Claude model. If it has outages, fall back to open AI
                     online_report = await get_report("web", prompt, research_config["report_type"],
