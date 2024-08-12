@@ -86,17 +86,18 @@ async def main():
                     online_report = await get_report("web", prompt, research_config["report_type"],
                                                  research_config["agent"], research_config["role"], verbose=False)
 
-                #TODO: Change the link to website?
-                online_report = check_point(online_report, website=link, summary=st.session_state.company_description)
-
-                if link: #if link to pitchdeck is not empty
-                    write_credentials_to_files()
-                    file_id = re.search(r'/d/([a-zA-Z0-9_-]+)', link).group(1)
-                    await export_pdf(file_id)
+                online_report = check_point(online_report, website=website, summary=st.session_state.company_description)
+                uploaded_files = st.file_uploader("Upload any documents you have from the company.")
+                # if link: #if link to pitchdeck is not empty
+                    # write_credentials_to_files()
+                    # file_id = re.search(r'/d/([a-zA-Z0-9_-]+)', link).group(1)
+                    # await export_pdf(file_id)
+                if uploaded_files is not None:  # if link to pitchdeck is not empty
+                    await new_export_pdf(uploaded_files)
                     offline_report = await get_report("local", prompt, research_config["report_type"],
                             research_config["agent"], research_config["role"], verbose=False)
 
-                    offline_report = check_point(offline_report, website=link, summary=st.session_state.company_description)
+                    offline_report = check_point(offline_report, website=website, summary=st.session_state.company_description)
 
                     report = combine_reports(research_config["prompt"], offline_report, online_report)
                 else:

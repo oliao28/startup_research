@@ -155,7 +155,16 @@ def check_point(report, website, summary):
 
     response = str(completion.choices[0].message.content)
     return response
-   
+
+
+#this downloads the file
+async def new_export_pdf(uploaded_file):
+  # Save the file
+  file_path = os.path.join("company", "pitchdeck.pdf")
+  os.makedirs("company", exist_ok=True)
+
+  with open(file_path, "wb") as f:
+    f.write(uploaded_file.getbuffer())
 
 #This function takes in a real_file_id and downloads the pdf to "pitchdeck.pdf"
 #there is no return value
