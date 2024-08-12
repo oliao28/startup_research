@@ -117,9 +117,9 @@ async def main():
             org_preexist, org_result = au.create_organization_in_affinity(AFFINITY_API_KEY, company_data)
             if org_result:
                 if org_preexist:
-                    st.success(f"Organization ID: {org_result['id']} already exists in Affinity", icon="✅")
+                    st.success(f"Organization: {org_result['name']} already exists in Affinity", icon="✅")
                 else:
-                    st.success(f"Created organization ID: {org_result['id']} in Affinity", icon="✅")
+                    st.success(f"Created organization: {org_result['name']} in Affinity", icon="✅")
                     au.add_entry_to_list(AFFINITY_API_KEY, au.deal_list_id, org_result['id'])
 
                 # Now add notes to the organization
