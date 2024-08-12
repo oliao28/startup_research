@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="change the display message to Affinity organization name instead of id">
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="try to make importing financial_analysis works">
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -97,14 +97,6 @@
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
       <updated>1719232007136</updated>
-    </task>
-    <task id="LOCAL-00026" summary="temporarily fall back to openAI b/c anthropic claude outage">
-      <option name="closed" value="true" />
-      <created>1723125903489</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1723125903489</updated>
     </task>
     <task id="LOCAL-00027" summary="temporarily fall back to openAI b/c anthropic claude outage">
       <option name="closed" value="true" />
@@ -474,7 +466,15 @@
       <option name="project" value="LOCAL" />
       <updated>1723430164086</updated>
     </task>
-    <option name="localTasksCounter" value="73" />
+    <task id="LOCAL-00073" summary="try to make importing financial_analysis works">
+      <option name="closed" value="true" />
+      <created>1723430485417</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1723430485417</updated>
+    </task>
+    <option name="localTasksCounter" value="74" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -504,7 +504,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="specify dependency name" />
     <MESSAGE value="improve the accuracy on getting company_name" />
     <MESSAGE value="change or to and;" />
     <MESSAGE value="reset affinity state when new memo is drafted" />
@@ -529,7 +528,8 @@
     <MESSAGE value="remove selenium" />
     <MESSAGE value="Change pitchdeck ingestion to offline file upload" />
     <MESSAGE value="change the display message to Affinity organization name instead of id" />
-    <option name="LAST_COMMIT_MESSAGE" value="change the display message to Affinity organization name instead of id" />
+    <MESSAGE value="try to make importing financial_analysis works" />
+    <option name="LAST_COMMIT_MESSAGE" value="try to make importing financial_analysis works" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

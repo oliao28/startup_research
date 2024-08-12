@@ -64,7 +64,8 @@ async def main():
         st.session_state.company_description = st.text_input(
             'Describe the company in a few sentences (or leave blank if website is provided)')
         # first get a link to a pitchdeck
-        link = st.text_input('Add a link to a pitch deck')
+        # link = st.text_input('Add a link to a pitch deck')
+        uploaded_files = st.file_uploader("Upload any documents you have from the company.")
         st.button("Draft call memo", on_click=set_stage, args=(1,))
         if st.session_state.stage==1:
             if not website:
@@ -87,7 +88,6 @@ async def main():
                                                  research_config["agent"], research_config["role"], verbose=False)
 
                 online_report = check_point(online_report, website=website, summary=st.session_state.company_description)
-                uploaded_files = st.file_uploader("Upload any documents you have from the company.")
                 # if link: #if link to pitchdeck is not empty
                     # write_credentials_to_files()
                     # file_id = re.search(r'/d/([a-zA-Z0-9_-]+)', link).group(1)
