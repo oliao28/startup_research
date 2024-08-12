@@ -1,8 +1,8 @@
 import streamlit as st
 import json
-import financial_analysis as fa
 from config import all_metrics, sorted_currency, research_config
 from startup_research import *
+from financial_analysis import *
 import os
 import re
 import asyncio
@@ -143,8 +143,8 @@ async def main():
 
         if st.button('Analyze'):
             with st.spinner('Analyzing companies...'):
-                results_df = fa.analyze_multiple_companies(companies, selected_metrics, target_currency, year)
-                formatted_df = fa.format_dataframe(results_df)
+                results_df = analyze_multiple_companies(companies, selected_metrics, target_currency, year)
+                formatted_df = format_dataframe(results_df)
 
             st.write(formatted_df)
 
