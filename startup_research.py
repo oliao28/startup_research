@@ -82,3 +82,38 @@ async def new_export_pdf(uploaded_file):
 
   with open(file_path, "wb") as f:
     f.write(uploaded_file.getbuffer())
+
+#this function identifies a company's industry and specific sector
+def industry_sector(report):
+    industry_list = ["biotech"]
+    client = OpenAI()
+
+    completion = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+      {"role": "system", "content": "You are a helpful assistant that analyzes reports on companies and extracts the industry of the company and the smaller sub-industry sector it belongs to."},
+      {"role": "user", "content": "Here is a report on a company: " + report + "Analyze the company and then select which industry best fits this company from the following list: " + industry_list + ". Then tell me what smaller sub-sector of this industry the company works in."},
+      {"role": "assistant", "content": "Output answers as the following INDUSTRY, SUB-SECTOR. Keep them separated by a comma. Do not add anything else."}
+    ]
+    )
+
+    response = str(completion.choices[0].message.content)
+
+    industry, sector = response.split(',')
+    return industry, sector
+
+#This function learns all about the industry
+def industry_sector_report():
+    return None
+
+#using the industry and sector report generated, we form an opinion on the company
+def opinion_formation(): 
+    return None
+
+
+#this function is called by app.py and calls to other functions in startup_research to generate expert opinion
+def expert_opinion(report):
+    industry, sector = industry_sector(report)
+    return None
+
+    
