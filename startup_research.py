@@ -55,92 +55,6 @@ async def generate_summary(url):
     researcher = GPTResearcher(prompt, report_type="custom_report", verbose = True, source_urls=[validate_url(url)])
     report = await researcher.write_report()
     return report
-# with st.echo():
-#     from selenium import webdriver
-#     from selenium.webdriver.chrome.options import Options
-#     from selenium.webdriver.chrome.service import Service
-#     from webdriver_manager.chrome import ChromeDriverManager
-#     from webdriver_manager.core.os_manager import ChromeType
-#
-#     @st.cache_resource
-#     def get_driver(_options):
-#           return webdriver.Chrome(
-#               service=Service(
-#                   ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()
-#               ),
-#               options=_options,
-#           )
-#
-#     #this function is called by check_point to generate a company summary.
-#     def generate_summary(link):
-#       opts = Options()
-#       opts.add_argument('--disable-gpu')
-#       opts.add_argument('--headless')
-#
-#       driver = get_driver(opts)
-#       text_content = ""
-#       page_source = ""
-#       try:
-#         driver.get(link)
-#         # Wait until the page is fully loaded
-#         WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-#
-#         # Wait for specific element to ensure page is fully loaded
-#         driver.implicitly_wait(50)  # Adjust the timeout as needed
-#
-#         # Example: Scroll down the page
-#         try:
-#           # Scroll and wait to load dynamic content
-#           for _ in range(3):  # Scroll multiple times to handle infinite scrolling
-#             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-#             driver.implicitly_wait(2)  # Wait for content to load
-#
-#         except:
-#           print("fail at scroll")
-#
-#         # Extract text data from common content containers
-#         containers = driver.find_elements(By.CSS_SELECTOR,  "main", "article", "[role='main']", ".main-content", ".article-body",
-#             "p", "div", "span", "body")
-#         text_content = extract_text_from_elements(containers)
-#
-#         # Print or use text_content as needed
-#         print("Extracted Text Content:")
-#         print(text_content)
-#
-#         # Get the page source
-#         page_source = st.code(driver.page_source)
-#
-#       except Exception as e:
-#           print(f"An error occurred: {e}")
-#
-#       finally:
-#         driver.quit()
-#
-#       if text_content != None and len(text_content) > 1500:
-#         text_content = text_content[0:1500]
-#       else:
-#          text_content += page_source[0:1500-len(text_content)]
-#       print(text_content)
-#       client = OpenAI()
-#
-#       completion = client.chat.completions.create(
-#       model="gpt-4o",
-#       messages=[
-#         {"role": "system", "content": "You are a helpful assistant that explains business concepts, technical verticals, and industries for non-experts. Please return all answers as HTML."},
-#         {"role": "user", "content": "Summarize the company from its website:" + link + ". The text content on the website is " + text_content},
-#         {"role": "assistant", "content": " Create a 5-sentence paragraph summarizing the company with the following structure. Sentence 1: What industry does it operate in? Sentence 2: What does its’ industry or technical vertical seek to improve or sell Sentence 3: What products does the company sell? Sentence 4: What problem is this company trying to solve? Sentence 5: Who is the end-user of this company’ products?"}
-#       ]
-#       )
-#
-#       response = str(completion.choices[0].message.content)
-#
-#       return response
-
-
-  researcher = GPTResearcher(query=query, report_type=report_type, source_urls=sources)
-  await researcher.conduct_research()
-  report = await researcher.write_report()
-  return report
    
    
 #this is the checkpoint function, it takes in a report, website, and company description
@@ -162,7 +76,6 @@ def check_point(report, website, summary):
     response = str(completion.choices[0].message.content)
     return response
 
-
 #this downloads the file
 async def new_export_pdf(uploaded_file):
   # Save the file
@@ -171,14 +84,3 @@ async def new_export_pdf(uploaded_file):
 
   with open(file_path, "wb") as f:
     f.write(uploaded_file.getbuffer())
-
-
-#this downloads the file
-async def new_export_pdf(uploaded_file):
-  # Save the file
-  file_path = os.path.join("company", "pitchdeck.pdf")
-  os.makedirs("company", exist_ok=True)
-
-  with open(file_path, "wb") as f:
-    f.write(uploaded_file.getbuffer())
-    
