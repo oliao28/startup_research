@@ -1,5 +1,4 @@
 import os.path
-# import pymupdf
 import io
 from openai import OpenAI
 from google.auth.transport.requests import Request
@@ -55,7 +54,6 @@ async def generate_summary(url):
     researcher = GPTResearcher(prompt, report_type="custom_report", verbose = True, source_urls=[validate_url(url)])
     report = await researcher.write_report()
     return report
-   
    
 #this is the checkpoint function, it takes in a report, website, and company description
 #it then uses GPT to do online research and check the validity of any claims. 
