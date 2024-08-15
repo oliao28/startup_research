@@ -53,9 +53,9 @@ You MUST write all used source urls at the end of the report as references, and 
 """
 prompt = prompt+"\n" + reference_prompt
 research_config = {
-	"llm_provider": "anthropic", #"openai", ##
-	"fast_llm_model": "claude-2.1", #"gpt-4o-mini", #
-	"smart_llm_model": "claude-3-5-sonnet-20240620", #"gpt-4o", #
+	"llm_provider": "openai",
+	"fast_llm_model": "gpt-4o-mini", 
+	"smart_llm_model": "gpt-4o", 
     "max_iterations": "6",
     "report_type": "custom_report",
     "agent": "venture capital agent",
