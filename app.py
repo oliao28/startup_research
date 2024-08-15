@@ -83,6 +83,7 @@ async def main():
                     os.environ["FAST_LLM_MODEL"] = "gpt-4o-mini"
                     os.environ["SMART_LLM_MODEL"] = "gpt-4o"
                     st.session_state.company_description = await generate_summary(website)
+                    print(st.session_state.company_description)
                     prompt = build_prompt(research_config["prompt"], website, st.session_state.company_description)
                     online_report = await get_report("web", prompt, research_config["report_type"],
                                                  research_config["agent"], research_config["role"], verbose=False)
