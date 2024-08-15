@@ -3,9 +3,7 @@ import os.path
 import io
 from openai import OpenAI
 from urllib.parse import urlparse, urlunparse
-
 from gpt_researcher import GPTResearcher
-
 import streamlit as st
 
 async def get_report(source: str, prompt: str, report_type: str, agent=None,role=None,config_path = None, verbose = True) -> str:

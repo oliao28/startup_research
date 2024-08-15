@@ -63,8 +63,6 @@ async def main():
         st.session_state.website = website
         st.session_state.company_description = st.text_input(
             'Describe the company in a few sentences (or leave blank if website is provided)')
-        # first get a link to a pitchdeck
-        # link = st.text_input('Add a link to a pitch deck')
         uploaded_files = st.file_uploader("Upload any documents you have from the company.")
         st.button("Draft call memo", on_click=set_stage, args=(1,))
         if st.session_state.stage==1:
@@ -75,7 +73,6 @@ async def main():
                     # Use Anthropic Claude model. If it has outages, fall back to open AI
                     if not st.session_state.company_description:
                         st.session_state.company_description = await generate_summary(website)
-                    
                     prompt = build_prompt(research_config["prompt"], st.session_state.website, st.session_state.company_description)
                     online_report = await get_report("web", prompt, research_config["report_type"],
                                                  research_config["agent"], research_config["role"], verbose=False)
