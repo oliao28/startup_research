@@ -1,6 +1,13 @@
 import os.path
+# import pymupdf
 import io
 from openai import OpenAI
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from googleapiclient.http import MediaIoBaseDownload
 from urllib.parse import urlparse, urlunparse
 
 from gpt_researcher import GPTResearcher
@@ -48,7 +55,88 @@ async def generate_summary(url):
     researcher = GPTResearcher(prompt, report_type="custom_report", verbose = True, source_urls=[validate_url(url)])
     report = await researcher.write_report()
     return report
-   
+# with st.echo():
+#     from selenium import webdriver
+#     from selenium.webdriver.chrome.options import Options
+#     from selenium.webdriver.chrome.service import Service
+#     from webdriver_manager.chrome import ChromeDriverManager
+#     from webdriver_manager.core.os_manager import ChromeType
+#
+#     @st.cache_resource
+#     def get_driver(_options):
+#           return webdriver.Chrome(
+#               service=Service(
+#                   ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()
+#               ),
+#               options=_options,
+#           )
+#
+#     #this function is called by check_point to generate a company summary.
+#     def generate_summary(link):
+#       opts = Options()
+#       opts.add_argument('--disable-gpu')
+#       opts.add_argument('--headless')
+#
+#       driver = get_driver(opts)
+#       text_content = ""
+#       page_source = ""
+#       try:
+#         driver.get(link)
+#         # Wait until the page is fully loaded
+#         WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+#
+#         # Wait for specific element to ensure page is fully loaded
+#         driver.implicitly_wait(50)  # Adjust the timeout as needed
+#
+#         # Example: Scroll down the page
+#         try:
+#           # Scroll and wait to load dynamic content
+#           for _ in range(3):  # Scroll multiple times to handle infinite scrolling
+#             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+#             driver.implicitly_wait(2)  # Wait for content to load
+#
+#         except:
+#           print("fail at scroll")
+#
+#         # Extract text data from common content containers
+#         containers = driver.find_elements(By.CSS_SELECTOR,  "main", "article", "[role='main']", ".main-content", ".article-body",
+#             "p", "div", "span", "body")
+#         text_content = extract_text_from_elements(containers)
+#
+#         # Print or use text_content as needed
+#         print("Extracted Text Content:")
+#         print(text_content)
+#
+#         # Get the page source
+#         page_source = st.code(driver.page_source)
+#
+#       except Exception as e:
+#           print(f"An error occurred: {e}")
+#
+#       finally:
+#         driver.quit()
+#
+#       if text_content != None and len(text_content) > 1500:
+#         text_content = text_content[0:1500]
+#       else:
+#          text_content += page_source[0:1500-len(text_content)]
+#       print(text_content)
+#       client = OpenAI()
+#
+#       completion = client.chat.completions.create(
+#       model="gpt-4o",
+#       messages=[
+#         {"role": "system", "content": "You are a helpful assistant that explains business concepts, technical verticals, and industries for non-experts. Please return all answers as HTML."},
+#         {"role": "user", "content": "Summarize the company from its website:" + link + ". The text content on the website is " + text_content},
+#         {"role": "assistant", "content": " Create a 5-sentence paragraph summarizing the company with the following structure. Sentence 1: What industry does it operate in? Sentence 2: What does its’ industry or technical vertical seek to improve or sell Sentence 3: What products does the company sell? Sentence 4: What problem is this company trying to solve? Sentence 5: Who is the end-user of this company’ products?"}
+#       ]
+#       )
+#
+#       response = str(completion.choices[0].message.content)
+#
+#       return response
+
+
 #this is the checkpoint function, it takes in a report, website, and company description
 #it then uses GPT to do online research and check the validity of any claims. 
 #It seeks to correct the information and outputs the corrected report
@@ -60,13 +148,14 @@ def check_point(report, website, summary):
     model="gpt-4o",
     messages=[
       {"role": "system", "content": "You are a helpful assistant that fact checks reports. In addition to fact-checking, you also modify fonts, colors, and text to standardize formats"},
-      {"role": "user", "content": "Using this company description: \'" + summary + "\' First understand what the company does. Then, going one bullet point at a time, fact check the following report \'" + report + "\' If a claim is accurate, make no modifications or additions to the report. Do not add a new line or mark the line in any way or form. If the claim is inaccurate, modify the line with the correct information."},
+      {"role": "user", "content": "Using this website: " + website + " and this company description: \'" + summary + "\' First understand what the company does. Then, going one bullet point at a time, fact check the following report \'" + report + "\' If a claim is accurate, make no modifications or additions to the report. Do not add a new line or mark the line in any way or form. If the claim is inaccurate, modify the line with the correct information."},
       {"role": "assistant", "content": "Stick to the same format as the report. If a claim is accurate, make no modifications. Only modify when a claim is inaccurate. There are eight sections: Website, Team, Market, Product, Traction, Exit Strategy, Concerns, and Deal Structure. Each section begins with factual statements regarding the section topic and is followed by a Questions section. Do not modify the Questions section."}
     ]
     )
 
     response = str(completion.choices[0].message.content)
     return response
+
 
 #this downloads the file
 async def new_export_pdf(uploaded_file):
@@ -77,37 +166,56 @@ async def new_export_pdf(uploaded_file):
   with open(file_path, "wb") as f:
     f.write(uploaded_file.getbuffer())
 
-#this function identifies a company's industry and specific sector
-def industry_sector(report):
-    industry_list = ["biotech"]
-    client = OpenAI()
+#This function takes in a real_file_id and downloads the pdf to "pitchdeck.pdf"
+#there is no return value
+#This function is called by app.py and reutrns to the main flow
+SCOPES = ["https://www.googleapis.com/auth/drive"]
+async def export_pdf(real_file_id):
+  """Download a Document file in PDF format.
+  Args:
+      real_file_id : file ID of any workspace document format file
+  Returns : IO object with location
 
-    completion = client.chat.completions.create(
-    model="gpt-4o",
-    messages=[
-      {"role": "system", "content": "You are a helpful assistant that analyzes reports on companies and extracts the industry of the company and the smaller sub-industry sector it belongs to."},
-      {"role": "user", "content": "Here is a report on a company: " + report + "Analyze the company and then select which industry best fits this company from the following list: " + industry_list + ". Then tell me what smaller sub-sector of this industry the company works in."},
-      {"role": "assistant", "content": "Output answers as the following INDUSTRY, SUB-SECTOR. Keep them separated by a comma. Do not add anything else."}
-    ]
-    )
+  Load pre-authorized user credentials from the environment.
+  TODO(developer) - See https://developers.google.com/identity
+  for guides on implementing OAuth2 for the application.
+  """
 
-    response = str(completion.choices[0].message.content)
+  creds = None
+  # The file token.json stores the user's access and refresh tokens, and is
+  # created automatically when the authorization flow completes for the first
+  # time.
+  if os.path.exists("token.json"):
+    creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+  # If there are no (valid) credentials available, let the user log in.
+  if not creds or not creds.valid:
+    if creds and creds.expired and creds.refresh_token:
+      creds.refresh(Request())
+    else:
+      flow = InstalledAppFlow.from_client_secrets_file(
+          "credentials.json", SCOPES
+      )
+      creds = flow.run_local_server(port=0)
+    # Save the credentials for the next run
+    with open("token.json", "w") as token:
+      token.write(creds.to_json())
 
-    industry, sector = response.split(',')
-    return industry, sector
+  try:
+    service = build("drive", "v3", credentials=creds)
 
-#This function learns all about the industry
-def industry_sector_report():
-    return None
+    # Download the file to Streamlit temp folder
+    # Note: this could be a security risk we need to fix
+    request = service.files().get_media(fileId=real_file_id)
+    file_path = os.path.join("company", "pitchdeck.pdf")
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    with io.FileIO(file_path, 'wb') as fh:
+        downloader = MediaIoBaseDownload(fh, request)
+        done = False
+        while not done:
+            status, done = downloader.next_chunk()
+            print(f"Download {int(status.progress() * 100)}%.")
 
-#using the industry and sector report generated, we form an opinion on the company
-def opinion_formation(): 
-    return None
-
-
-#this function is called by app.py and calls to other functions in startup_research to generate expert opinion
-def expert_opinion(report):
-    industry, sector = industry_sector(report)
-    return None
-
-    
+  except HttpError as error:
+    print(f"An error occurred: {error}")
+    file = None
+ 
