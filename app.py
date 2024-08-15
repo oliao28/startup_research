@@ -105,6 +105,10 @@ async def main():
             st.write("Company Description")
             st.write(st.session_state.company_description)
             st.write(st.session_state.report)
+            industry, sub_sector = identify_industry(st.session_state.report)
+            st.write("The company is in: " + industry)
+            st.write("The specfic sub-sector is: " + sub_sector)
+
             # Add to Affinity
             st.button("Add to Affinity", on_click=set_stage, args=(2,))
         if st.session_state.stage==2:
