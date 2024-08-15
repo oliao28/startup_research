@@ -88,15 +88,14 @@ def identify_industry(report):
     completion = client.chat.completions.create(
     model="gpt-4o",
     messages=[
-      {"role": "system", "content": "You are an expert in venture capital and assist non-experts in making assessments of specific technical fields. Use a comma to separate the reponses."},
-      {"role": "user", "content": "Using this report on a company: " + report + " please report back what the sub-sector industry is. This company is operating within the larger " + industry + " industry."},
-      {"role": "assistant", "content": "Respond by using the following format: Industry, Sub-sector. Use a comma to separate the two entries"}
+      {"role": "system", "content": "You are an expert in venture capital and assist non-experts in making assessments of specific technical fields."},
+      {"role": "user", "content": "Using this report on a company: " + report + " please report back what the sub-sector industry is. This company is operating within the larger " + industry + " industry. Make sure that your response is more specific than the larger industry"},
+      {"role": "assistant", "content": "Respond by using 1-3 words to decribe the field. Add nothing else. Be specific."}
     ]
     )
     
     response = str(completion.choices[0].message.content)
 
-    industry, sub_sector = response.split(",")
-    return industry, sub_sector
+    return industry, response
 
 
