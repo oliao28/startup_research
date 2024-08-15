@@ -53,11 +53,11 @@ async def generate_summary(url):
     sourcelist =[url]
     print(sourcelist)
     print(url)
-    test = "https://craif.com/en/"
     print("start generating summary")
-    prompt = f"Give me a 5 sentence overview of the company at + " + url + " especially what products it offers and its end users, and the industry it operates in. The company "
+    prompt = f"Give me a 5 sentence overview of the company at + " + url + " especially what products it offers and its end users, and the industry it operates in."
     researcher = GPTResearcher(prompt, report_type="custom_report", verbose = True, source_urls=sourcelist)
     research_result = await researcher.conduct_research()
+    print(research_result)
     report = await researcher.write_report()
     return report
 
