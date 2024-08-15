@@ -71,10 +71,14 @@ async def main():
             if not website:
                 st.warning("Please add the startup website to enable drafting the call memo.", icon="🚨")
             else:
+                os.environ["LLM_PROVIDER"] = "openai"
+                os.environ["FAST_LLM_MODEL"] = "gpt-4o-mini"
+                os.environ["SMART_LLM_MODEL"] = "gpt-4o"
                 try:
                     # Use Anthropic Claude model. If it has outages, fall back to open AI
                     if not st.session_state.company_description:
                         st.session_state.company_description = await generate_summary(website)
+                    
                     prompt = build_prompt(research_config["prompt"], st.session_state.website, st.session_state.company_description)
                     online_report = await get_report("web", prompt, research_config["report_type"],
                                                  research_config["agent"], research_config["role"], verbose=False)
