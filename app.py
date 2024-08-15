@@ -88,7 +88,10 @@ async def main():
                                                  research_config["agent"], research_config["role"], verbose=False)
 
                 online_report = check_point(online_report, website=website, summary=st.session_state.company_description)
-
+                # if link: #if link to pitchdeck is not empty
+                    # write_credentials_to_files()
+                    # file_id = re.search(r'/d/([a-zA-Z0-9_-]+)', link).group(1)
+                    # await export_pdf(file_id)
                 if uploaded_files is not None:  # if link to pitchdeck is not empty
                     await new_export_pdf(uploaded_files)
                     offline_report = await get_report("local", prompt, research_config["report_type"],
@@ -99,17 +102,10 @@ async def main():
                     report = combine_reports(research_config["prompt"], offline_report, online_report)
                 else:
                     report = online_report
-                '''
-                This area is for generating an expert opinion via dynamic prompting.
 
-                detailed_opnion = expert_opinion(report)
-                
-                '''
                 # Store the report in session state
                 st.session_state.report = report
         if st.session_state.stage>=1:
-            st.write("Company Description")
-            st.write(st.session_state.company_description)
             st.write(st.session_state.report)
             # Add to Affinity
             st.button("Add to Affinity", on_click=set_stage, args=(2,))
@@ -163,6 +159,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-
-
