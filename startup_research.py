@@ -1,5 +1,4 @@
 import os.path
-# import pymupdf
 import io
 from openai import OpenAI
 from urllib.parse import urlparse, urlunparse
