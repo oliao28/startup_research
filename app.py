@@ -86,7 +86,7 @@ async def main():
                     online_report = await get_report("web", prompt, research_config["report_type"],
                                                  research_config["agent"], research_config["role"], verbose=False)
 
-               # online_report = check_point(online_report, website=website, summary=st.session_state.company_description)
+                online_report = check_point(online_report, website=website, summary=st.session_state.company_description)
                 
                 if uploaded_files is not None:  # if link to pitchdeck is not empty
                     await new_export_pdf(uploaded_files)
