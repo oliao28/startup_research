@@ -54,9 +54,9 @@ async def generate_summary(url):
     print(sourcelist)
     print(url)
     print("start generating summary")
-    prompt = f"Give me a 5 sentence overview of this company especially what products it offers and its end users, and the industry it operates in. The company "
+    prompt = f"Give me a 5 sentence overview of the company at {url} especially what products it offers and its end users, and the industry it operates in. The company "
     researcher = GPTResearcher(prompt, report_type="custom_report", verbose = True, source_urls=sourcelist)
-    await researcher.conduct_research()
+    research_result = await researcher.conduct_research()
     report = await researcher.write_report()
     return report
 
@@ -141,4 +141,16 @@ async def export_pdf(real_file_id):
   except HttpError as error:
     print(f"An error occurred: {error}")
     file = None
- 
+
+def dynamic_prompting():
+   #find the industry
+
+   #point at repo for industry
+
+   return None
+
+def user_inquiry():
+   #take in user request:
+
+   #provided information: reports, pitchdeck, website, company decription, and expert opinion
+   return None
