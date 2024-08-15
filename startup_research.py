@@ -51,7 +51,7 @@ def validate_url(url):
 
 async def generate_summary(url):
     print("start generating summary")
-    prompt = f"Give me a 5 sentence overview of the company found at {url}, especially what products it offers and its end users, and the industry it operates in. The company "
+    prompt = f"Give me a 5 sentence overview of the company found at" + url + " especially what products it offers and its end users, and the industry it operates in. The company "
     researcher = GPTResearcher(prompt, report_type="custom_report", verbose = True, source_urls=url)
     report = await researcher.write_report()
     return report
