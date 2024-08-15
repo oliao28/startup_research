@@ -81,13 +81,15 @@ async def new_export_pdf(uploaded_file):
 
 #this function takes in a report and identifies the industry and sub-sector of a company
 def identify_industry(report):
+    
+    industry = "Biotech"
     client = OpenAI()
 
     completion = client.chat.completions.create(
     model="gpt-4o",
     messages=[
       {"role": "system", "content": "You are an expert in venture capital and assist non-experts in making assessments of specific technical fields. Use a comma to separate the reponses."},
-      {"role": "user", "content": "Using this report on a company: " + report + "identify the company's industry from this list [Biotech, Software, Semiconductor, Industrial] and then discover what the specific sub-sector is. Use a comma to separate the responses"},
+      {"role": "user", "content": "Using this report on a company: " + report + " please report back what the sub-sector industry is. This company is operating within the larger " + industry + " industry."},
       {"role": "assistant", "content": "Respond by using the following format: Industry, Sub-sector. Use a comma to separate the two entries"}
     ]
     )
