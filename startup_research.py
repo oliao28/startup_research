@@ -50,7 +50,7 @@ def validate_url(url):
     return url
 
 async def generate_summary(url):
-    sourcelist = [url]
+    sourcelist = list(url)
     print(sourcelist)
     print(url)
     print("start generating summary")
