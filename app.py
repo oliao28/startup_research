@@ -106,6 +106,8 @@ async def main():
                 # Store the report in session state
                 st.session_state.report = report
         if st.session_state.stage>=1:
+            st.write("Company Description")
+            st.write(st.session_state.company_description)
             st.write(st.session_state.report)
             # Add to Affinity
             st.button("Add to Affinity", on_click=set_stage, args=(2,))
