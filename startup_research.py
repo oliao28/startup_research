@@ -100,7 +100,7 @@ def identify_industry(report):
     return industry, response
 
 def industry_sector_report(industry, sector, company):
-    source = "hybrid"
+    source = "web"
     report_type = "research_report"
 
     prompt = """Please investigate the """+ industry + """industry and """ + sector + """sector. Provide up-to-date assessments of the investment viability 
