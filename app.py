@@ -90,12 +90,14 @@ async def main():
                 
                 if uploaded_files is not None:  # if link to pitchdeck is not empty
                     await new_export_pdf(uploaded_files)
-                    offline_report = await get_report("local", prompt, research_config["report_type"],
+                    '''offline_report = await get_report("local", prompt, research_config["report_type"],
                             research_config["agent"], research_config["role"], verbose=False)
 
                     offline_report = check_point(offline_report, website=website, summary=st.session_state.company_description)
 
-                    report = combine_reports(research_config["prompt"], offline_report, online_report)
+                    report = combine_reports(research_config["prompt"], offline_report, online_report)'''
+                    report = await get_report("hybrid", prompt, research_config["report_type"],
+                            research_config["agent"], research_config["role"], verbose=False)
                 else:
                     report = online_report
 
