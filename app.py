@@ -24,8 +24,6 @@ AFFINITY_API_KEY = st.secrets["affinity_api_key"]
 GOOGLE_CRED = json.loads(str(st.secrets["GOOGLE_CRED"]))
 GOOGLE_TOKEN = json.loads(str(st.secrets["GOOGLE_TOKEN"]))
 
-
-
 # Function to write credentials to JSON files
 #By writing locally, it allows for the potential to update the credentials
 def write_credentials_to_files():
@@ -108,7 +106,7 @@ async def main():
             industry, sub_sector = identify_industry(st.session_state.report)
             st.write("The company is in: " + industry)
             st.write("The specfic sub-sector is: " + sub_sector)
-            market_report = await industry_sector_report(industry, sub_sector, st.session_state.report)
+            market_report = await industry_sector_report(industry, sub_sector)
             st.write(market_report)
 
             # Add to Affinity

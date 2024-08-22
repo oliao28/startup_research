@@ -110,7 +110,7 @@ async def industry_sector_report(industry, sector):
                 the sector and how it is performing within the industry. Perform a Strengths, Weaknesses, Opportunities, and Threats analysis.
                 Examine how this sector differs from other sectors within the industry and what quirks of the industry affect the sector."""
 
-    researcher = GPTResearcher(prompt, report_type, source_urls = list)
+    researcher = GPTResearcher(query=prompt, report_type=report_type,  source_urls = list)
     research_result = await researcher.conduct_research()
     report = await researcher.write_report()
 
