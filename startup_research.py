@@ -5,8 +5,8 @@ from urllib.parse import urlparse, urlunparse
 from gpt_researcher import GPTResearcher
 import streamlit as st
 
-async def get_report(source: str, prompt: str, report_type: str, sourcelist: list, agent=None,role=None,config_path = None, verbose = True) -> str:
-    researcher = GPTResearcher(prompt, report_type, report_source=source, config_path = config_path, agent= agent, role=role, verbose = verbose, source_urls = sourcelist)
+async def get_report(source: str, prompt: str, report_type: str, agent=None,role=None,config_path = None, verbose = True) -> str:
+    researcher = GPTResearcher(prompt, report_type, report_source=source, config_path = config_path, agent= agent, role=role, verbose = verbose)
     research_result = await researcher.conduct_research()
     report = await researcher.write_report()
     return report
@@ -99,7 +99,7 @@ def identify_industry(report):
 
     return industry, response
 
-def industry_sector_report(industry, sector, company):
+async def industry_sector_report(industry, sector, company):
     source = "web"
     report_type = "research_report"
 
@@ -109,7 +109,9 @@ def industry_sector_report(industry, sector, company):
                 of the industry and the sector within the industry. After reviewing the industry in-depth, please assess this company and form a judgement of
                 how the company plays within the larger industry and sector. Company details here: """ + company 
 
-    report = get_report(source=source, prompt=prompt, report_type = report_type, sourcelist=list)
+    researcher = GPTResearcher(prompt, report_type, report_source=source, source_urls = list)
+    research_result = await researcher.conduct_research()
+    report = await researcher.write_report()
 
     return report
 
