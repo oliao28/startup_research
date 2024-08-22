@@ -5,8 +5,8 @@ from urllib.parse import urlparse, urlunparse
 from gpt_researcher import GPTResearcher
 import streamlit as st
 
-async def get_report(source: str, prompt: str, report_type: str, agent=None,role=None,config_path = None, verbose = True) -> str:
-    researcher = GPTResearcher(prompt, report_type, report_source=source, config_path = config_path, agent= agent, role=role, verbose = verbose)
+async def get_report(source: str, prompt: str, report_type: str, agent=None,role=None,config_path = None, verbose = True, source_urls = None) -> str:
+    researcher = GPTResearcher(prompt, report_type, report_source=source, config_path = config_path, agent= agent, role=role, verbose = verbose, source_urls = source_urls)
     research_result = await researcher.conduct_research()
     report = await researcher.write_report()
     return report
@@ -100,14 +100,16 @@ def identify_industry(report):
     return industry, response
 
 def industry_sector_report(industry, sector, company):
-    source = "web"
+    source = "hybrid"
     report_type = "research_report"
+
+    list = ["https://www.taiwan-healthcare.org/zh/homepage", "https://www.ankecare.com/", "https://news.gbimonthly.com/", "https://technews.tw/"]
 
     prompt = """Please investigate the """+ industry + """industry and """ + sector + """sector. Provide up-to-date assessments of the investment viability 
                 of the industry and the sector within the industry. After reviewing the industry in-depth, please assess this company and form a judgement of
                 how the company plays within the larger industry and sector. Company details here: """ + company 
 
-    report = get_report(source, prompt, report_type)
+    report = get_report(source=source, prompt=prompt, report_type = report_type, source_urls=list)
 
     return report
 
