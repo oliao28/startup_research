@@ -101,7 +101,6 @@ def identify_industry(report):
 
 async def industry_sector_report(industry, sector):
     report_type = "research_report"
-    source = "sources"
     list = ["https://www.taiwan-healthcare.org/zh/homepage", "https://www.ankecare.com/", "https://news.gbimonthly.com/", "https://technews.tw/"]
 
     prompt = """Please investigate the """+ industry + """industry and """ + sector + """sector. Provide up-to-date assessments 
@@ -110,12 +109,27 @@ async def industry_sector_report(industry, sector):
                 the sector and how it is performing within the industry. Perform a Strengths, Weaknesses, Opportunities, and Threats analysis.
                 Examine how this sector differs from other sectors within the industry and what quirks of the industry affect the sector."""
 
-    researcher = GPTResearcher(report_source="sources", query=prompt, report_type=report_type, source_urls=list)
+    researcher = GPTResearcher(report_source="sources", query=prompt, report_type=report_type, source_urls=list, verbose=True)
     research_result = await researcher.conduct_research()
     report = await researcher.write_report()
 
     return report
 
+def expert_opinion(company, market):
+    client = OpenAI()
+
+    completion = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+      {"role": "system", "content": "You are an expert in venture capital and assist non-experts in making assessments of specific technical fields."},
+      {"role": "user", "content": "Using this report on a company: " + company + " and this report on the industry and sector of the company: " + market + " Please provide a 5 sentence analysis of the company's investment viability. Focus on the connections between the industry and sector analysis and the company. Do not focus on company data alone."},
+      {"role": "assistant", "content": "You are an expert who sees the connections between large market trands and individual companies.."}
+    ]
+    )
+    
+    response = str(completion.choices[0].message.content)
+
+    return response
     
 
 
