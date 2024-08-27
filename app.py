@@ -109,6 +109,10 @@ async def main():
             market_report = await industry_sector_report(industry, sub_sector)
             st.write(market_report)
 
+            st.write("The expert opinion is: ")
+            opinion = expert_opinion(company=st.session_state.report, market=market_report)
+            st.write(opinion)
+
             # Add to Affinity
             st.button("Add to Affinity", on_click=set_stage, args=(2,))
         if st.session_state.stage==2:
