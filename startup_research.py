@@ -103,11 +103,9 @@ async def industry_sector_report(industry, sector):
     report_type = "research_report"
     sources = ["https://www.taiwan-healthcare.org/zh/homepage", "https://www.ankecare.com/", "https://news.gbimonthly.com/", "https://technews.tw/"]
 
-    prompt = """Please investigate the """+ industry + """industry and """ + sector + """sector. Provide up-to-date assessments 
-                of how the industry is performing. Perform a Strengths, Weaknesses, Opportunities, and Threats analysis of the industry.
-                Examine how the industry differs from other industries and what quirks often affect companies within the indudstry. Then examine
-                the sector and how it is performing within the industry. Perform a Strengths, Weaknesses, Opportunities, and Threats analysis.
-                Examine how this sector differs from other sectors within the industry and what quirks of the industry affect the sector."""
+    prompt = """Please investigate the """+ industry + """industry and """ + sector + """sector. Create an instruction manual for investing in 
+                this industry and this sector. Focus on what distinguishes venture capital investing in this industry and sector from others.
+                Include a short summary of how the industry and sector are performing."""
 
     researcher = GPTResearcher(query=prompt, 
                                  report_type=report_type, source_urls=sources, report_source='sources', verbose=True)
