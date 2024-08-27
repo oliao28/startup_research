@@ -101,7 +101,7 @@ def identify_industry(report):
 
 async def industry_sector_report(industry, sector):
     report_type = "research_report"
-
+    source = "sources"
     list = ["https://www.taiwan-healthcare.org/zh/homepage", "https://www.ankecare.com/", "https://news.gbimonthly.com/", "https://technews.tw/"]
 
     prompt = """Please investigate the """+ industry + """industry and """ + sector + """sector. Provide up-to-date assessments 
@@ -110,7 +110,7 @@ async def industry_sector_report(industry, sector):
                 the sector and how it is performing within the industry. Perform a Strengths, Weaknesses, Opportunities, and Threats analysis.
                 Examine how this sector differs from other sectors within the industry and what quirks of the industry affect the sector."""
 
-    researcher = GPTResearcher(query=prompt, report_type=report_type,  source_urls = list)
+    researcher = GPTResearcher(report_source=source, query=prompt, report_type=report_type, source_urls = list)
     research_result = await researcher.conduct_research()
     report = await researcher.write_report()
 
