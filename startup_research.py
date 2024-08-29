@@ -151,7 +151,7 @@ async def decrypt_pdf(pdf_content, password):
         output_pdf = BytesIO()
         doc.save(output_pdf)
         output_pdf.seek(0)  # Reset the file pointer to the beginning
-        new_export_pdf(output_pdf) 
+        await new_export_pdf(output_pdf) 
         return output_pdf, "PDF decrypted successfully!"
     else:
         return None, "Incorrect password! Unable to decrypt PDF."
