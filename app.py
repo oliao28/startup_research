@@ -95,8 +95,6 @@ async def main():
                             if not passkey:
                                  st.warning("Please add a password for the pdf.", icon="🚨")
                             await decrypt_pdf(uploaded_files, passkey) #new_export_pdf called within
-                        else:
-                            st.rerun() 
                     else:
                         await new_export_pdf(uploaded_files)
                     offline_report = await get_report("local", prompt, research_config["report_type"],
