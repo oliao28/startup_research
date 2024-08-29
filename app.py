@@ -66,6 +66,23 @@ async def main():
             if not website:
                 st.warning("Please add the startup website to enable drafting the call memo.", icon="🚨")
             else:
+                #check early if the pdf is encrypted BEFORE DOING ANY research
+                if uploaded_files is not None:  # if document provided
+                    #first check if encrypted
+                    if is_encrypted(uploaded_files.getvalue()):
+                        print("success!")
+                        passkey = st.text_input("Enter the password for the encrypted pdf:", type="password")
+                        tmp_button = st.button("Press enter to decrypt pdf with password")
+                        while 1==1:
+                            if tmp_button: #if button is pressed 
+                                if not passkey:
+                                    st.warning("Please add a password for the pdf.", icon="🚨")
+                                await decrypt_pdf(uploaded_files, passkey) #new_export_pdf called within
+                                break 
+                    else:
+                        await new_export_pdf(uploaded_files)
+
+                #research beginnings
                 try:
                     # Use Anthropic Claude model. If it has outages, fall back to open AI
                     if not st.session_state.company_description:
@@ -86,19 +103,6 @@ async def main():
                 online_report = check_point(online_report, website=website, summary=st.session_state.company_description)
                 #code change making more
                 if uploaded_files is not None:  # if document provided
-                    #first check if encrypted
-                    if is_encrypted(uploaded_files.getvalue()):
-                        print("success!")
-                        passkey = st.text_input("Enter the password for the encrypted pdf:", type="password")
-                        tmp_button = st.button("Press enter to decrypt pdf with password")
-                        while 1==1:
-                            if tmp_button: #if button is pressed 
-                                if not passkey:
-                                    st.warning("Please add a password for the pdf.", icon="🚨")
-                                await decrypt_pdf(uploaded_files, passkey) #new_export_pdf called within
-                                break 
-                    else:
-                        await new_export_pdf(uploaded_files)
                     offline_report = await get_report("local", prompt, research_config["report_type"],
                             research_config["agent"], research_config["role"], verbose=False)
 
