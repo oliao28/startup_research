@@ -139,7 +139,7 @@ def is_encrypted(pdf_content):
     reader = PyPDF2.PdfReader(BytesIO(pdf_content))
     return reader.is_encrypted
 
-def decrypt_pdf(pdf_content, password):
+async def decrypt_pdf(pdf_content, password):
     """Decrypt a password-protected PDF."""
     doc = pymupdf.open(stream=pdf_content.read(), filetype="pdf")
     
