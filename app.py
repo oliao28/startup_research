@@ -95,7 +95,7 @@ async def main():
                             if not passkey:
                                  st.warning("Please add a password for the pdf.", icon="🚨")
                             await decrypt_pdf(uploaded_files, passkey) #new_export_pdf called within
-                            st.experimental_rerun()
+                            st.rerun()
                         else:
                             st.stop()
                     else:
