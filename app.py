@@ -91,13 +91,12 @@ async def main():
                         print("success!")
                         passkey = st.text_input("Enter the password for the encrypted pdf:", type="password")
                         tmp_button = st.button("Press enter to decrypt pdf with password")
-                        if tmp_button:
+                        if tmp_button: #if button is pressed
                             if not passkey:
                                  st.warning("Please add a password for the pdf.", icon="🚨")
                             await decrypt_pdf(uploaded_files, passkey) #new_export_pdf called within
-                            st.rerun()
                         else:
-                            st.stop()
+                            st.rerun() 
                     else:
                         await new_export_pdf(uploaded_files)
                     offline_report = await get_report("local", prompt, research_config["report_type"],
