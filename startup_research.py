@@ -132,7 +132,7 @@ def expert_opinion(company, market):
     response = str(completion.choices[0].message.content)
 
     return response
-#pulled from internet
+#pulled from internet and works!
 def is_encrypted(pdf_content):
     """Check if a PDF file is encrypted."""
     print("success in is_encryped")
@@ -141,7 +141,7 @@ def is_encrypted(pdf_content):
 
 def decrypt_pdf(pdf_content, password):
     """Decrypt a password-protected PDF."""
-    doc = pymupdf.open(stream=pdf_content, filetype="pdf")
+    doc = pymupdf.open(stream=pdf_content.read(), filetype="pdf")
     
     # Check if the PDF is not encrypted
     if not doc.is_encrypted:
