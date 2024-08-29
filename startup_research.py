@@ -4,6 +4,9 @@ from openai import OpenAI
 from urllib.parse import urlparse, urlunparse
 from gpt_researcher import GPTResearcher
 import streamlit as st
+import PyPDF2
+from io import BytesIO
+import fitz
 
 async def get_report(source: str, prompt: str, report_type: str, agent=None,role=None,config_path = None, verbose = True) -> str:
     researcher = GPTResearcher(prompt, report_type, report_source=source, config_path = config_path, agent= agent, role=role, verbose = verbose)
@@ -130,5 +133,24 @@ def expert_opinion(company, market):
 
     return response
     
+def is_encrypted(pdf_content):
+    """Check if a PDF file is encrypted."""
+    reader = PyPDF2.PdfReader(BytesIO(pdf_content))
+    return reader.is_encrypted
 
+def decrypt_pdf(pdf_content, password):
+    """Decrypt a password-protected PDF."""
+    doc = fitz.open(stream=pdf_content, filetype="pdf")
+    
+    # Check if the PDF is not encrypted
+    if not doc.is_encrypted:
+        return None, "The PDF file is not encrypted."
 
+    if doc.authenticate(password):
+        output_pdf = BytesIO()
+        doc.save(output_pdf)
+        output_pdf.seek(0)  # Reset the file pointer to the beginning
+        new_export_pdf(output_pdf) 
+        return output_pdf, "PDF decrypted successfully!"
+    else:
+        return None, "Incorrect password! Unable to decrypt PDF."

@@ -85,8 +85,13 @@ async def main():
 
                 online_report = check_point(online_report, website=website, summary=st.session_state.company_description)
                 
-                if uploaded_files is not None:  # if link to pitchdeck is not empty
-                    await new_export_pdf(uploaded_files)
+                if uploaded_files is not None:  # if document provided
+                    #first check if encrypted
+                    if is_encrypted(uploaded_files):
+                        passkey = st.text_input("Enter the password for the encrypted pdf:", type="password")
+                        await decrypt_pdf(uploaded_files, passkey) #new_export_pdf called within
+                    else:
+                        await new_export_pdf(uploaded_files)
                     offline_report = await get_report("local", prompt, research_config["report_type"],
                             research_config["agent"], research_config["role"], verbose=False)
 
