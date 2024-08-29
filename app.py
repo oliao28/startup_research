@@ -90,7 +90,17 @@ async def main():
                     if is_encrypted(uploaded_files.getvalue()):
                         print("success!")
                         passkey = st.text_input("Enter the password for the encrypted pdf:", type="password")
-                        await decrypt_pdf(uploaded_files, passkey) #new_export_pdf called within
+                        tmp_button = st.button("Press enter to decrypt pdf with password")
+                        if tmp_button:
+                            if not website:
+                                 st.warning("Please add a password for the pdf.", icon="🚨")
+                            await decrypt_pdf(uploaded_files, passkey) #new_export_pdf called within
+                            st.experimental_rerun()
+                        else:
+                            st.stop()
+                        
+                        
+                        if passkey is not None:
                     else:
                         await new_export_pdf(uploaded_files)
                     offline_report = await get_report("local", prompt, research_config["report_type"],
