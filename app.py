@@ -87,7 +87,7 @@ async def main():
                 
                 if uploaded_files is not None:  # if document provided
                     #first check if encrypted
-                    if is_encrypted(uploaded_files):
+                    if is_encrypted(uploaded_files.get_value()):
                         passkey = st.text_input("Enter the password for the encrypted pdf:", type="password")
                         await decrypt_pdf(uploaded_files, passkey) #new_export_pdf called within
                     else:
