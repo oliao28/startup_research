@@ -6,7 +6,6 @@ from financial_analysis import *
 import os
 import re
 import asyncio
-
 import affinity_utils as au
 import anthropic
 
@@ -24,8 +23,6 @@ AFFINITY_API_KEY = st.secrets["affinity_api_key"]
 
 GOOGLE_CRED = json.loads(str(st.secrets["GOOGLE_CRED"]))
 GOOGLE_TOKEN = json.loads(str(st.secrets["GOOGLE_TOKEN"]))
-
-
 
 # Function to write credentials to JSON files
 #By writing locally, it allows for the potential to update the credentials
@@ -63,18 +60,33 @@ async def main():
         st.session_state.website = website
         st.session_state.company_description = st.text_input(
             'Describe the company in a few sentences (or leave blank if website is provided)')
-        # first get a link to a pitchdeck
-        # link = st.text_input('Add a link to a pitch deck')
         uploaded_files = st.file_uploader("Upload any documents you have from the company.")
         st.button("Draft call memo", on_click=set_stage, args=(1,))
         if st.session_state.stage==1:
             if not website:
                 st.warning("Please add the startup website to enable drafting the call memo.", icon="🚨")
             else:
+                #check early if the pdf is encrypted BEFORE DOING ANY research
+                if uploaded_files is not None:  # if document provided
+                    #first check if encrypted
+                    if is_encrypted(uploaded_files.getvalue()):
+                        print("success!")
+                        passkey = st.text_input("Enter the password for the encrypted pdf:", type="password")
+                        tmp_button = st.button("Press enter to decrypt pdf with password")
+                        while 1==1:
+                            if tmp_button: #if button is pressed 
+                                if not passkey:
+                                    st.warning("Please add a password for the pdf.", icon="🚨")
+                                await decrypt_pdf(uploaded_files, passkey) #new_export_pdf called within
+                                break 
+                    else:
+                        await new_export_pdf(uploaded_files)
+
+                #research beginnings
                 try:
                     # Use Anthropic Claude model. If it has outages, fall back to open AI
                     if not st.session_state.company_description:
-                        st.session_state.company_description = await generate_summary(st.session_state.website)
+                        st.session_state.company_description = await generate_summary(website)
                     prompt = build_prompt(research_config["prompt"], st.session_state.website, st.session_state.company_description)
                     online_report = await get_report("web", prompt, research_config["report_type"],
                                                  research_config["agent"], research_config["role"], verbose=False)
@@ -82,18 +94,15 @@ async def main():
                     os.environ["LLM_PROVIDER"] = "openai"
                     os.environ["FAST_LLM_MODEL"] = "gpt-4o-mini"
                     os.environ["SMART_LLM_MODEL"] = "gpt-4o"
-                    st.session_state.company_description = await generate_summary(website)
+                    if not st.session_state.company_description:
+                        st.session_state.company_description = await generate_summary(website)
                     prompt = build_prompt(research_config["prompt"], website, st.session_state.company_description)
                     online_report = await get_report("web", prompt, research_config["report_type"],
                                                  research_config["agent"], research_config["role"], verbose=False)
 
                 online_report = check_point(online_report, website=website, summary=st.session_state.company_description)
-                # if link: #if link to pitchdeck is not empty
-                    # write_credentials_to_files()
-                    # file_id = re.search(r'/d/([a-zA-Z0-9_-]+)', link).group(1)
-                    # await export_pdf(file_id)
-                if uploaded_files is not None:  # if link to pitchdeck is not empty
-                    await new_export_pdf(uploaded_files)
+                #code change making more
+                if uploaded_files is not None:  # if document provided
                     offline_report = await get_report("local", prompt, research_config["report_type"],
                             research_config["agent"], research_config["role"], verbose=False)
 
@@ -106,7 +115,20 @@ async def main():
                 # Store the report in session state
                 st.session_state.report = report
         if st.session_state.stage>=1:
+            st.write("Company Description")
+            st.write(st.session_state.company_description)
             st.write(st.session_state.report)
+
+            '''industry, sub_sector = identify_industry(st.session_state.report)
+            st.write("The company is in: " + industry)
+            st.write("The specfic sub-sector is: " + sub_sector)
+            market_report = await industry_sector_report(industry, sub_sector)
+            st.write(market_report)
+
+            st.write("The expert opinion is: ")
+            opinion = expert_opinion(company=st.session_state.report, market=market_report)
+            st.write(opinion)
+'''
             # Add to Affinity
             st.button("Add to Affinity", on_click=set_stage, args=(2,))
         if st.session_state.stage==2:
@@ -159,6 +181,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-
-

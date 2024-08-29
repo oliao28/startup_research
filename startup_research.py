@@ -1,18 +1,12 @@
 import os.path
-# import pymupdf
 import io
 from openai import OpenAI
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-from googleapiclient.http import MediaIoBaseDownload
 from urllib.parse import urlparse, urlunparse
-
 from gpt_researcher import GPTResearcher
-
 import streamlit as st
+import PyPDF2
+from io import BytesIO
+import pymupdf
 
 async def get_report(source: str, prompt: str, report_type: str, agent=None,role=None,config_path = None, verbose = True) -> str:
     researcher = GPTResearcher(prompt, report_type, report_source=source, config_path = config_path, agent= agent, role=role, verbose = verbose)
@@ -50,92 +44,13 @@ def validate_url(url):
     return url
 
 async def generate_summary(url):
+    sourcelist = [url]
     print("start generating summary")
-    prompt = f"Give me a 5 sentence overview of {url}, especially what products it offers and its end users, and the industry it operates in"
-    researcher = GPTResearcher(prompt, report_type="custom_report", verbose = True, source_urls=[validate_url(url)])
+    prompt = "Give me a 5 sentence overview of the company at + " + url + " especially what products it offers and its end users, and the industry it operates in."
+    researcher = GPTResearcher(prompt, report_type="custom_report", verbose = True, source_urls=sourcelist)
+    research_result = await researcher.conduct_research()
     report = await researcher.write_report()
     return report
-# with st.echo():
-#     from selenium import webdriver
-#     from selenium.webdriver.chrome.options import Options
-#     from selenium.webdriver.chrome.service import Service
-#     from webdriver_manager.chrome import ChromeDriverManager
-#     from webdriver_manager.core.os_manager import ChromeType
-#
-#     @st.cache_resource
-#     def get_driver(_options):
-#           return webdriver.Chrome(
-#               service=Service(
-#                   ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()
-#               ),
-#               options=_options,
-#           )
-#
-#     #this function is called by check_point to generate a company summary.
-#     def generate_summary(link):
-#       opts = Options()
-#       opts.add_argument('--disable-gpu')
-#       opts.add_argument('--headless')
-#
-#       driver = get_driver(opts)
-#       text_content = ""
-#       page_source = ""
-#       try:
-#         driver.get(link)
-#         # Wait until the page is fully loaded
-#         WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-#
-#         # Wait for specific element to ensure page is fully loaded
-#         driver.implicitly_wait(50)  # Adjust the timeout as needed
-#
-#         # Example: Scroll down the page
-#         try:
-#           # Scroll and wait to load dynamic content
-#           for _ in range(3):  # Scroll multiple times to handle infinite scrolling
-#             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-#             driver.implicitly_wait(2)  # Wait for content to load
-#
-#         except:
-#           print("fail at scroll")
-#
-#         # Extract text data from common content containers
-#         containers = driver.find_elements(By.CSS_SELECTOR,  "main", "article", "[role='main']", ".main-content", ".article-body",
-#             "p", "div", "span", "body")
-#         text_content = extract_text_from_elements(containers)
-#
-#         # Print or use text_content as needed
-#         print("Extracted Text Content:")
-#         print(text_content)
-#
-#         # Get the page source
-#         page_source = st.code(driver.page_source)
-#
-#       except Exception as e:
-#           print(f"An error occurred: {e}")
-#
-#       finally:
-#         driver.quit()
-#
-#       if text_content != None and len(text_content) > 1500:
-#         text_content = text_content[0:1500]
-#       else:
-#          text_content += page_source[0:1500-len(text_content)]
-#       print(text_content)
-#       client = OpenAI()
-#
-#       completion = client.chat.completions.create(
-#       model="gpt-4o",
-#       messages=[
-#         {"role": "system", "content": "You are a helpful assistant that explains business concepts, technical verticals, and industries for non-experts. Please return all answers as HTML."},
-#         {"role": "user", "content": "Summarize the company from its website:" + link + ". The text content on the website is " + text_content},
-#         {"role": "assistant", "content": " Create a 5-sentence paragraph summarizing the company with the following structure. Sentence 1: What industry does it operate in? Sentence 2: What does its’ industry or technical vertical seek to improve or sell Sentence 3: What products does the company sell? Sentence 4: What problem is this company trying to solve? Sentence 5: Who is the end-user of this company’ products?"}
-#       ]
-#       )
-#
-#       response = str(completion.choices[0].message.content)
-#
-#       return response
-
 
 #this is the checkpoint function, it takes in a report, website, and company description
 #it then uses GPT to do online research and check the validity of any claims. 
@@ -150,7 +65,8 @@ def check_point(report, website, summary):
       {"role": "system", "content": "You are a helpful assistant that fact checks reports. In addition to fact-checking, you also modify fonts, colors, and text to standardize formats"},
       {"role": "user", "content": "Using this website: " + website + " and this company description: \'" + summary + "\' First understand what the company does. Then, going one bullet point at a time, fact check the following report \'" + report + "\' If a claim is accurate, make no modifications or additions to the report. Do not add a new line or mark the line in any way or form. If the claim is inaccurate, modify the line with the correct information."},
       {"role": "assistant", "content": "Stick to the same format as the report. If a claim is accurate, make no modifications. Only modify when a claim is inaccurate. There are eight sections: Website, Team, Market, Product, Traction, Exit Strategy, Concerns, and Deal Structure. Each section begins with factual statements regarding the section topic and is followed by a Questions section. Do not modify the Questions section."}
-    ]
+    ],
+     temperature = 0.2
     )
 
     response = str(completion.choices[0].message.content)
@@ -166,56 +82,76 @@ async def new_export_pdf(uploaded_file):
   with open(file_path, "wb") as f:
     f.write(uploaded_file.getbuffer())
 
-#This function takes in a real_file_id and downloads the pdf to "pitchdeck.pdf"
-#there is no return value
-#This function is called by app.py and reutrns to the main flow
-SCOPES = ["https://www.googleapis.com/auth/drive"]
-async def export_pdf(real_file_id):
-  """Download a Document file in PDF format.
-  Args:
-      real_file_id : file ID of any workspace document format file
-  Returns : IO object with location
 
-  Load pre-authorized user credentials from the environment.
-  TODO(developer) - See https://developers.google.com/identity
-  for guides on implementing OAuth2 for the application.
-  """
+#this function takes in a report and identifies the industry and sub-sector of a company
+def identify_industry(report):
+    
+    industry = "Biotech"
+    client = OpenAI()
 
-  creds = None
-  # The file token.json stores the user's access and refresh tokens, and is
-  # created automatically when the authorization flow completes for the first
-  # time.
-  if os.path.exists("token.json"):
-    creds = Credentials.from_authorized_user_file("token.json", SCOPES)
-  # If there are no (valid) credentials available, let the user log in.
-  if not creds or not creds.valid:
-    if creds and creds.expired and creds.refresh_token:
-      creds.refresh(Request())
+    completion = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+      {"role": "system", "content": "You are an expert in venture capital and assist non-experts in making assessments of specific technical fields."},
+      {"role": "user", "content": "Using this report on a company: " + report + " please report back what the sub-sector industry is. This company is operating within the larger " + industry + " industry. Make sure that your response is more specific than the larger industry"},
+      {"role": "assistant", "content": "Respond by using 1-3 words to decribe the field. Add nothing else. Be specific."}
+    ]
+    )
+    
+    response = str(completion.choices[0].message.content)
+
+    return industry, response
+
+async def industry_sector_report(industry, sector):
+    report_type = "research_report"
+    sources = ["https://www.taiwan-healthcare.org/zh/homepage", "https://www.ankecare.com/", "https://news.gbimonthly.com/", "https://technews.tw/"]
+
+    prompt = """Please investigate the """+ industry + """industry and """ + sector + """sector. Create an instruction manual for investing in 
+                this industry and this sector. Focus on what distinguishes venture capital investing in this industry and sector from others.
+                Include a short summary of how the industry and sector are performing."""
+
+    researcher = GPTResearcher(query=prompt, 
+                                 report_type=report_type, source_urls=sources, report_source='sources', verbose=True)
+    research_result = await researcher.conduct_research()
+    report = await researcher.write_report()
+
+    return report
+
+def expert_opinion(company, market):
+    client = OpenAI()
+
+    completion = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+      {"role": "system", "content": "You are an expert in venture capital and assist non-experts in making assessments of specific technical fields."},
+      {"role": "user", "content": "Using this report on a company: " + company + " and this report on the industry and sector of the company: " + market + " Please provide a 5 sentence analysis of the company's investment viability. Focus on the connections between the industry and sector analysis and the company. Do not focus on company data alone."},
+      {"role": "assistant", "content": "You are an expert who sees the connections between large market trands and individual companies.."}
+    ]
+    )
+    
+    response = str(completion.choices[0].message.content)
+
+    return response
+
+#pulled from internet and works!
+def is_encrypted(pdf_content):
+    """Check if a PDF file is encrypted."""
+    reader = PyPDF2.PdfReader(BytesIO(pdf_content))
+    return reader.is_encrypted
+
+async def decrypt_pdf(pdf_content, password):
+    """Decrypt a password-protected PDF."""
+    doc = pymupdf.open(stream=pdf_content.read(), filetype="pdf")
+    
+    # Check if the PDF is not encrypted
+    if not doc.is_encrypted:
+        return None, "The PDF file is not encrypted."
+
+    if doc.authenticate(password):
+        output_pdf = BytesIO()
+        doc.save(output_pdf)
+        output_pdf.seek(0)  # Reset the file pointer to the beginning
+        await new_export_pdf(output_pdf) 
+        return output_pdf, "PDF decrypted successfully!"
     else:
-      flow = InstalledAppFlow.from_client_secrets_file(
-          "credentials.json", SCOPES
-      )
-      creds = flow.run_local_server(port=0)
-    # Save the credentials for the next run
-    with open("token.json", "w") as token:
-      token.write(creds.to_json())
-
-  try:
-    service = build("drive", "v3", credentials=creds)
-
-    # Download the file to Streamlit temp folder
-    # Note: this could be a security risk we need to fix
-    request = service.files().get_media(fileId=real_file_id)
-    file_path = os.path.join("company", "pitchdeck.pdf")
-    os.makedirs(os.path.dirname(file_path), exist_ok=True)
-    with io.FileIO(file_path, 'wb') as fh:
-        downloader = MediaIoBaseDownload(fh, request)
-        done = False
-        while not done:
-            status, done = downloader.next_chunk()
-            print(f"Download {int(status.progress() * 100)}%.")
-
-  except HttpError as error:
-    print(f"An error occurred: {error}")
-    file = None
- 
+        return None, "Incorrect password! Unable to decrypt PDF."
