@@ -132,10 +132,10 @@ def expert_opinion(company, market):
     response = str(completion.choices[0].message.content)
 
     return response
+
 #pulled from internet and works!
 def is_encrypted(pdf_content):
     """Check if a PDF file is encrypted."""
-    print("success in is_encryped")
     reader = PyPDF2.PdfReader(BytesIO(pdf_content))
     return reader.is_encrypted
 
