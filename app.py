@@ -119,16 +119,16 @@ async def main():
             st.write(st.session_state.company_description)
             st.write(st.session_state.report)
 
-            '''industry, sub_sector = identify_industry(st.session_state.report)
-            st.write("The company is in: " + industry)
-            st.write("The specfic sub-sector is: " + sub_sector)
-            market_report = await industry_sector_report(industry, sub_sector)
-            st.write(market_report)
+            # industry, sub_sector = identify_industry(st.session_state.report)
+            # st.write("The company is in: " + industry)
+            # st.write("The specfic sub-sector is: " + sub_sector)
+            # market_report = await industry_sector_report(industry, sub_sector)
+            # st.write(market_report)
+            #
+            # st.write("The expert opinion is: ")
+            # opinion = expert_opinion(company=st.session_state.report, market=market_report)
+            # st.write(opinion)
 
-            st.write("The expert opinion is: ")
-            opinion = expert_opinion(company=st.session_state.report, market=market_report)
-            st.write(opinion)
-'''
             # Add to Affinity
             st.button("Add to Affinity", on_click=set_stage, args=(2,))
         if st.session_state.stage==2:
