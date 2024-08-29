@@ -6,7 +6,7 @@ from gpt_researcher import GPTResearcher
 import streamlit as st
 import PyPDF2
 from io import BytesIO
-import fitz
+import pymupdf
 
 async def get_report(source: str, prompt: str, report_type: str, agent=None,role=None,config_path = None, verbose = True) -> str:
     researcher = GPTResearcher(prompt, report_type, report_source=source, config_path = config_path, agent= agent, role=role, verbose = verbose)
@@ -140,7 +140,7 @@ def is_encrypted(pdf_content):
 
 def decrypt_pdf(pdf_content, password):
     """Decrypt a password-protected PDF."""
-    doc = fitz.open(stream=pdf_content, filetype="pdf")
+    doc = pymupdf.open(stream=pdf_content, filetype="pdf")
     
     # Check if the PDF is not encrypted
     if not doc.is_encrypted:
