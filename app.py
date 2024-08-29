@@ -84,7 +84,7 @@ async def main():
                                                  research_config["agent"], research_config["role"], verbose=False)
 
                 online_report = check_point(online_report, website=website, summary=st.session_state.company_description)
-                
+                #code change 
                 if uploaded_files is not None:  # if document provided
                     #first check if encrypted
                     if is_encrypted(uploaded_files.getvalue()):
