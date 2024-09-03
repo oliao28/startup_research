@@ -60,7 +60,7 @@ async def main():
         st.session_state.website = website
         st.session_state.company_description = st.text_input(
             'Describe the company in a few sentences (or leave blank if website is provided)')
-        uploaded_files = st.file_uploader("Upload any documents you have from the company.")
+        uploaded_files = st.file_uploader("Upload any documents you have from the company.") #TODO: check the app work with normal pitch deck
         st.button("Draft call memo", on_click=set_stage, args=(1,))
         if st.session_state.stage==1:
             if not website:
@@ -82,37 +82,8 @@ async def main():
                     else:
                         await new_export_pdf(uploaded_files)
 
-                research beginnings
-                try:
-                    # Use Anthropic Claude model. If it has outages, fall back to open AI
-                    if not st.session_state.company_description:
-                        st.session_state.company_description = await generate_summary(website)
-                    prompt = build_prompt(research_config["prompt"], st.session_state.website, st.session_state.company_description)
-                    online_report = await get_report("web", prompt, research_config["report_type"],
-                                                 research_config["agent"], research_config["role"], verbose=False)
-                except anthropic.InternalServerError:
-                    os.environ["LLM_PROVIDER"] = "openai"
-                    os.environ["FAST_LLM_MODEL"] = "gpt-4o-mini"
-                    os.environ["SMART_LLM_MODEL"] = "gpt-4o"
-                    if not st.session_state.company_description:
-                        st.session_state.company_description = await generate_summary(website)
-                    prompt = build_prompt(research_config["prompt"], website, st.session_state.company_description)
-                    online_report = await get_report("web", prompt, research_config["report_type"],
-                                                 research_config["agent"], research_config["role"], verbose=False)
-
-                online_report = check_point(online_report, website=website, summary=st.session_state.company_description)
-                #code change making more
-                if uploaded_files is not None:  # if document provided
-                    offline_report = await get_report("local", prompt, research_config["report_type"],
-                            research_config["agent"], research_config["role"], verbose=False)
-
-                    offline_report = check_point(offline_report, website=website, summary=st.session_state.company_description)
-
-                    report = combine_reports(research_config["prompt"], offline_report, online_report)
-                else:
-                    report = online_report
-                # Store the report in session state
-                st.session_state.report = report
+                #research beginnings
+                st.session_state.report = await conduct_research(st.session_state, research_config, uploaded_files)
         if st.session_state.stage>=1:
             st.write(st.session_state.report)
             st.write("Company Description")
