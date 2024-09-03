@@ -60,7 +60,7 @@ async def main():
         st.session_state.website = website
         st.session_state.company_description = st.text_input(
             'Describe the company in a few sentences (or leave blank if website is provided)')
-        uploaded_files = st.file_uploader("Upload any documents you have from the company.") #TODO: check the app work with normal pitch deck
+        uploaded_files = st.file_uploader("Upload any documents you have from the company.")
         st.button("Draft call memo", on_click=set_stage, args=(1,))
         if st.session_state.stage==1:
             if not website:
