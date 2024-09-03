@@ -82,7 +82,7 @@ async def main():
                     else:
                         await new_export_pdf(uploaded_files)
 
-                #research beginnings
+                research beginnings
                 try:
                     # Use Anthropic Claude model. If it has outages, fall back to open AI
                     if not st.session_state.company_description:
@@ -111,13 +111,12 @@ async def main():
                     report = combine_reports(research_config["prompt"], offline_report, online_report)
                 else:
                     report = online_report
-
                 # Store the report in session state
                 st.session_state.report = report
         if st.session_state.stage>=1:
+            st.write(st.session_state.report)
             st.write("Company Description")
             st.write(st.session_state.company_description)
-            st.write(st.session_state.report)
 
             # industry, sub_sector = identify_industry(st.session_state.report)
             # st.write("The company is in: " + industry)
@@ -138,11 +137,7 @@ async def main():
             }
             org_preexist, org_result = au.create_organization_in_affinity(AFFINITY_API_KEY, company_data)
             if org_result:
-                if org_preexist:
-                    st.success(f"Organization: {org_result['name']} already exists in Affinity", icon="✅")
-                else:
-                    st.success(f"Created organization: {org_result['name']} in Affinity", icon="✅")
-                    au.add_entry_to_list(AFFINITY_API_KEY, au.deal_list_id, org_result['id'])
+                au.add_entry_to_list(AFFINITY_API_KEY, au.deal_list_id, org_result['id'])
 
                 # Now add notes to the organization
                 note_result = au.add_notes_to_company(AFFINITY_API_KEY, org_result['id'], st.session_state.report)
