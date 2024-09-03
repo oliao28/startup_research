@@ -82,7 +82,7 @@ async def main():
                     else:
                         await new_export_pdf(uploaded_files)
 
-                research beginnings
+                #research beginnings
                 try:
                     # Use Anthropic Claude model. If it has outages, fall back to open AI
                     if not st.session_state.company_description:
