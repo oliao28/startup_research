@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="edit &quot;Peer Analysis&quot; header for testing purposes">
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="change the comment style">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/affinity_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/affinity_utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -29,6 +30,13 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RESET_MODE" value="HARD" />
     <option name="UPDATE_TYPE" value="REBASE" />
+  </component>
+  <component name="GithubProjectSettings">
+    <option name="branchProtectionPatterns">
+      <list>
+        <option value="main" />
+      </list>
+    </option>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -98,14 +106,6 @@
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
       <updated>1719232007136</updated>
-    </task>
-    <task id="LOCAL-00027" summary="temporarily fall back to openAI b/c anthropic claude outage">
-      <option name="closed" value="true" />
-      <created>1723126245722</created>
-      <option name="number" value="00027" />
-      <option name="presentableId" value="LOCAL-00027" />
-      <option name="project" value="LOCAL" />
-      <updated>1723126245722</updated>
     </task>
     <task id="LOCAL-00028" summary="ask LLM not to bold text, udpate get_company_name">
       <option name="closed" value="true" />
@@ -475,7 +475,15 @@
       <option name="project" value="LOCAL" />
       <updated>1723430485417</updated>
     </task>
-    <option name="localTasksCounter" value="74" />
+    <task id="LOCAL-00074" summary="change the comment style">
+      <option name="closed" value="true" />
+      <created>1724970702071</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1724970702071</updated>
+    </task>
+    <option name="localTasksCounter" value="75" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -505,7 +513,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="improve the accuracy on getting company_name" />
     <MESSAGE value="change or to and;" />
     <MESSAGE value="reset affinity state when new memo is drafted" />
     <MESSAGE value="uncomment meat" />
@@ -530,7 +537,8 @@
     <MESSAGE value="Change pitchdeck ingestion to offline file upload" />
     <MESSAGE value="change the display message to Affinity organization name instead of id" />
     <MESSAGE value="try to make importing financial_analysis works" />
-    <option name="LAST_COMMIT_MESSAGE" value="try to make importing financial_analysis works" />
+    <MESSAGE value="change the comment style" />
+    <option name="LAST_COMMIT_MESSAGE" value="change the comment style" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

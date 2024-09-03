@@ -58,30 +58,35 @@ def create_organization_in_affinity(affinity_api_key, organization_data):
     else:
         return False, None
 
+def find_dict_by_entity_id(dict_list, target_id):
+    for dictionary in dict_list:
+        if dictionary.get("entity_id") == target_id:
+            return dictionary
+    return None
 def add_entry_to_list(affinity_api_key, list_id, entity_id):# list_id is 143881
     headers = affinity_authorization(affinity_api_key)
     full_url = f"{url_affinity_list}/{list_id}/list-entries"
-    data = {"entity_id": entity_id}
-
     # First, check if the organization is already in the list
-    check_response = requests.get(full_url, headers=headers, params=data)
+    check_response = requests.get(full_url, headers=headers)
     if check_response.status_code == 200:
         existing_entries = check_response.json()
-        if existing_entries:
-            print("Organization is already in the list!")
-            return existing_entries[0]
-
-    # Make the POST request
-    response = requests.post(full_url, json=data, headers=headers)
-    # Check if the request was successful
-    # if response.status_code == 201:
-    if response.status_code in [200, 201]:
-        print("Organization added to list successfully!")
-        return response.json()
+        output = find_dict_by_entity_id(existing_entries, entity_id)
+        if output:
+            return output
+        else:
+            # if the entry doesnt' exist, either because check_response is 404 or the return list is >1, Make the POST request
+            response = requests.post(full_url, json={"entity_id": entity_id}, headers=headers)
+            # Check if the request was successful
+            if response.status_code in [200, 201]:
+                print("Organization added to list successfully!")
+                return response.json()
+            else:
+                print(f"Failed to add organization to list. Status code: {response.status_code}")
+                print(f"Response: {response.text}")
+                return None
     else:
-        print(f"Failed to add organization to list. Status code: {response.status_code}")
-        print(f"Response: {response.text}")
-        return None
+        print("this Affinity list doesn't exist!")
+
 
 def add_notes_to_company(affinity_api_key, organization_id, note):
     headers = affinity_authorization(affinity_api_key)
