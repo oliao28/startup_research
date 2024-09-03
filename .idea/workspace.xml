@@ -4,7 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="Revise add_entry_to_list because Affinity's API call has bugs">
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="move company description to the back because the Affinity function fetch company_name by the first line of the report">
+      <change beforePath="$PROJECT_DIR$/affinity_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/affinity_utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -104,14 +105,6 @@
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
       <updated>1719232007136</updated>
-    </task>
-    <task id="LOCAL-00029" summary="update MAX_ITERATIONS, add some more comments">
-      <option name="closed" value="true" />
-      <created>1723128482983</created>
-      <option name="number" value="00029" />
-      <option name="presentableId" value="LOCAL-00029" />
-      <option name="project" value="LOCAL" />
-      <updated>1723128482983</updated>
     </task>
     <task id="LOCAL-00030" summary="edit user instruction">
       <option name="closed" value="true" />
@@ -481,7 +474,15 @@
       <option name="project" value="LOCAL" />
       <updated>1725387628158</updated>
     </task>
-    <option name="localTasksCounter" value="76" />
+    <task id="LOCAL-00076" summary="move company description to the back because the Affinity function fetch company_name by the first line of the report">
+      <option name="closed" value="true" />
+      <created>1725387847246</created>
+      <option name="number" value="00076" />
+      <option name="presentableId" value="LOCAL-00076" />
+      <option name="project" value="LOCAL" />
+      <updated>1725387847247</updated>
+    </task>
+    <option name="localTasksCounter" value="77" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -511,7 +512,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="reset affinity state when new memo is drafted" />
     <MESSAGE value="uncomment meat" />
     <MESSAGE value="reset memo state" />
     <MESSAGE value="comment out LLM for testing" />
@@ -536,7 +536,8 @@
     <MESSAGE value="try to make importing financial_analysis works" />
     <MESSAGE value="change the comment style" />
     <MESSAGE value="Revise add_entry_to_list because Affinity's API call has bugs" />
-    <option name="LAST_COMMIT_MESSAGE" value="Revise add_entry_to_list because Affinity's API call has bugs" />
+    <MESSAGE value="move company description to the back because the Affinity function fetch company_name by the first line of the report" />
+    <option name="LAST_COMMIT_MESSAGE" value="move company description to the back because the Affinity function fetch company_name by the first line of the report" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

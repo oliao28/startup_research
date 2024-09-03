@@ -45,7 +45,7 @@ def create_organization_in_affinity(affinity_api_key, organization_data):
         search_results = search_response.json()
         if search_results["organizations"]:
             # Organization already exists
-            return True, search_results["organizations"][0]
+            return search_results["organizations"][0]
 
     # Make the POST request
     company_name = get_company_name(organization_data.get("report"),organization_data.get("domain"))
@@ -54,9 +54,9 @@ def create_organization_in_affinity(affinity_api_key, organization_data):
 
     # Check if the request was successful
     if response.status_code in [200, 201]:
-        return False, response.json()  #response will contains entity_id of the new organization
+        return response.json()  #response will contains entity_id of the new organization
     else:
-        return False, None
+        return None
 
 def find_dict_by_entity_id(dict_list, target_id):
     for dictionary in dict_list:

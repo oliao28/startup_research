@@ -135,7 +135,7 @@ async def main():
                 "report": st.session_state.report,
                 "domain": st.session_state.website,
             }
-            org_preexist, org_result = au.create_organization_in_affinity(AFFINITY_API_KEY, company_data)
+            org_result = au.create_organization_in_affinity(AFFINITY_API_KEY, company_data)
             if org_result:
                 au.add_entry_to_list(AFFINITY_API_KEY, au.deal_list_id, org_result['id'])
 
