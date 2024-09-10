@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="move company description to the back because the Affinity function fetch company_name by the first line of the report">
-      <change beforePath="$PROJECT_DIR$/affinity_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/affinity_utils.py" afterDir="false" />
+    <list default="true" id="2a1e84f1-e178-413d-8cc9-de6055ba7008" name="Changes" comment="remove org_preexist check because it seems that Affinity captures every organization on earth">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/startup_research.py" beforeDir="false" afterPath="$PROJECT_DIR$/startup_research.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -105,14 +106,6 @@
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
       <updated>1719232007136</updated>
-    </task>
-    <task id="LOCAL-00030" summary="edit user instruction">
-      <option name="closed" value="true" />
-      <created>1723128630033</created>
-      <option name="number" value="00030" />
-      <option name="presentableId" value="LOCAL-00030" />
-      <option name="project" value="LOCAL" />
-      <updated>1723128630033</updated>
     </task>
     <task id="LOCAL-00031" summary="go back to anthropic">
       <option name="closed" value="true" />
@@ -482,7 +475,15 @@
       <option name="project" value="LOCAL" />
       <updated>1725387847247</updated>
     </task>
-    <option name="localTasksCounter" value="77" />
+    <task id="LOCAL-00077" summary="remove org_preexist check because it seems that Affinity captures every organization on earth">
+      <option name="closed" value="true" />
+      <created>1725387931022</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1725387931022</updated>
+    </task>
+    <option name="localTasksCounter" value="78" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -512,7 +513,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
-    <MESSAGE value="uncomment meat" />
     <MESSAGE value="reset memo state" />
     <MESSAGE value="comment out LLM for testing" />
     <MESSAGE value="do not reset memo state" />
@@ -537,7 +537,8 @@
     <MESSAGE value="change the comment style" />
     <MESSAGE value="Revise add_entry_to_list because Affinity's API call has bugs" />
     <MESSAGE value="move company description to the back because the Affinity function fetch company_name by the first line of the report" />
-    <option name="LAST_COMMIT_MESSAGE" value="move company description to the back because the Affinity function fetch company_name by the first line of the report" />
+    <MESSAGE value="remove org_preexist check because it seems that Affinity captures every organization on earth" />
+    <option name="LAST_COMMIT_MESSAGE" value="remove org_preexist check because it seems that Affinity captures every organization on earth" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
