@@ -83,52 +83,22 @@ async def main():
                         await new_export_pdf(uploaded_files)
 
                 #research beginnings
-                try:
-                    # Use Anthropic Claude model. If it has outages, fall back to open AI
-                    if not st.session_state.company_description:
-                        st.session_state.company_description = await generate_summary(website)
-                    prompt = build_prompt(research_config["prompt"], st.session_state.website, st.session_state.company_description)
-                    online_report = await get_report("web", prompt, research_config["report_type"],
-                                                 research_config["agent"], research_config["role"], verbose=False)
-                except anthropic.InternalServerError:
-                    os.environ["LLM_PROVIDER"] = "openai"
-                    os.environ["FAST_LLM_MODEL"] = "gpt-4o-mini"
-                    os.environ["SMART_LLM_MODEL"] = "gpt-4o"
-                    if not st.session_state.company_description:
-                        st.session_state.company_description = await generate_summary(website)
-                    prompt = build_prompt(research_config["prompt"], website, st.session_state.company_description)
-                    online_report = await get_report("web", prompt, research_config["report_type"],
-                                                 research_config["agent"], research_config["role"], verbose=False)
-
-                online_report = check_point(online_report, website=website, summary=st.session_state.company_description)
-                #code change making more
-                if uploaded_files is not None:  # if document provided
-                    offline_report = await get_report("local", prompt, research_config["report_type"],
-                            research_config["agent"], research_config["role"], verbose=False)
-
-                    offline_report = check_point(offline_report, website=website, summary=st.session_state.company_description)
-
-                    report = combine_reports(research_config["prompt"], offline_report, online_report)
-                else:
-                    report = online_report
-
-                # Store the report in session state
-                st.session_state.report = report
+                st.session_state.report = await conduct_research(st.session_state, research_config, uploaded_files)
         if st.session_state.stage>=1:
+            st.write(st.session_state.report)
             st.write("Company Description")
             st.write(st.session_state.company_description)
-            st.write(st.session_state.report)
 
-            '''industry, sub_sector = identify_industry(st.session_state.report)
-            st.write("The company is in: " + industry)
-            st.write("The specfic sub-sector is: " + sub_sector)
-            market_report = await industry_sector_report(industry, sub_sector)
-            st.write(market_report)
+            # industry, sub_sector = identify_industry(st.session_state.report)
+            # st.write("The company is in: " + industry)
+            # st.write("The specfic sub-sector is: " + sub_sector)
+            # market_report = await industry_sector_report(industry, sub_sector)
+            # st.write(market_report)
+            #
+            # st.write("The expert opinion is: ")
+            # opinion = expert_opinion(company=st.session_state.report, market=market_report)
+            # st.write(opinion)
 
-            st.write("The expert opinion is: ")
-            opinion = expert_opinion(company=st.session_state.report, market=market_report)
-            st.write(opinion)
-'''
             # Add to Affinity
             st.button("Add to Affinity", on_click=set_stage, args=(2,))
         if st.session_state.stage==2:
@@ -136,13 +106,9 @@ async def main():
                 "report": st.session_state.report,
                 "domain": st.session_state.website,
             }
-            org_preexist, org_result = au.create_organization_in_affinity(AFFINITY_API_KEY, company_data)
+            org_result = au.create_organization_in_affinity(AFFINITY_API_KEY, company_data)
             if org_result:
-                if org_preexist:
-                    st.success(f"Organization: {org_result['name']} already exists in Affinity", icon="✅")
-                else:
-                    st.success(f"Created organization: {org_result['name']} in Affinity", icon="✅")
-                    au.add_entry_to_list(AFFINITY_API_KEY, au.deal_list_id, org_result['id'])
+                au.add_entry_to_list(AFFINITY_API_KEY, au.deal_list_id, org_result['id'])
 
                 # Now add notes to the organization
                 note_result = au.add_notes_to_company(AFFINITY_API_KEY, org_result['id'], st.session_state.report)
