@@ -111,7 +111,7 @@ async def industry_sector_report(industry, sector):
                 Include a short summary of how the industry and sector are performing."""
 
     researcher = GPTResearcher(query=prompt, 
-                                 report_type=report_type, source_urls=sources, report_source='sources', verbose=True)
+                                 report_type=report_type, source_urls=sources, report_source='static', verbose=True)
     research_result = await researcher.conduct_research()
     report = await researcher.write_report()
 
