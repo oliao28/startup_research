@@ -61,6 +61,8 @@ async def main():
         st.session_state.company_description = st.text_input(
             'Describe the company in a few sentences (or leave blank if website is provided)')
         uploaded_files = st.file_uploader("Upload any documents you have from the company.")
+        st.selectbox("Industry", ["Biotech", "Semiconductor", "Software", "Consumer"], index=0, label_visibility="visible")
+        opinion = st.checkbox("Would you like market research and an expert opinon?")
         st.button("Draft call memo", on_click=set_stage, args=(1,))
         if st.session_state.stage==1:
             if not website:
@@ -84,7 +86,7 @@ async def main():
 
                 #research beginnings
                 st.session_state.report = await conduct_research(st.session_state, research_config, uploaded_files)
-        if st.session_state.stage>=1:
+        if st.session_state.stage>=1 and opinion:
             st.write(st.session_state.report)
             st.write("Company Description")
             st.write(st.session_state.company_description)
