@@ -122,7 +122,7 @@ def expert_opinion(company, market):
     messages=[
       {"role": "system", "content": "You are an expert in venture capital and assist non-experts in making assessments of specific technical fields."},
       {"role": "user", "content": "Using this report on a company: " + company + " and this report on the industry and sector of the company: " + market + " Please provide a 5 sentence analysis of the company's investment viability. Focus on the connections between the industry and sector analysis and the company. Do not focus on company data alone."},
-      {"role": "assistant", "content": "You are an expert who sees the connections between large market trands and individual companies.."}
+      {"role": "assistant", "content": "You are an expert who sees the connections between large market trands and individual companies. You are hard to impress and only recommend investment in the best companies. You justify all your answers."}
     ]
     )
     
@@ -152,7 +152,6 @@ async def decrypt_pdf(pdf_content, password):
         return output_pdf, "PDF decrypted successfully!"
     else:
         return None, "Incorrect password! Unable to decrypt PDF."
-
 
 async def conduct_research(session_state, research_config, uploaded_files):
     website = session_state.website
