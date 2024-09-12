@@ -103,15 +103,12 @@ def identify_industry(report):
     return industry, response
 
 async def industry_sector_report(industry, sector):
-    report_source= "static"
-    sources = ["https://www.taiwan-healthcare.org/zh/homepage", "https://www.ankecare.com/", "https://news.gbimonthly.com/", "https://technews.tw/"]
-    #sources = ["https://en.wikipedia.org/wiki/Biotechnology"]
 
     prompt = """Please investigate the """+ industry + """industry and """ + sector + """sector. Create an instruction manual for investing in 
                 this industry and this sector. Focus on what distinguishes venture capital investing in this industry and sector from others.
                 Include a short summary of how the industry and sector are performing."""
 
-    researcher = GPTResearcher(query=prompt, report_source=report_source, source_urls=sources)
+    researcher = GPTResearcher(query=prompt, report_source="web")
     research_result = await researcher.conduct_research()
     report = await researcher.write_report()
 
