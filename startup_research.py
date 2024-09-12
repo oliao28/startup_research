@@ -111,7 +111,7 @@ async def industry_sector_report(industry, sector):
                 this industry and this sector. Focus on what distinguishes venture capital investing in this industry and sector from others.
                 Include a short summary of how the industry and sector are performing."""
 
-    researcher = GPTResearcher(query=prompt, report_source=report_source, sources=sources)
+    researcher = GPTResearcher(query=prompt, report_source=report_source, source_urls=sources)
     research_result = await researcher.conduct_research()
     report = await researcher.write_report()
 
