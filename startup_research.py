@@ -104,8 +104,8 @@ def identify_industry(report):
 
 async def industry_sector_report(industry, sector):
     report_source= "static"
-    #sources = ["https://www.taiwan-healthcare.org/zh/homepage", "https://www.ankecare.com/", "https://news.gbimonthly.com/", "https://technews.tw/"]
-    sources = ["https://en.wikipedia.org/wiki/Biotechnology"]
+    sources = ["https://www.taiwan-healthcare.org/zh/homepage", "https://www.ankecare.com/", "https://news.gbimonthly.com/", "https://technews.tw/"]
+    #sources = ["https://en.wikipedia.org/wiki/Biotechnology"]
 
     prompt = """Please investigate the """+ industry + """industry and """ + sector + """sector. Create an instruction manual for investing in 
                 this industry and this sector. Focus on what distinguishes venture capital investing in this industry and sector from others.
